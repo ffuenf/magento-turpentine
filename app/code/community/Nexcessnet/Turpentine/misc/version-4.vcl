@@ -131,7 +131,7 @@ sub vcl_recv {
         # set this so Turpentine can see the request passed through Varnish
         set req.http.X-Turpentine-Secret-Handshake = "{{secret_handshake}}";
         # use the special admin backend and pipe if it's for the admin section
-        if (req.url ~ "{{url_base_regex}}{{admin_frontname}}") {
+        if (req.url ~ "{{url_base_regex}}{{admin_frontname}}" || req.url ~ "(/MarketPlace/|/banner7/|/wp-admin/|/amshiprules/|/datafeedmanager/|/Amazon/|/ekomimeetsmage_admin/|/adminhtml_config/|/navconnect_admin/|/seoautolink/|/seo/admin|/downloader/|/M2ePro/|/promo_quote/|/advancedreports_admin/|/navconnect)" || req.url ~  "/ranvi_feed/|/pnsofortueberweisung/|/timthumb|/paypal/") {
             set req.backend_hint = admin;
             return (pipe);
         }
