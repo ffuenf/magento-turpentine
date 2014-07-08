@@ -353,3 +353,7 @@ Magento CE 1.8+ or EE 1.13+, see [these instructions](https://github.com/nexcess
   * [#443] Fixed caching of static assets when the *Add Store Code to Urls* option
   is enabled (thanks @jeroenvermeulen)
   * [#345] Fixed compatibility with Magento CE 1.8 and EE 1.13
+
+### RELEASE-0.6.1 (ffuenf)
+
+This release is a merge of various branches to add support of Varnish4 and compatibility with ngx_pagespeed in fornt of FPC.
