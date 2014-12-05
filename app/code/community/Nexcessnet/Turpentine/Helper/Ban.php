@@ -24,18 +24,22 @@ class Nexcessnet_Turpentine_Helper_Ban extends Mage_Core_Helper_Abstract {
      * Get the regex for banning a product page from the cache, including
      * any parent products for configurable/group products
      *
-     * @param  Mage_Catalog_Model_Product $product
+     * @param  Mage_Catalog_Model_Product | Mage_Catalog_Model_Resource_Product_Collection $product
      * @return string
      */
     public function getProductBanRegex( $product ) {
         $urlPatterns = array();
-        foreach( $this->getParentProducts( $product ) as $parentProduct ) {
-            if ( $parentProduct->getUrlKey() ) {
-                $urlPatterns[] = $parentProduct->getUrlKey();
+
+        if($product instanceof Mage_Catalog_Model_Resource_Product_Collection){
+            foreach( $product as $productObject ) {
+                if ( $productObject->getUrlKey() ) {
+                    $urlPatterns[] = $productObject->getUrlKey();
+                }
             }
-        }
-        if ( $product->getUrlKey() ) {
-            $urlPatterns[] = $product->getUrlKey();
+        }else{
+            if ( $product->getUrlKey() ) {
+                $urlPatterns[] = $product->getUrlKey();
+            }
         }
         if ( empty($urlPatterns) ) {
             $urlPatterns[] = "##_NEVER_MATCH_##";
@@ -54,11 +58,36 @@ class Nexcessnet_Turpentine_Helper_Ban extends Mage_Core_Helper_Abstract {
         $parentProducts = array();
         foreach( array( 'configurable', 'grouped' ) as $pType ) {
             foreach( Mage::getModel( 'catalog/product_type_' . $pType )
-                    ->getParentIdsByChild( $childProduct->getId() ) as $parentId ) {
+                         ->getParentIdsByChild( $childProduct->getId() ) as $parentId ) {
                 $parentProducts[] = Mage::getModel( 'catalog/product' )
                     ->load( $parentId );
             }
         }
         return $parentProducts;
     }
+
+
+    /**
+     * get a collection of all related products
+     *
+     * @param Mage_Catalog_Model_Product $product
+     * @return Mage_Catalog_Model_Resource_Product_Collection
+     */
+    public function getRelatedProductsCollection(Mage_Catalog_Model_Product $product)
+    {
+        /** @var Mage_Catalog_Model_Resource_Eav_Mysql4_Product_Collection $productCollection */
+        $parentProductsCollection = Mage::getResourceModel('catalog/product_collection');
+        $parentProductsCollection->addAttributeToSelect('url_key');
+        $parentProductsCollection->joinField('relation',
+            'catalog/product_relation',
+            'parent_id',
+            'parent_id=entity_id',
+            '{{table}}.child_id='.$product->getId(),
+            'inner');
+        $parentProductsCollection->load();
+        $parentProductsCollection->addItem($product);
+
+        return $parentProductsCollection;
+    }
+
 }

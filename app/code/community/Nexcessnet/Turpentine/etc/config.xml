@@ -125,7 +125,11 @@
         <models>
             <turpentine>
                 <class>Nexcessnet_Turpentine_Model</class>
+                <resourceModel>turpentine_resource_mysql4</resourceModel>
             </turpentine>
+            <turpentine_resource_mysql4>
+                <class>Nexcessnet_Turpentine_Model_Resource_Mysql4</class>
+            </turpentine_resource_mysql4>
         </models>
         <cache>
             <types>
