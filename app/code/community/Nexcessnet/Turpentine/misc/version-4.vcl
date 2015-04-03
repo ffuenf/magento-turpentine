@@ -21,6 +21,7 @@ vcl 4.0;
 ## Custom C Code
 
 C{
+    // @source app/code/community/Nexcessnet/Turpentine/misc/uuid.c
     {{custom_c_code}}
 }C
 
@@ -131,7 +132,7 @@ sub vcl_recv {
         # set this so Turpentine can see the request passed through Varnish
         set req.http.X-Turpentine-Secret-Handshake = "{{secret_handshake}}";
         # use the special admin backend and pipe if it's for the admin section
-        if (req.url ~ "{{url_base_regex}}{{admin_frontname}}" || req.url ~ "(/enhancedgrid/|/MarketPlace/|/banner7/|/wp-admin/|/amshiprules/|/datafeedmanager/|/Amazon/|/ekomimeetsmage_admin/|/adminhtml_config/|/navconnect_admin/|/seoautolink/|/seo/admin|/downloader/|/M2ePro/|/promo_quote/|/advancedreports_admin/|/navconnect)" || req.url ~  "/ranvi_feed/|/pnsofortueberweisung/|/timthumb|/paypal/") {
+        if (req.url ~ "{{url_base_regex}}{{admin_frontname}}") {
             set req.backend_hint = admin;
             return (pipe);
         }
@@ -158,6 +159,8 @@ sub vcl_recv {
             }
         }
         # no frontend cookie was sent to us AND this is not an ESI or AJAX call
+        # BUGFIX https://github.com/ho-nl/magento-turpentine/commit/88a84039b1ae13a90eb9498aa458bec402a14009
+        # Issue thread: https://github.com/nexcess/magento-turpentine/issues/470
         if (req.http.Cookie !~ "frontend=" && !req.http.X-Varnish-Esi-Method) {
             if (client.ip ~ crawler_acl ||
                     req.http.User-Agent ~ "^(?:{{crawler_user_agent_regex}})$") {

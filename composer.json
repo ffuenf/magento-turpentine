@@ -1,5 +1,5 @@
 {
-    "name": "nexcess/magento-turpentine",
+    "name": "flagbit/magento-turpentine",
     "type": "magento-module",
     "license": "GPLv2+",
     "description": "A Varnish extension for Magento.",

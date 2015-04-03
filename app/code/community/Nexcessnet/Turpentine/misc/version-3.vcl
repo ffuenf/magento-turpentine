@@ -153,8 +153,10 @@ sub vcl_recv {
                 error 403 "External ESI requests are not allowed";
             }
         }
-        # no frontend cookie was sent to us AND this is not an ESI or AJAX call
-        if (req.http.Cookie !~ "frontend=" && !req.http.X-Varnish-Esi-Method) {
+        # no frontend cookie was sent to us
+        # BUGFIX https://github.com/ho-nl/magento-turpentine/commit/88a84039b1ae13a90eb9498aa458bec402a14009
+        # Issue thread: https://github.com/nexcess/magento-turpentine/issues/470
+        if (req.http.Cookie !~ "frontend="  && !req.http.X-Varnish-Esi-Method) {
             if (client.ip ~ crawler_acl ||
                     req.http.User-Agent ~ "^(?:{{crawler_user_agent_regex}})$") {
                 # it's a crawler, give it a fake cookie
