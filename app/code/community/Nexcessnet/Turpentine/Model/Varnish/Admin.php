@@ -42,6 +42,7 @@ class Nexcessnet_Turpentine_Model_Varnish_Admin {
      * @return bool
      */
     public function flushUrl( $subPattern ) {
+        Mage::getModel('turpentine/urlCacheStatus')->expireByRegex($subPattern);
         $result = array();
         foreach( Mage::helper( 'turpentine/varnish' )->getSockets() as $socket ) {
             $socketName = $socket->getConnectionString();

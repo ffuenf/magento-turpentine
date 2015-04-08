@@ -23,6 +23,8 @@ class Nexcessnet_Turpentine_Helper_Varnish extends Mage_Core_Helper_Abstract {
 
     const MAGE_CACHE_NAME           = 'turpentine_pages';
 
+    protected $_urlTtls;
+
     /**
      * Get whether Varnish caching is enabled or not
      *
@@ -215,5 +217,38 @@ class Nexcessnet_Turpentine_Helper_Varnish extends Mage_Core_Helper_Abstract {
             }
         }
         return $result;
+    }
+
+
+    /**
+     * @see Nexcessnet_Turpentine_Model_Varnish_Configurator_Abstract::_getUrlTtls()
+     *
+     * @return array
+     */
+    public function getUrlTtls()
+    {
+        if (!is_null($this->_urlTtls)) {
+            return $this->_urlTtls;
+        }
+
+        $ttls       = array();
+        $configTtls = Mage::helper('turpentine/data')->cleanExplode(
+            PHP_EOL,
+            Mage::getStoreConfig('turpentine_vcl/ttls/url_ttls')
+        );
+        if (!count($configTtls)) {
+            return $ttls;
+        }
+
+        foreach($configTtls as $configTtl) {
+            $explodedTtlConfig = explode(',', trim($configTtl));
+            $ttls[] = array(
+                'regex' => $explodedTtlConfig[0],
+                'ttl'   => $explodedTtlConfig[1],
+            );
+        }
+        $this->_urlTtls = $ttls;
+
+        return $this->_urlTtls;
     }
 }
