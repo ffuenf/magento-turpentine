@@ -433,4 +433,11 @@
             </turpentine_crawl_urls>
         </jobs>
     </crontab>
+    <phpunit>
+      <suite>
+        <modules>
+          <Nexcessnet_Turpentine/>
+        </modules>
+      </suite>
+    </phpunit>
 </config>
