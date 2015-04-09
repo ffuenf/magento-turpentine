@@ -1,4 +1,3 @@
-#!/usr/bin/php -f
 <?php
 
 /**
@@ -21,6 +20,8 @@
  */
 
 require_once( dirname( $_SERVER['argv'][0] ) . '/abstract.php' );
+
+namespace Nexcessnet\Turpentine;
 
 class Turpentine_Shell_Varnishadm extends Mage_Shell_Abstract {
     /**
