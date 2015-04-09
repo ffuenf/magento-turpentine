@@ -1,5 +1,14 @@
+[![GitHub tag](https://img.shields.io/github/tag/ffuenf/magento-turpentine.svg)][tag]
+[![Build Status](https://img.shields.io/travis/ffuenf/magento-turpentine.svg)][travis]
+[![Code Climate](https://codeclimate.com/github/ffuenf/magento-turpentine/badges/gpa.svg)][codeclimate_gpa]
+[![Test Coverage](https://codeclimate.com/github/ffuenf/magento-turpentine/badges/coverage.svg)][codeclimate_coverage]
+
+[tag]: https://github.com/ffuenf/magento-turpentine
+[travis]: https://travis-ci.org/ffuenf/magento-turpentine
+[codeclimate_gpa]: https://codeclimate.com/github/ffuenf/magento-turpentine
+[codeclimate_coverage]: https://codeclimate.com/github/ffuenf/magento-turpentine
+
 # [Nexcess.net](https://www.nexcess.net/) Turpentine Extension for Magento
-[![Build Status](https://travis-ci.org/Flagbit/magento-turpentine.svg)](https://travis-ci.org/Flagbit/magento-turpentine)
 
 Turpentine is a full page cache extension for [Magento](https://www.magentocommerce.com/)
 that works with [Varnish](https://www.varnish-cache.org/), a very fast caching reverse-proxy. By
@@ -113,9 +122,3 @@ wiki page.
 
 If you use Turpentine (on a production site), feel free to add your site to the
 list!
-
-## License
-
-The code is licensed under GPLv2+, much of the ESI-specific code is taken from
-Hugues Alary's [Magento-Varnish](https://github.com/huguesalary/Magento-Varnish)
-extension, which is licensed as GPLv3.

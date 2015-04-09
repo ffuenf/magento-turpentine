@@ -17,6 +17,11 @@ env:
   - MAGENTO_VERSION=magento-ce-1.8.1.0
   - MAGENTO_VERSION=magento-ce-1.7.0.2
   - MAGENTO_VERSION=magento-ce-1.6.2.0
+  global:
+    secure: v4ijs42bECltZP22MaZQsUUfKd6mesqE67Gb9vOyyNoupelQ2Hpo/NJDy0lazkKSF2Hn+o9sPi3dqq0yTNVBswvkZu0Ibe6yh4zjiLIcJzbV1blFCU2FGDEPV+/z4QUXd24JtZHDY1k4kHEGDIuDac2jrjnZfTn9wWQ9nLYk3KM=
 script:
 - curl -sSL https://raw.githubusercontent.com/ffuenf/MageTestStand/master/setup.sh
   | bash
+notifications:
+  slack:
+    secure: Ic1aBYRAMlnj6gG1Kth7Are/v7I7hst6gKEFhEMu88xMYr+07pUxJ0YCxiHW/mUTRnhuKjvjB/h4yJlps8uURqoVdHiIsLurhPa6y1KOdqTEaYOTaaDVqZxBSiJbCXrZ5qSxilbEoTHSjwBpWyg0uELxrNJCfdxDfZ5b2Uan9CE=
