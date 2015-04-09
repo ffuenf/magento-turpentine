@@ -1,1 +1,2 @@
 config:
+  turpentine_varnish/servers/auth_key: "test"
