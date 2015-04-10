@@ -221,7 +221,17 @@ class Nexcessnet_Turpentine_Helper_Varnish extends Mage_Core_Helper_Abstract {
 
 
     /**
+     * Return array of ttls per regexp got from configuration
+     *
      * @see Nexcessnet_Turpentine_Model_Varnish_Configurator_Abstract::_getUrlTtls()
+     *
+     * structure:
+     * array(
+     *     array(
+     *         'regex' => <regexp>
+     *         'ttl'   => <ttl>
+     *     )
+     * )
      *
      * @return array
      */

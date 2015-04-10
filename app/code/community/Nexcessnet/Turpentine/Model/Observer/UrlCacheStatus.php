@@ -16,9 +16,10 @@ class Nexcessnet_Turpentine_Model_Observer_UrlCacheStatus
      */
     public function addUrlCache(Varien_Event_Observer $eventObject)
     {
-        if (!Mage::helper('turpentine/esi')->shouldResponseUseEsi()
+        if (!Mage::helper('turpentine/varnish')->shouldResponseUseVarnish()
             || Mage::registry('turpentine_nocache_flag')
             || http_response_code() == 404
+            || Mage::helper('turpentine/esi')->isEsiRequest()
         ) {
             return;
         }

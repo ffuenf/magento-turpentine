@@ -400,4 +400,18 @@ class Nexcessnet_Turpentine_Helper_Esi extends Mage_Core_Helper_Abstract {
         Varien_Profiler::stop( 'turpentine::helper::esi::_loadLayoutXml' );
         return $layoutXml;
     }
+
+
+    /**
+     * Check if request was to esi get block action
+     *
+     * @return bool
+     */
+    public function isEsiRequest()
+    {
+        $controller = Mage::app()->getRequest()->getControllerName();
+        $action     = Mage::app()->getRequest()->getActionName();
+
+        return ($controller === 'esi' && ($action === 'getBlock' || $action === 'getFormKey'));
+    }
 }

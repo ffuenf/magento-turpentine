@@ -16,6 +16,8 @@ class Nexcessnet_Turpentine_Model_Resource_Mysql4_UrlCacheStatus extends Mage_Co
 
 
     /**
+     * Update or insert $expireAt date for $url
+     *
      * @param string $url
      * @param Zend_Date $expireAt
      */

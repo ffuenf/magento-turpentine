@@ -28,41 +28,40 @@ class Nexcessnet_Turpentine_Model_UrlCacheStatus extends Mage_Core_Model_Abstrac
 
 
     /**
-     * Reload page by url and set new expire at
+     * Request page by url and set new expire at
      *
      * @throws Exception
      */
     public function refreshCache()
     {
-        $ch = curl_init($this->getUrl());
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_HEADER, false);
-        curl_setopt($ch, CURLOPT_ENCODING, 'gzip,deflate');
-        curl_exec($ch);
-        $errNumber = curl_errno($ch);
-        if ($errNumber) {
-            $message = sprintf('Error while curl to url "%s": %s (%s)', $this->getUrl(), curl_error($ch), $errNumber);
+        $url    = $this->getUrl();
+        $client = Mage::helper('turpentine/cron')->getCrawlerClient();
+        $client->setUri($url);
+        Mage::helper('turpentine/debug')->logDebug('Crawling URL: %s', $url);
+        try {
+            $response = $client->request();
+        } catch (Exception $e) {
+            $message = sprintf('Error crawling URL (%s): %s', $url, $e->getMessage());
+
             throw new Exception($message);
         }
-        $info = curl_getinfo($ch);
 
-        if ($info['http_code'] == 404) {
+        if ($response->getStatus() == 404) {
             $this->delete();
+
             $message = sprintf('Url become 404: %s', $this->getUrl());
-            Mage::log($message, null, self::LOGFILE);
+            Mage::helper('turpentine/debug')->logDebug($message);
 
             return;
         }
-
-        curl_close($ch);
 
         $this->renewExpireAt();
     }
 
 
     /**
+     * Set expire_at date to current(so they are expired) for all occurrences found by url $regexp
+     *
      * @param string $regex
      */
     public function  expireByRegex($regex)
@@ -79,6 +78,8 @@ class Nexcessnet_Turpentine_Model_UrlCacheStatus extends Mage_Core_Model_Abstrac
 
 
     /**
+     * Renew expire_at date to (currentDate + ttl) for $url or model's url
+     *
      * @param string $url
      *
      * @throws Mage_Core_Exception
@@ -99,6 +100,8 @@ class Nexcessnet_Turpentine_Model_UrlCacheStatus extends Mage_Core_Model_Abstrac
 
 
     /**
+     * Get next expire_at date for url
+     *
      * @return Zend_Date
      */
     public function getNextExpireAtDate($url)
