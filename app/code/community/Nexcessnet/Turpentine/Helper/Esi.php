@@ -403,15 +403,12 @@ class Nexcessnet_Turpentine_Helper_Esi extends Mage_Core_Helper_Abstract {
 
 
     /**
-     * Check if request was to esi get block action
+     * Check if request was a esi request
      *
      * @return bool
      */
     public function isEsiRequest()
     {
-        $controller = Mage::app()->getRequest()->getControllerName();
-        $action     = Mage::app()->getRequest()->getActionName();
-
-        return ($controller === 'esi' && ($action === 'getBlock' || $action === 'getFormKey'));
+        return Mage::app()->getRequest()->getControllerName() === 'esi';
     }
 }

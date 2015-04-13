@@ -47,7 +47,7 @@ class TurpentineUrlCacheStatus extends Mage_Shell_Abstract
         return <<<USAGE
 Usage:  php turpentineUrlCacheStatus.php -- [options]
 
-        --limit <indexer>             Limit urls count per on execution
+        --limit <count>               Limit urls count per on execution (optional)
         help                          This help
 
 USAGE;
