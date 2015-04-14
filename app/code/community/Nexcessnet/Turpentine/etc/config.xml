@@ -20,7 +20,7 @@
 <config>
     <modules>
         <Nexcessnet_Turpentine>
-            <version>0.6.1</version>
+            <version>0.6.2</version>
         </Nexcessnet_Turpentine>
     </modules>
     <default>
@@ -129,8 +129,20 @@
             </turpentine>
             <turpentine_resource_mysql4>
                 <class>Nexcessnet_Turpentine_Model_Resource_Mysql4</class>
+                <entities>
+                    <url_cache_status>
+                        <table>turpentine_url_cache_status</table>
+                    </url_cache_status>
+                </entities>
             </turpentine_resource_mysql4>
         </models>
+        <resources>
+            <turpentine_setup>
+                <setup>
+                    <module>Nexcessnet_Turpentine</module>
+                </setup>
+            </turpentine_setup>
+        </resources>
         <cache>
             <types>
                 <!--
@@ -371,6 +383,16 @@
                 </turpentine_esi>
             </updates>
         </layout>
+        <events>
+            <controller_front_send_response_after>
+                <observers>
+                    <turpentine_add_url_cache>
+                        <class>turpentine/observer_urlCacheStatus</class>
+                        <method>addUrlCache</method>
+                    </turpentine_add_url_cache>
+                </observers>
+            </controller_front_send_response_after>
+        </events>
     </frontend>
     <admin>
         <routers>
