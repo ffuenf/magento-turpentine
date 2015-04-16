@@ -20,22 +20,35 @@ class Nexcessnet_Turpentine_Model_Observer_UrlCacheStatus
             || Mage::registry('turpentine_nocache_flag')
             || http_response_code() == 404
             || Mage::helper('turpentine/esi')->isEsiRequest()
+            || $this->_hasInvalidParameters()
         ) {
-            return;
-        }
-
-        $noCacheGetParams = Mage::helper( 'turpentine/data' )->cleanExplode(
-            ',',
-            Mage::getStoreConfig('turpentine_vcl/params/get_params')
-        );
-
-        $getParams = array_keys($_GET);
-
-        if (count(array_intersect($getParams, $noCacheGetParams))) {
             return;
         }
 
         $url = Mage::helper('core/url')->getCurrentUrl();
         Mage::getModel('turpentine/urlCacheStatus')->renewExpireAt($url);
+    }
+
+
+    /**
+     * Check if request has invalid(not whitelisted) GET parameters
+     *
+     * @return bool
+     */
+    protected function _hasInvalidParameters()
+    {
+        $whitelistGetParams = Mage::helper( 'turpentine/data' )->cleanExplode(
+            ',',
+            Mage::getStoreConfig('turpentine_vcl/params/crawler_whitelist_get_params')
+        );
+
+        $whitelistGetParams = array_map('strtolower', $whitelistGetParams);
+        $getLowercase       = array_map('strtolower', array_keys($_GET));
+
+        if (count($getLowercase) && count(array_diff($getLowercase, $whitelistGetParams))) {
+            return true;
+        }
+
+        return false;
     }
 }
