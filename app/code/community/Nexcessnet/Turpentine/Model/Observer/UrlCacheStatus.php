@@ -20,6 +20,7 @@ class Nexcessnet_Turpentine_Model_Observer_UrlCacheStatus
             || Mage::registry('turpentine_nocache_flag')
             || http_response_code() == 404
             || Mage::helper('turpentine/esi')->isEsiRequest()
+            || !Mage::helper('turpentine/crawler')->getSmartCrawlerEnabled()
             || $this->_hasInvalidParameters()
         ) {
             return;

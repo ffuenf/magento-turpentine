@@ -58,7 +58,7 @@ class Nexcessnet_Turpentine_Model_Varnish_Admin {
             $clearedFlag         = true;
         }
 
-        if ($clearedFlag) {
+        if ($clearedFlag && Mage::helper('turpentine/crawler')->getSmartCrawlerEnabled()) {
             try {
                 Mage::getModel('turpentine/urlCacheStatus')->expireByRegex($subPattern);
             } catch (Exception $e) {
@@ -110,7 +110,7 @@ class Nexcessnet_Turpentine_Model_Varnish_Admin {
      */
     public function applyConfig() {
         $result = array();
-	    $helper = Mage::helper( 'turpentine' );
+        $helper = Mage::helper( 'turpentine' );
         foreach( Mage::helper( 'turpentine/varnish' )->getSockets() as $socket ) {
             $cfgr = Nexcessnet_Turpentine_Model_Varnish_Configurator_Abstract::getFromSocket( $socket );
             $socketName = $socket->getConnectionString();

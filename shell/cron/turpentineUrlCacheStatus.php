@@ -27,8 +27,10 @@ class TurpentineUrlCacheStatus extends Mage_Shell_Abstract
             return;
         }
 
-        if (!Mage::helper('turpentine/varnish')->getVarnishEnabled()){
-            echo 'Varnish is disabled';
+        if (!Mage::helper('turpentine/varnish')->getVarnishEnabled()
+            || !Mage::helper('turpentine/crawler')->getSmartCrawlerEnabled()
+        ) {
+            echo "Varnish or smart crawler is disabled";
             return;
         }
 
@@ -109,7 +111,7 @@ class TurpentineUrlCacheStatus extends Mage_Shell_Abstract
         $idsFile = $this->_getIdsFile($instanceNumber, 'w');
         if (!$idsFile) {
             Mage::helper('turpentine/debug')->logInfo("Instance with number {$instanceNumber} already running");
-            
+
             return false;
         }
         fputs($idsFile, implode(self::DELIMITER, $ids));
