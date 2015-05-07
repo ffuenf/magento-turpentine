@@ -13,7 +13,10 @@ class TurpentineUrlCacheStatus extends Mage_Shell_Abstract
             return;
         }
 
-        if (!Mage::helper('turpentine/varnish')->getVarnishEnabled()){
+        if (!Mage::helper('turpentine/varnish')->getVarnishEnabled()
+            || !Mage::helper('turpentine/crawler')->getSmartCrawlerEnabled()
+        ) {
+            echo "Varnish or smart crawler is disabled";
             return;
         }
 
