@@ -23,12 +23,24 @@ class Nexcessnet_Turpentine_Helper_Crawler extends Nexcessnet_Turpentine_Helper_
 {
 
     /**
+     * Path for smart_crawler_enable
+     */
+    const CONFIG_EXTENSION_SMARTCRAWLERENABLE = 'turpentine_varnish/general/smart_crawler_enable';
+
+    /**
+     * Variable for if Turpentine should handle the flash messages
+     *
+     * @var bool
+     */
+    protected $bSmartCrawlerEnabled;
+
+    /**
     * Get if the crawler is enabled
     *
     * @return bool
     */
     public function getSmartCrawlerEnabled()
     {
-        return $this->getStoreFlag('turpentine_varnish/general/smart_crawler_enable');
+        return $this->getStoreFlag(self::CONFIG_EXTENSION_SMARTCRAWLERENABLE, $bSmartCrawlerEnabled);
     }
 }

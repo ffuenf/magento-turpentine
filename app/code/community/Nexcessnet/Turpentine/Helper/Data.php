@@ -23,6 +23,21 @@ class Nexcessnet_Turpentine_Helper_Data extends Nexcessnet_Turpentine_Helper_Cor
 {
 
     /**
+     * Path for ajax_messages
+     */
+    const CONFIG_EXTENSION_AJAXMESSAGES = 'turpentine_varnish/general/ajax_messages';
+
+    /**
+     * Path for fix_product_toolbar
+     */
+    const CONFIG_EXTENSION_FIXPRODUCTTOOLBAR = 'turpentine_varnish/general/fix_product_toolbar';
+
+    /**
+     * Path for fix_product_toolbar
+     */
+    const CONFIG_EXTENSION_AUTOAPPLYONSAVE = 'turpentine_varnish/general/auto_apply_on_save';
+
+    /**
     * Contains a newly generated v4 uuid whenever read, possibly not available
     * on all kernels
     */
@@ -46,14 +61,35 @@ class Nexcessnet_Turpentine_Helper_Data extends Nexcessnet_Turpentine_Helper_Cor
     *
     * @var string
     */
-    const BYPASS_COOKIE_NAME  = 'varnish_bypass';
+    const BYPASS_COOKIE_NAME = 'varnish_bypass';
 
     /**
     * encryption singleton thing
     *
     * @var Mage_Core_Model_Encryption
     */
-    protected $_crypt   = null;
+    protected $_crypt = null;
+
+    /**
+     * Variable for if Turpentine should handle the flash messages
+     *
+     * @var bool
+     */
+    protected $bUseFlashMessagesFix;
+
+    /**
+     * Variable for if Turpentine should apply the product list toolbar
+     *
+     * @var bool
+     */
+    protected $bUseProductListToolbarFix;
+
+    /**
+     * Variable for if Turpentine should apply the new VCL on config changes
+     *
+     * @var bool
+     */
+    protected $bAutoApplyOnSave;
 
     /**
     * Like built-in explode() but applies trim to each exploded element and
@@ -244,7 +280,7 @@ class Nexcessnet_Turpentine_Helper_Data extends Nexcessnet_Turpentine_Helper_Cor
     */
     public function useFlashMessagesFix()
     {
-        return $this->getStoreFlag('turpentine_varnish/general/ajax_messages');
+        return $this->getStoreFlag(self::CONFIG_EXTENSION_AJAXMESSAGES, $bUseFlashMessagesFix);
     }
         
     /**
@@ -255,9 +291,9 @@ class Nexcessnet_Turpentine_Helper_Data extends Nexcessnet_Turpentine_Helper_Cor
     */
     public function useProductListToolbarFix()
     {
-        return $this->getStoreFlag('turpentine_varnish/general/fix_product_toolbar');
+        return $this->getStoreFlag(self::CONFIG_EXTENSION_FIXPRODUCTTOOLBAR, $bUseProductListToolbarFix);
     }
-        
+
     /**
     * Check if Turpentine should apply the new VCL on config changes
     *
@@ -265,7 +301,7 @@ class Nexcessnet_Turpentine_Helper_Data extends Nexcessnet_Turpentine_Helper_Cor
     */
     public function getAutoApplyOnSave()
     {
-        return $this->getStoreFlag('turpentine_varnish/general/auto_apply_on_save');
+        return $this->getStoreFlag(self::CONFIG_EXTENSION_AUTOAPPLYONSAVE, $bAutoApplyOnSave);
     }
         
     /**
