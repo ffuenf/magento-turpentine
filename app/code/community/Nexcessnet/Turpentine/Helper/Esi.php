@@ -168,7 +168,7 @@ class Nexcessnet_Turpentine_Helper_Esi extends Mage_Core_Helper_Abstract
     */
     public function getEsiBlockLogEnabled()
     {
-        return $this->getStoreFlag(self::CONFIG_EXTENSION_BLOCKDEBUG, $bEsiBlockLogEnabled);
+        return $this->getStoreFlag(self::CONFIG_EXTENSION_BLOCKDEBUG, 'bEsiBlockLogEnabled');
     }
 
     /**

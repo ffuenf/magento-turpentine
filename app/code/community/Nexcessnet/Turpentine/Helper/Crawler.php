@@ -41,6 +41,6 @@ class Nexcessnet_Turpentine_Helper_Crawler extends Mage_Core_Helper_Abstract
     */
     public function getSmartCrawlerEnabled()
     {
-        return $this->getStoreFlag(self::CONFIG_EXTENSION_SMARTCRAWLERENABLE, $bSmartCrawlerEnabled);
+        return $this->getStoreFlag(self::CONFIG_EXTENSION_SMARTCRAWLERENABLE, 'bSmartCrawlerEnabled');
     }
 }

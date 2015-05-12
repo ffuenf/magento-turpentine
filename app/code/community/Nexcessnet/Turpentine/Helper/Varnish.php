@@ -55,7 +55,7 @@ class Nexcessnet_Turpentine_Helper_Varnish extends Mage_Core_Helper_Abstract
     */
     public function getVarnishDebugEnabled()
     {
-        return $this->getStoreFlag(self::CONFIG_EXTENSION_VARNISHDEBUG, $bVarnishDebugEnabled);
+        return $this->getStoreFlag(self::CONFIG_EXTENSION_VARNISHDEBUG, 'bVarnishDebugEnabled');
     }
 
     /**

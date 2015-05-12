@@ -280,7 +280,7 @@ class Nexcessnet_Turpentine_Helper_Data extends Mage_Core_Helper_Abstract
     */
     public function useFlashMessagesFix()
     {
-        return $this->getStoreFlag(self::CONFIG_EXTENSION_AJAXMESSAGES, $bUseFlashMessagesFix);
+        return $this->getStoreFlag(self::CONFIG_EXTENSION_AJAXMESSAGES, 'bUseFlashMessagesFix');
     }
         
     /**
@@ -291,7 +291,7 @@ class Nexcessnet_Turpentine_Helper_Data extends Mage_Core_Helper_Abstract
     */
     public function useProductListToolbarFix()
     {
-        return $this->getStoreFlag(self::CONFIG_EXTENSION_FIXPRODUCTTOOLBAR, $bUseProductListToolbarFix);
+        return $this->getStoreFlag(self::CONFIG_EXTENSION_FIXPRODUCTTOOLBAR, 'bUseProductListToolbarFix');
     }
 
     /**
@@ -301,7 +301,7 @@ class Nexcessnet_Turpentine_Helper_Data extends Mage_Core_Helper_Abstract
     */
     public function getAutoApplyOnSave()
     {
-        return $this->getStoreFlag(self::CONFIG_EXTENSION_AUTOAPPLYONSAVE, $bAutoApplyOnSave);
+        return $this->getStoreFlag(self::CONFIG_EXTENSION_AUTOAPPLYONSAVE, 'bAutoApplyOnSave');
     }
         
     /**
