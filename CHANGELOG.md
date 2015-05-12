@@ -376,3 +376,12 @@ This release is a merge of various branches to add support of Varnish4 and compa
   utility (@jeroenvermeulen)
   * [#536] Allow `//` (double slash) comments in VCL files and strip them when
   trimming whitespace (@eth8505)
+
+### RELEASE-0.6.2
+
+  * [#635] Fixed typos (@pborelli)  
+  * [#668] Replace short open tag (@XnS)
+  * [#721] Fix license according to SPDX (@ihor-sviziev)
+  * [#740] Do not return pipe for OPTIONS straight away (@ashsmith)
+  * [#598] Ensure POST request gets normalized data (@melvyn-sopacua)
+    

@@ -1,6 +1,6 @@
 {
   "name": "ffuenf/magento-turpentine",
-  "license": "OSL-3.0",
+  "license": "GPL-2.0+",
   "description": "A Varnish extension for Magento",
   "authors": [
     {
