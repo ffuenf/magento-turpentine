@@ -20,6 +20,6 @@ void generate_uuid(char* buf) {
         (c & 0x0fff) | 0x8000,
         (c & (long)0xffff0000) >> 16,
         d
-    );
+   );
     return;
 }

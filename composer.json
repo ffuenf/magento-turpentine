@@ -4,8 +4,8 @@
   "description": "A Varnish extension for Magento",
   "authors": [
     {
-        "name": "Alex Headley",
-        "email": "aheadley@nexcess.net"
+      "name": "Alex Headley",
+      "email": "aheadley@nexcess.net"
     }
     {
       "name": "Achim Rosenhagen",

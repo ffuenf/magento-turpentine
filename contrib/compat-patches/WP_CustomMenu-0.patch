@@ -9,8 +9,8 @@
 +     * Added for compatibility with Nexcessnet_Turpentine
 +     */
 +    protected function _toHtml() {
-+        if( Mage::getStoreConfig('custom_menu/general/enabled') &&
-+                $this->getNameInLayout() == 'catalog.topnav' ) {
++        if (Mage::getStoreConfig('custom_menu/general/enabled') &&
++                $this->getNameInLayout() == 'catalog.topnav') {
 +            $this->setTemplate('webandpeople/custommenu/top.phtml');
 +        }
 +        return parent::_toHtml();

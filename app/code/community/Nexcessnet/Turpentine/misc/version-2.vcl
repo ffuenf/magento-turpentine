@@ -48,7 +48,9 @@ sub generate_session {
     if (req.url ~ ".*[&?]SID=([^&]+).*") {
         set req.http.X-Varnish-Faked-Session = regsub(
             req.url, ".*[&?]SID=([^&]+).*", "frontend=\1");
-    } else {
+    }
+else
+{
         C{
             char uuid_buf [50];
             generate_uuid(uuid_buf);
@@ -56,14 +58,16 @@ sub generate_session {
                 "\030X-Varnish-Faked-Session:",
                 uuid_buf,
                 vrt_magic_string_end
-            );
+           );
         }C
     }
     if (req.http.Cookie) {
         # client sent us cookies, just not a frontend cookie. try not to blow
         # away the extra cookies
         set req.http.Cookie = req.http.X-Varnish-Faked-Session "; " req.http.Cookie;
-    } else {
+    }
+else
+{
         set req.http.Cookie = req.http.X-Varnish-Faked-Session;
     }
 }
@@ -82,7 +86,7 @@ sub generate_session_expires {
             "\031X-Varnish-Cookie-Expires:",
             date_buf,
             vrt_magic_string_end
-        );
+       );
     }C
 }
 
@@ -94,7 +98,9 @@ sub vcl_recv {
         if (req.http.X-Forwarded-For) {
             set req.http.X-Forwarded-For =
                 req.http.X-Forwarded-For ", " client.ip;
-        } else {
+        }
+else
+{
             set req.http.X-Forwarded-For = client.ip;
         }
     }
@@ -166,7 +172,9 @@ sub vcl_recv {
                     req.http.User-Agent ~ "^(?:{{crawler_user_agent_regex}})$") {
                 # it's a crawler, give it a fake cookie
                 set req.http.Cookie = "frontend=crawler-session";
-            } else {
+            }
+else
+{
                 # it's a real user, make up a new session for them
                 call generate_session;
             }
@@ -219,7 +227,9 @@ sub vcl_hash {
     set req.hash += req.url;
     if (req.http.Host) {
         set req.hash += req.http.Host;
-    } else {
+    }
+else
+{
         set req.hash += server.ip;
     }
     set req.hash += req.http.Ssl-Offloaded;
@@ -277,7 +287,9 @@ sub vcl_fetch {
             # don't cache if it's not a 200 or 404
             set beresp.ttl = {{grace_period}}s;
             return (pass);
-        } else {
+        }
+else
+{
             # if Magento sent us a Set-Cookie header, we'll put it somewhere
             # else for now
             if (beresp.http.Set-Cookie) {
@@ -298,7 +310,9 @@ sub vcl_fetch {
                 set beresp.cacheable = false;
                 set beresp.ttl = {{grace_period}}s;
                 return (pass);
-            } else {
+            }
+else
+{
                 set beresp.cacheable = true;
                 if (req.http.X-Opt-Force-Static-Caching == "true" &&
                         bereq.url ~ ".*\.(?:{{static_extensions}})(?=\?|&|$)") {
@@ -317,17 +331,23 @@ sub vcl_fetch {
                         if (req.http.X-Varnish-Esi-Method == "ajax") {
                             set beresp.ttl = {{grace_period}}s;
                             return (pass);
-                        } else {
+                        }
+else
+{
                             set beresp.ttl = {{esi_private_ttl}}s;
                         }
-                    } else {
+                    }
+else
+{
                         if (req.http.X-Varnish-Esi-Method == "ajax") {
                             set beresp.http.Cache-Control =
                                 "max-age={{esi_public_ttl}}";
                         }
                         set beresp.ttl = {{esi_public_ttl}}s;
                     }
-                } else {
+                }
+else
+{
                     {{url_ttls}}
                 }
             }
@@ -355,14 +375,16 @@ sub vcl_deliver {
         set resp.http.Cache-Control = "no-cache";
     }
     set resp.http.X-Opt-Debug-Headers = "{{debug_headers}}";
-    if (resp.http.X-Opt-Debug-Headers == "true" || client.ip ~ debug_acl ) {
+    if (resp.http.X-Opt-Debug-Headers == "true" || client.ip ~ debug_acl) {
         # debugging is on, give some extra info
         set resp.http.X-Varnish-Hits = obj.hits;
         set resp.http.X-Varnish-Esi-Method = req.http.X-Varnish-Esi-Method;
         set resp.http.X-Varnish-Esi-Access = req.http.X-Varnish-Esi-Access;
         set resp.http.X-Varnish-Currency = req.http.X-Varnish-Currency;
         set resp.http.X-Varnish-Store = req.http.X-Varnish-Store;
-    } else {
+    }
+else
+{
         # remove Varnish fingerprints
         remove resp.http.X-Varnish;
         remove resp.http.Via;

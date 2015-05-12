@@ -53,7 +53,9 @@ sub generate_session {
     if (req.url ~ ".*[&?]SID=([^&]+).*") {
         set req.http.X-Varnish-Faked-Session = regsub(
             req.url, ".*[&?]SID=([^&]+).*", "frontend=\1");
-    } else {
+    }
+else
+{
         C{
             char uuid_buf [50];
             generate_uuid(uuid_buf);
@@ -63,7 +65,7 @@ sub generate_session {
                 &VGC_HDR_REQ_VARNISH_FAKED_SESSION,
                 uuid_buf,
                 vrt_magic_string_end
-            );
+           );
         }C
     }
     if (req.http.Cookie) {
@@ -72,7 +74,9 @@ sub generate_session {
         std.collect(req.http.Cookie);
         set req.http.Cookie = req.http.X-Varnish-Faked-Session +
             "; " + req.http.Cookie;
-    } else {
+    }
+else
+{
         set req.http.Cookie = req.http.X-Varnish-Faked-Session;
     }
 }
@@ -94,7 +98,7 @@ sub generate_session_expires {
             &VGC_HDR_RESP_COOKIE_EXPIRES,
             date_buf,
             vrt_magic_string_end
-        );
+       );
     }C
 }
 
@@ -106,7 +110,9 @@ sub vcl_recv {
         if (req.http.X-Forwarded-For) {
             set req.http.X-Forwarded-For =
                 req.http.X-Forwarded-For + ", " + client.ip;
-        } else {
+        }
+else
+{
             set req.http.X-Forwarded-For = client.ip;
         }
     }
@@ -170,7 +176,9 @@ sub vcl_recv {
                     req.http.User-Agent ~ "^(?:{{crawler_user_agent_regex}})$") {
                 # it's a crawler, give it a fake cookie
                 set req.http.Cookie = "frontend=crawler-session";
-            } else {
+            }
+else
+{
                 # it's a real user, make up a new session for them
                 call generate_session;
             }
@@ -225,7 +233,9 @@ sub vcl_hash {
     hash_data(req.url);
     if (req.http.Host) {
         hash_data(req.http.Host);
-    } else {
+    }
+else
+{
         hash_data(server.ip);
     }
     hash_data(req.http.Ssl-Offloaded);
@@ -285,7 +295,9 @@ sub vcl_backend_response {
             set beresp.ttl = {{grace_period}}s;
             set beresp.uncacheable = true;
             return (deliver);
-        } else {
+        }
+else
+{
             # if Magento sent us a Set-Cookie header, we'll put it somewhere
             # else for now
             if (beresp.http.Set-Cookie) {
@@ -306,7 +318,9 @@ sub vcl_backend_response {
                 set beresp.ttl = {{grace_period}}s;
                 set beresp.uncacheable = true;
                 return (deliver);
-            } else {
+            }
+else
+{
                 if ({{force_cache_static}} &&
                         bereq.url ~ ".*\.(?:{{static_extensions}})(?=\?|&|$)") {
                     # it's a static asset
@@ -336,7 +350,9 @@ sub vcl_backend_response {
                         set beresp.uncacheable = true;
                         return (deliver);
                     }
-                } else {
+                }
+else
+{
                     {{url_ttls}}
                 }
             }
@@ -370,7 +386,9 @@ sub vcl_deliver {
         set resp.http.X-Varnish-Esi-Access = req.http.X-Varnish-Esi-Access;
         set resp.http.X-Varnish-Currency = req.http.X-Varnish-Currency;
         set resp.http.X-Varnish-Store = req.http.X-Varnish-Store;
-    } else {
+    }
+else
+{
         # remove Varnish fingerprints
         unset resp.http.X-Varnish;
         unset resp.http.Via;

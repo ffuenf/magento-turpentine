@@ -42,7 +42,7 @@ class Nexcessnet_Turpentine_Helper_Varnish extends Mage_Core_Helper_Abstract
     */
     public function getVarnishDebugEnabled()
     {
-        return (bool)Mage::getStoreConfig('turpentine_varnish/general/varnish_debug');
+        return Mage::getStoreFlag('turpentine_varnish/general/varnish_debug');
     }
 
     /**
@@ -85,8 +85,8 @@ class Nexcessnet_Turpentine_Helper_Varnish extends Mage_Core_Helper_Abstract
         * cause ESI injection despite the request not passing through Varnish
         * for ESI parsing/handling.
         */
-        // return Mage::helper( 'turpentine/data' )->secureHash(
-        //     Mage::getStoreConfig( 'turpentine_varnish/servers/auth_key' ) );
+        // return Mage::helper('turpentine/data')->secureHash(
+        //     Mage::getStoreConfig('turpentine_varnish/servers/auth_key'));
     }
 
     /**
@@ -120,12 +120,12 @@ class Nexcessnet_Turpentine_Helper_Varnish extends Mage_Core_Helper_Abstract
     public function getSockets()
     {
         $sockets = array();
-        $servers = Mage::helper('turpentine/data')->cleanExplode( PHP_EOL,
+        $servers = Mage::helper('turpentine/data')->cleanExplode(PHP_EOL,
         Mage::getStoreConfig('turpentine_varnish/servers/server_list'));
         $key = str_replace('\n', PHP_EOL,
         Mage::getStoreConfig('turpentine_varnish/servers/auth_key'));
         $version = Mage::getStoreConfig('turpentine_varnish/servers/version');
-        if ( $version == 'auto')
+        if ($version == 'auto')
         {
             $version = null;
         }
@@ -178,7 +178,6 @@ class Nexcessnet_Turpentine_Helper_Varnish extends Mage_Core_Helper_Abstract
     {
         $cookieName = Mage::helper('turpentine/data')->getBypassCookieName();
         $cookieValue = Mage::getModel('core/cookie')->get($cookieName);
-
         return $cookieValue === $this->getSecretHandshake();
     }
 
@@ -195,7 +194,7 @@ class Nexcessnet_Turpentine_Helper_Varnish extends Mage_Core_Helper_Abstract
     public function getFormKeyFixupActionsList()
     {
         $data = Mage::getStoreConfig('turpentine_varnish/miscellaneous/formkey_fixup_actions');
-        $actions = array_filter( explode(PHP_EOL, trim($data)));
+        $actions = array_filter(explode(PHP_EOL, trim($data)));
         return $actions;
     }
 
@@ -212,13 +211,15 @@ class Nexcessnet_Turpentine_Helper_Varnish extends Mage_Core_Helper_Abstract
     {
         $result = false;
         $isEnterprise = false; // ce
-        if ( method_exists('Mage', 'getEdition'))
+        if (method_exists('Mage', 'getEdition'))
         {
             if (Mage::getEdition() === Mage::EDITION_ENTERPRISE)
             {
                 $isEnterprise = true;
             }
-        } else {
+        }
+        else
+        {
             if (Mage::getConfig()->getModuleConfig('Enterprise_Enterprise'))
             {
                 $isEnterprise = true;
@@ -226,7 +227,7 @@ class Nexcessnet_Turpentine_Helper_Varnish extends Mage_Core_Helper_Abstract
         }
         if ($isEnterprise)
         {
-            if (version_compare( Mage::getVersion(), '1.13', '>='))
+            if (version_compare(Mage::getVersion(), '1.13', '>='))
             {
                 $result = true;
             }
@@ -251,8 +252,8 @@ class Nexcessnet_Turpentine_Helper_Varnish extends Mage_Core_Helper_Abstract
     *     array(
     *         'regex' => <regexp>
     *         'ttl'   => <ttl>
-    *     )
-    * )
+    *    )
+    *)
     *
     * @return array
     */
@@ -263,15 +264,12 @@ class Nexcessnet_Turpentine_Helper_Varnish extends Mage_Core_Helper_Abstract
             return $this->_urlTtls;
         }
         $ttls = array();
-        $configTtls = Mage::helper('turpentine/data')->cleanExplode(
-            PHP_EOL,
-            Mage::getStoreConfig('turpentine_vcl/ttls/url_ttls')
-        );
+        $configTtls = Mage::helper('turpentine/data')->cleanExplode(PHP_EOL, Mage::getStoreConfig('turpentine_vcl/ttls/url_ttls'));
         if (!count($configTtls))
         {
             return $ttls;
         }
-        foreach($configTtls as $configTtl)
+        foreach ($configTtls as $configTtl)
         {
             $explodedTtlConfig = explode(',', trim($configTtl));
             $ttls[] = array(
