@@ -40,7 +40,8 @@ class Nexcessnet_Turpentine_Model_Varnish_Admin {
      * @return bool
      */
     public function flushUrl( $subPattern ) {
-        $result = array();
+        $result      = array();
+        $clearedFlag = false;
         foreach( Mage::helper( 'turpentine/varnish' )->getSockets() as $socket ) {
             $socketName = $socket->getConnectionString();
             try {
@@ -52,7 +53,17 @@ class Nexcessnet_Turpentine_Model_Varnish_Admin {
                 continue;
             }
             $result[$socketName] = true;
+            $clearedFlag         = true;
         }
+
+        if ($clearedFlag && Mage::helper('turpentine/crawler')->getSmartCrawlerEnabled()) {
+            try {
+                Mage::getModel('turpentine/urlCacheStatus')->expireByRegex($subPattern);
+            } catch (Exception $e) {
+                Mage::logException($e);
+            }
+        }
+
         return $result;
     }
 
@@ -96,7 +107,7 @@ class Nexcessnet_Turpentine_Model_Varnish_Admin {
      */
     public function applyConfig() {
         $result = array();
-	    $helper = Mage::helper( 'turpentine' );
+        $helper = Mage::helper( 'turpentine' );
         foreach( Mage::helper( 'turpentine/varnish' )->getSockets() as $socket ) {
             $cfgr = Nexcessnet_Turpentine_Model_Varnish_Configurator_Abstract::getFromSocket( $socket );
             $socketName = $socket->getConnectionString();

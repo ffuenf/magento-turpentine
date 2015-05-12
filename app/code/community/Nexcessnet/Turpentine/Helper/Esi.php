@@ -401,15 +401,26 @@ class Nexcessnet_Turpentine_Helper_Esi extends Mage_Core_Helper_Abstract {
         return $layoutXml;
     }
 
-	/**
-	 * Replace https scheme in ESI URLs with http to prevent secure ESI calls
-	 * Varnish does support HTTPS ESI urls, but only properly as of 3.0.5 because of Bug #1333
-	 * https://www.varnish-cache.org/trac/ticket/1333
-	 * Note: this should only happen if the unsecure base url is configured to use https
-	 * @param string $url
-	 * @return string
-	 */
-	public function unsecureUrl($url) {
-		return preg_replace('!^https://!', 'http://', $url);
-	}
+    /**
+    * Replace https scheme in ESI URLs with http to prevent secure ESI calls
+    * Varnish does support HTTPS ESI urls, but only properly as of 3.0.5 because of Bug #1333
+    * https://www.varnish-cache.org/trac/ticket/1333
+    * Note: this should only happen if the unsecure base url is configured to use https
+    * @param string $url
+    * @return string
+    */
+    public function unsecureUrl($url)
+    {
+        return preg_replace('!^https://!', 'http://', $url);
+    }
+
+    /**
+     * Check if request was a esi request
+     *
+     * @return bool
+     */
+    public function isEsiRequest()
+    {
+        return Mage::app()->getRequest()->getControllerName() === 'esi';
+    }
 }
