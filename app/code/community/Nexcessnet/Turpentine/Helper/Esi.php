@@ -156,7 +156,7 @@ class Nexcessnet_Turpentine_Helper_Esi extends Mage_Core_Helper_Abstract
     */
     public function getEsiBlockLogEnabled()
     {
-        return Mage::getStoreFlag('turpentine_varnish/general/block_debug');
+        return $this->getStoreFlag('turpentine_varnish/general/block_debug');
     }
 
     /**

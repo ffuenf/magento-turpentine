@@ -244,7 +244,7 @@ class Nexcessnet_Turpentine_Helper_Data extends Mage_Core_Helper_Abstract
     */
     public function useFlashMessagesFix()
     {
-        return Mage::getStoreFlag('turpentine_varnish/general/ajax_messages');
+        return $this->getStoreFlag('turpentine_varnish/general/ajax_messages');
     }
         
     /**
@@ -255,7 +255,7 @@ class Nexcessnet_Turpentine_Helper_Data extends Mage_Core_Helper_Abstract
     */
     public function useProductListToolbarFix()
     {
-        return Mage::getStoreFlag('turpentine_varnish/general/fix_product_toolbar');
+        return $this->getStoreFlag('turpentine_varnish/general/fix_product_toolbar');
     }
         
     /**
@@ -265,7 +265,7 @@ class Nexcessnet_Turpentine_Helper_Data extends Mage_Core_Helper_Abstract
     */
     public function getAutoApplyOnSave()
     {
-        return Mage::getStoreFlag('turpentine_varnish/general/auto_apply_on_save');
+        return $this->getStoreFlag('turpentine_varnish/general/auto_apply_on_save');
     }
         
     /**
