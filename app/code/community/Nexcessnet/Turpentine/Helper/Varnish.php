@@ -23,7 +23,20 @@ class Nexcessnet_Turpentine_Helper_Varnish extends Mage_Core_Helper_Abstract
 {
 
     const MAGE_CACHE_NAME = 'turpentine_pages';
+
+    /**
+     * Path for ajax_messages
+     */
+    const CONFIG_EXTENSION_VARNISHDEBUG = 'turpentine_varnish/general/varnish_debug';
+
     protected $_urlTtls;
+
+    /**
+     * Variable for whether Varnish debugging is enabled or not
+     *
+     * @var bool
+     */
+    protected $bVarnishDebugEnabled;
 
     /**
     * Get whether Varnish caching is enabled or not
@@ -42,7 +55,7 @@ class Nexcessnet_Turpentine_Helper_Varnish extends Mage_Core_Helper_Abstract
     */
     public function getVarnishDebugEnabled()
     {
-        return $this->getStoreFlag('turpentine_varnish/general/varnish_debug');
+        return $this->getStoreFlag(self::CONFIG_EXTENSION_VARNISHDEBUG, $bVarnishDebugEnabled);
     }
 
     /**

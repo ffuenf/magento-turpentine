@@ -30,11 +30,23 @@ class Nexcessnet_Turpentine_Helper_Esi extends Mage_Core_Helper_Abstract
     const MAGE_CACHE_NAME = 'turpentine_esi_blocks';
 
     /**
+     * Path for block_debug
+     */
+    const CONFIG_EXTENSION_BLOCKDEBUG = 'turpentine_varnish/general/block_debug';
+
+    /**
     * Cache for layout XML
     *
     * @var Mage_Core_Model_Layout_Element|SimpleXMLElement
     */
     protected $_layoutXml = null;
+
+    /**
+     * Variable for whether block name logging is enabled or not
+     *
+     * @var bool
+     */
+    protected $bEsiBlockLogEnabled;
 
     /**
     * Get whether ESI includes are enabled or not
@@ -156,7 +168,7 @@ class Nexcessnet_Turpentine_Helper_Esi extends Mage_Core_Helper_Abstract
     */
     public function getEsiBlockLogEnabled()
     {
-        return $this->getStoreFlag('turpentine_varnish/general/block_debug');
+        return $this->getStoreFlag(self::CONFIG_EXTENSION_BLOCKDEBUG, $bEsiBlockLogEnabled);
     }
 
     /**
