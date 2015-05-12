@@ -55,7 +55,7 @@ class Nexcessnet_Turpentine_Helper_Varnish extends Nexcessnet_Turpentine_Helper_
     */
     public function getVarnishDebugEnabled()
     {
-        return $this->getStoreFlag(self::CONFIG_EXTENSION_VARNISHDEBUG, $bVarnishDebugEnabled);
+        return $this->getStoreFlag(self::CONFIG_EXTENSION_VARNISHDEBUG, 'bVarnishDebugEnabled');
     }
 
     /**
