@@ -29,6 +29,6 @@ class Nexcessnet_Turpentine_Helper_Crawler extends Nexcessnet_Turpentine_Helper_
     */
     public function getSmartCrawlerEnabled()
     {
-        return Mage::getStoreFlag('turpentine_varnish/general/smart_crawler_enable');
+        return $this->getStoreFlag('turpentine_varnish/general/smart_crawler_enable');
     }
 }
