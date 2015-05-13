@@ -22,12 +22,12 @@ class Nexcessnet_Turpentine_Helper_Ban extends Nexcessnet_Turpentine_Helper_Core
 {
 
     /**
-    * Get the regex for banning a product page from the cache, including
-    * any parent products for configurable/group products
-    *
-    * @param  Mage_Catalog_Model_Product | Mage_Catalog_Model_Resource_Product_Collection $product
-    * @return string
-    */
+     * Get the regex for banning a product page from the cache, including
+     * any parent products for configurable/group products
+     *
+     * @param  Mage_Catalog_Model_Product | Mage_Catalog_Model_Resource_Product_Collection $product
+     * @return string
+     */
     public function getProductBanRegex($product)
     {
         $urlPatterns = array();
@@ -40,8 +40,7 @@ class Nexcessnet_Turpentine_Helper_Ban extends Nexcessnet_Turpentine_Helper_Core
                     $urlPatterns[] = $productObject->getUrlKey();
                 }
             }
-        }
-        else
+        } else
         {
             if ($product->getUrlKey())
             {
@@ -57,11 +56,11 @@ class Nexcessnet_Turpentine_Helper_Ban extends Nexcessnet_Turpentine_Helper_Core
     }
 
     /**
-    * Get parent products of a configurable or group product
-    *
-    * @param  Mage_Catalog_Model_Product $childProduct
-    * @return array
-    */
+     * Get parent products of a configurable or group product
+     *
+     * @param  Mage_Catalog_Model_Product $childProduct
+     * @return array
+     */
     public function getParentProducts($childProduct)
     {
         $parentProducts = array();
@@ -77,11 +76,11 @@ class Nexcessnet_Turpentine_Helper_Ban extends Nexcessnet_Turpentine_Helper_Core
 
 
     /**
-    * get a collection of all related products
-    *
-    * @param Mage_Catalog_Model_Product $product
-    * @return Mage_Catalog_Model_Resource_Product_Collection
-    */
+     * get a collection of all related products
+     *
+     * @param Mage_Catalog_Model_Product $product
+     * @return Mage_Catalog_Model_Resource_Product_Collection
+     */
     public function getRelatedProductsCollection(Mage_Catalog_Model_Product $product)
     {
         /** @var Mage_Catalog_Model_Resource_Eav_Mysql4_Product_Collection $productCollection */
@@ -91,7 +90,7 @@ class Nexcessnet_Turpentine_Helper_Ban extends Nexcessnet_Turpentine_Helper_Core
         'catalog/product_relation',
         'parent_id',
         'parent_id=entity_id',
-        '{{table}}.child_id='.$product->getId(),
+        '{{table}}.child_id=' . $product->getId(),
         'inner');
         $parentProductsCollection->load();
         $parentProductsCollection->addItem($product);

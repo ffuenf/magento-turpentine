@@ -38,36 +38,36 @@ class Nexcessnet_Turpentine_Helper_Data extends Nexcessnet_Turpentine_Helper_Cor
     const CONFIG_EXTENSION_AUTOAPPLYONSAVE = 'turpentine_varnish/general/auto_apply_on_save';
 
     /**
-    * Contains a newly generated v4 uuid whenever read, possibly not available
-    * on all kernels
-    */
+     * Contains a newly generated v4 uuid whenever read, possibly not available
+     * on all kernels
+     */
     const UUID_SOURCE = '/proc/sys/kernel/random/uuid';
 
     /**
-    * Compression level for serialization compression
-    *
-    * Testing showed no significant (size) difference between levels 1 and 9
-    * so using 1 since it's faster
-    */
+     * Compression level for serialization compression
+     *
+     * Testing showed no significant (size) difference between levels 1 and 9
+     * so using 1 since it's faster
+     */
     const COMPRESSION_LEVEL = 1;
 
     /**
-    * Hash algorithm to use in various cryptographic methods
-    */
+     * Hash algorithm to use in various cryptographic methods
+     */
     const HASH_ALGORITHM = 'sha256';
 
     /**
-    * Cookie name for the Varnish bypass
-    *
-    * @var string
-    */
+     * Cookie name for the Varnish bypass
+     *
+     * @var string
+     */
     const BYPASS_COOKIE_NAME = 'varnish_bypass';
 
     /**
-    * encryption singleton thing
-    *
-    * @var Mage_Core_Model_Encryption
-    */
+     * encryption singleton thing
+     *
+     * @var Mage_Core_Model_Encryption
+     */
     protected $_crypt = null;
 
     /**
@@ -92,36 +92,35 @@ class Nexcessnet_Turpentine_Helper_Data extends Nexcessnet_Turpentine_Helper_Cor
     protected $bAutoApplyOnSave;
 
     /**
-    * Like built-in explode() but applies trim to each exploded element and
-    * filters out empty elements from result
-    *
-    * @param  string $token [description]
-    * @param  string $data  [description]
-    * @return array
-    */
+     * Like built-in explode() but applies trim to each exploded element and
+     * filters out empty elements from result
+     *
+     * @param  string $token [description]
+     * @param  string $data  [description]
+     * @return array
+     */
     public function cleanExplode($token, $data)
     {
-        return array_filter(array_map('trim',explode($token, trim($data))));
+        return array_filter(array_map('trim', explode($token, trim($data))));
     }
 
     /**
-    * Generate a v4 UUID
-    *
-    * @return string
-    */
+     * Generate a v4 UUID
+     *
+     * @return string
+     */
     public function generateUuid()
     {
         if (is_readable(self::UUID_SOURCE))
         {
             $uuid = trim(file_get_contents(self::UUID_SOURCE));
-        }
-        elseif (function_exists('mt_rand'))
+        } elseif (function_exists('mt_rand'))
         {
             /**
-            * Taken from stackoverflow answer, possibly not the fastest or
-            * strictly standards compliant
-            * @link http://stackoverflow.com/a/2040279
-            */
+             * Taken from stackoverflow answer, possibly not the fastest or
+             * strictly standards compliant
+             * @link http://stackoverflow.com/a/2040279
+             */
             $uuid = sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
                 // 32 bits for "time_low"
                 mt_rand(0, 0xffff), mt_rand(0, 0xffff),
@@ -137,8 +136,7 @@ class Nexcessnet_Turpentine_Helper_Data extends Nexcessnet_Turpentine_Helper_Cor
                 // 48 bits for "node"
                 mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff)
             );
-        }
-        else
+        } else
         {
             // chosen by dice roll, guaranteed to be random
             $uuid = '4';
@@ -147,64 +145,64 @@ class Nexcessnet_Turpentine_Helper_Data extends Nexcessnet_Turpentine_Helper_Cor
     }
         
     /**
-    * Get the Turpentine version
-    *
-    * @return string
-    */
+     * Get the Turpentine version
+     *
+     * @return string
+     */
     public function getVersion()
     {
         return Mage::getConfig()->getModuleConfig('Nexcessnet_Turpentine')->version;
     }
         
     /**
-    * Base64 encode a string
-    *
-    * NOTE this changes the last 2 characters to be friendly to URLs
-    *     / => .
-    *     + => -
-    *
-    * @param  string $str
-    * @return string
-    */
+     * Base64 encode a string
+     *
+     * NOTE this changes the last 2 characters to be friendly to URLs
+     *     / => .
+     *     + => -
+     *
+     * @param  string $str
+     * @return string
+     */
     public function urlBase64Encode($str)
     {
         return str_replace(array('/', '+'), array('.', '-'), base64_encode($str));
     }
         
     /**
-    * Base64 decode a string, counterpart to urlBase64Encode
-    *
-    * @param  string $str
-    * @return string
-    */
+     * Base64 decode a string, counterpart to urlBase64Encode
+     *
+     * @param  string $str
+     * @return string
+     */
     public function urlBase64Decode($str)
     {
         return base64_decode(str_replace(array('.', '-'), array('/', '+'), $str));
     }
         
     /**
-    * Serialize a variable into a string that can be used in a URL
-    *
-    * Using gzdeflate to avoid the checksum/metadata overhead in gzencode and
-    * gzcompress
-    *
-    * @param  mixed $data
-    * @return string
-    */
+     * Serialize a variable into a string that can be used in a URL
+     *
+     * Using gzdeflate to avoid the checksum/metadata overhead in gzencode and
+     * gzcompress
+     *
+     * @param  mixed $data
+     * @return string
+     */
     public function freeze($data)
     {
         Varien_Profiler::start('turpentine::helper::data::freeze');
-        $frozenData = $this->urlBase64Encode($this->_getCrypt()->encrypt(gzdeflate(serialize($data),self::COMPRESSION_LEVEL)));
+        $frozenData = $this->urlBase64Encode($this->_getCrypt()->encrypt(gzdeflate(serialize($data), self::COMPRESSION_LEVEL)));
         Varien_Profiler::stop('turpentine::helper::data::freeze');
         return $frozenData;
     }
         
     /**
-    * Unserialize data
-    *
-    * @param  string $data
-    * @return mixed
-    */
+     * Unserialize data
+     *
+     * @param  string $data
+     * @return mixed
+     */
     public function thaw($data)
     {
         Varien_Profiler::start('turpentine::helper::data::thaw');
@@ -214,11 +212,11 @@ class Nexcessnet_Turpentine_Helper_Data extends Nexcessnet_Turpentine_Helper_Cor
     }
         
     /**
-    * Get SHA256 hash of a string, salted with encryption key
-    *
-    * @param  string $data
-    * @return string
-    */
+     * Get SHA256 hash of a string, salted with encryption key
+     *
+     * @param  string $data
+     * @return string
+     */
     public function secureHash($data)
     {
         $salt = $this->_getCryptKey();
@@ -226,44 +224,44 @@ class Nexcessnet_Turpentine_Helper_Data extends Nexcessnet_Turpentine_Helper_Cor
     }
         
     /**
-    * Get the HMAC hash for given data
-    *
-    * @param  string $data
-    * @return string
-    */
+     * Get the HMAC hash for given data
+     *
+     * @param  string $data
+     * @return string
+     */
     public function getHmac($data)
     {
         return hash_hmac(self::HASH_ALGORITHM, $data, $this->_getCryptKey());
     }
         
     /**
-    * Hash a cache key the same way blocks do
-    *
-    * @param  array $key
-    * @return string
-    */
+     * Hash a cache key the same way blocks do
+     *
+     * @param  array $key
+     * @return string
+     */
     public function getCacheKeyHash($key)
     {
         return sha1(implode('|', array_values($key)));
     }
         
     /**
-    * Get a list of child blocks inside the given block
-    *
-    * @param  Mage_Core_Model_Layout_Element $blockNode
-    * @return array
-    */
+     * Get a list of child blocks inside the given block
+     *
+     * @param  Mage_Core_Model_Layout_Element $blockNode
+     * @return array
+     */
     public function getChildBlockNames($blockNode)
     {
         return array_unique($this->_getChildBlockNames($blockNode));
     }
         
     /**
-    * Get the getModel formatted name of a model classname or object
-    *
-    * @param  string|object $model
-    * @return string
-    */
+     * Get the getModel formatted name of a model classname or object
+     *
+     * @param  string|object $model
+     * @return string
+     */
     public function getModelName($model)
     {
         if (is_object($model))
@@ -274,60 +272,59 @@ class Nexcessnet_Turpentine_Helper_Data extends Nexcessnet_Turpentine_Helper_Cor
     }
         
     /**
-    * Check config to see if Turpentine should handle the flash messages
-    *
-    * @return bool
-    */
+     * Check config to see if Turpentine should handle the flash messages
+     *
+     * @return bool
+     */
     public function useFlashMessagesFix()
     {
         return $this->getStoreFlag(self::CONFIG_EXTENSION_AJAXMESSAGES, 'bUseFlashMessagesFix');
     }
         
     /**
-    * Check config to see if Turpentine should apply the product list toolbar
-    * fix
-    *
-    * @return bool
-    */
+     * Check config to see if Turpentine should apply the product list toolbar
+     * fix
+     *
+     * @return bool
+     */
     public function useProductListToolbarFix()
     {
         return $this->getStoreFlag(self::CONFIG_EXTENSION_FIXPRODUCTTOOLBAR, 'bUseProductListToolbarFix');
     }
 
     /**
-    * Check if Turpentine should apply the new VCL on config changes
-    *
-    * @return bool
-    */
+     * Check if Turpentine should apply the new VCL on config changes
+     *
+     * @return bool
+     */
     public function getAutoApplyOnSave()
     {
         return $this->getStoreFlag(self::CONFIG_EXTENSION_AUTOAPPLYONSAVE, 'bAutoApplyOnSave');
     }
         
     /**
-    * Get config value specifying when to strip VCL whitespaces
-    *
-    * @return string
-    */
+     * Get config value specifying when to strip VCL whitespaces
+     *
+     * @return string
+     */
     public function getStripVclWhitespace()
     {
         return Mage::getStoreConfig('turpentine_varnish/general/strip_vcl_whitespace');
     }
         
     /**
-    * Check if VCL whitespaces should be stripped for the given action
-    *
-    * @param string $action can be either "apply", "save" or "download"
-    * @return bool
-    */
+     * Check if VCL whitespaces should be stripped for the given action
+     *
+     * @param string $action can be either "apply", "save" or "download"
+     * @return bool
+     */
     public function shouldStripVclWhitespace($action)
     {
         $configValue = $this->getStripVclWhitespace();
         if ($configValue === 'always')
         {
             return true;
-        }
-        elseif ($configValue === 'apply' && $action === 'apply')
+        } elseif ($configValue === 'apply' && $action === 'apply')
         {
             return true;
         }
@@ -335,21 +332,21 @@ class Nexcessnet_Turpentine_Helper_Data extends Nexcessnet_Turpentine_Helper_Cor
     }
         
     /**
-    * Get the cookie name for the Varnish bypass
-    *
-    * @return string
-    */
+     * Get the cookie name for the Varnish bypass
+     *
+     * @return string
+     */
     public function getBypassCookieName()
     {
         return self::BYPASS_COOKIE_NAME;
     }
         
     /**
-    * The actual recursive implementation of getChildBlockNames
-    *
-    * @param  Mage_Core_Model_Layout_Element $blockNode
-    * @return array
-    */
+     * The actual recursive implementation of getChildBlockNames
+     *
+     * @param  Mage_Core_Model_Layout_Element $blockNode
+     * @return array
+     */
     protected function _getChildBlockNames($blockNode)
     {
         Varien_Profiler::start('turpentine::helper::data::_getChildBlockNames');
@@ -367,8 +364,7 @@ class Nexcessnet_Turpentine_Helper_Data extends Nexcessnet_Turpentine_Helper_Cor
                     }
                 }
             }
-        }
-        else
+        } else
         {
             $blockNames = array();
         }
@@ -377,13 +373,13 @@ class Nexcessnet_Turpentine_Helper_Data extends Nexcessnet_Turpentine_Helper_Cor
     }
         
     /**
-    * Get encryption singleton thing
-    *
-    * Not using core/cryption because it auto-base64 encodes stuff which we
-    * don't want in this case
-    *
-    * @return Mage_Core_Model_Encryption
-    */
+     * Get encryption singleton thing
+     *
+     * Not using core/cryption because it auto-base64 encodes stuff which we
+     * don't want in this case
+     *
+     * @return Mage_Core_Model_Encryption
+     */
     protected function _getCrypt()
     {
         if (is_null($this->_crypt))
@@ -394,10 +390,10 @@ class Nexcessnet_Turpentine_Helper_Data extends Nexcessnet_Turpentine_Helper_Cor
     }
         
     /**
-    * Get Magento's encryption key
-    *
-    * @return string
-    */
+     * Get Magento's encryption key
+     *
+     * @return string
+     */
     protected function _getCryptKey()
     {
         return (string)Mage::getConfig()->getNode('global/crypt/key');

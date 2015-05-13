@@ -9,10 +9,10 @@ class Nexcessnet_Turpentine_Model_Observer_UrlCacheStatus
 {
 
     /**
-    * Add url cache for pages that should be cached by Varnish
-    *
-    * @param Varien_Event_Observer $eventObject
-    */
+     * Add url cache for pages that should be cached by Varnish
+     *
+     * @param Varien_Event_Observer $eventObject
+     */
     public function addUrlCache(Varien_Event_Observer $eventObject)
     {
         if (!Mage::helper('turpentine/varnish')->shouldResponseUseVarnish()
@@ -30,10 +30,10 @@ class Nexcessnet_Turpentine_Model_Observer_UrlCacheStatus
     }
 
     /**
-    * Check if request has invalid(not whitelisted) GET parameters
-    *
-    * @return bool
-    */
+     * Check if request has invalid(not whitelisted) GET parameters
+     *
+     * @return bool
+     */
     protected function _hasInvalidParameters()
     {
         $whitelistGetParams = Mage::helper('turpentine/data')->cleanExplode(',', Mage::getStoreConfig('turpentine_vcl/params/crawler_whitelist_get_params'));

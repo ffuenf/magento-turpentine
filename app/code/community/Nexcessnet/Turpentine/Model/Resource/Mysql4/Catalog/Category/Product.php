@@ -22,8 +22,8 @@ class Nexcessnet_Turpentine_Model_Resource_Mysql4_Catalog_Category_Product exten
 {
 
     /**
-    * Initialize resource model and define main table
-    */
+     * Initialize resource model and define main table
+     */
     protected function _construct()
     {
         $this->_init('catalog/category_product', 'category_id');

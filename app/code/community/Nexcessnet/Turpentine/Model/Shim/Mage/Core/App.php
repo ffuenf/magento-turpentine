@@ -26,13 +26,13 @@ class Nexcessnet_Turpentine_Model_Shim_Mage_Core_App extends Mage_Core_Model_App
 {
 
     /**
-    * Request setter
-    *
-    * This is needed because there is no setRequest in CE < 1.7 and EE < 1.12
-    *
-    * @param Mage_Core_Controller_Request_Http $request
-    * @return Nexcessnet_Turpentine_Model_Shim_Mage_Core_App
-    */
+     * Request setter
+     *
+     * This is needed because there is no setRequest in CE < 1.7 and EE < 1.12
+     *
+     * @param Mage_Core_Controller_Request_Http $request
+     * @return Nexcessnet_Turpentine_Model_Shim_Mage_Core_App
+     */
     public function shim_setRequest(Mage_Core_Controller_Request_Http $request)
     {
         $app = $this->_shim_getApp();
@@ -40,8 +40,7 @@ class Nexcessnet_Turpentine_Model_Shim_Mage_Core_App extends Mage_Core_Model_App
         {
             // use the real setRequest if it's available
             $app->setRequest($request);
-        }
-        else
+        } else
         {
             $app->_request = $request;
         }
@@ -49,16 +48,16 @@ class Nexcessnet_Turpentine_Model_Shim_Mage_Core_App extends Mage_Core_Model_App
     }
 
     /**
-    * Adds new observer for specified event
-    *
-    * @param string $area (global|admin...)
-    * @param string $eventName name of the event to observe
-    * @param string $obsName name of the observer (as specified in config.xml)
-    * @param string $type (model|singleton)
-    * @param string $class identifier of the observing model class
-    * @param string $method name of the method to call
-    * @return Nexcessnet_Turpentine_Model_Shim_Mage_Core_App
-    */
+     * Adds new observer for specified event
+     *
+     * @param string $area (global|admin...)
+     * @param string $eventName name of the event to observe
+     * @param string $obsName name of the observer (as specified in config.xml)
+     * @param string $type (model|singleton)
+     * @param string $class identifier of the observing model class
+     * @param string $method name of the method to call
+     * @return Nexcessnet_Turpentine_Model_Shim_Mage_Core_App
+     */
     public function shim_addEventObserver($area, $eventName, $obsName,$type=null, $class=null, $method=null)
     {
         $eventConfig = new Varien_Simplexml_Config();
@@ -73,14 +72,14 @@ class Nexcessnet_Turpentine_Model_Shim_Mage_Core_App extends Mage_Core_Model_App
     }
 
     /**
-    * Add a new block/model/helper rewrite
-    *
-    * @param  string $type         rewrite type (helper|model|block)
-    * @param  string $module       module part of class spec, "example" in "example/model"
-    * @param  string $class        class part of class spec, "model" in "example/model"
-    * @param  string $rewriteTarget    full class name to rewrite to
-    * @return Nexcessnet_Turpentine_Model_Shim_Mage_Core_App
-    */
+     * Add a new block/model/helper rewrite
+     *
+     * @param  string $type         rewrite type (helper|model|block)
+     * @param  string $module       module part of class spec, "example" in "example/model"
+     * @param  string $class        class part of class spec, "model" in "example/model"
+     * @param  string $rewriteTarget    full class name to rewrite to
+     * @return Nexcessnet_Turpentine_Model_Shim_Mage_Core_App
+     */
     public function shim_addClassRewrite($type, $module, $class, $rewriteTarget)
     {
         $rewriteConfig = new Varien_Simplexml_Config();
@@ -91,16 +90,16 @@ class Nexcessnet_Turpentine_Model_Shim_Mage_Core_App extends Mage_Core_Model_App
     }
 
     /**
-    * Prepares event DOM node used for updating configuration
-    *
-    * @param string $area (global|admin...)
-    * @param string $eventName
-    * @param string $obsName
-    * @param string $type
-    * @param string $class
-    * @param string $method
-    * @return DOMDocument
-    */
+     * Prepares event DOM node used for updating configuration
+     *
+     * @param string $area (global|admin...)
+     * @param string $eventName
+     * @param string $obsName
+     * @param string $type
+     * @param string $class
+     * @param string $method
+     * @return DOMDocument
+     */
     protected function _shim_getEventDom($area, $eventName, $obsName, $type=null, $class=null, $method=null)
     {
         $dom = new DOMDocument('1.0');
@@ -126,14 +125,14 @@ class Nexcessnet_Turpentine_Model_Shim_Mage_Core_App extends Mage_Core_Model_App
     }
 
     /**
-    * Generate the dom to add a new block/model/helper rewrite to the config
-    *
-    * @param  string $groupType    rewrite type (helper|model|block)
-    * @param  string $group        module part of class spec, "example" in "example/model"
-    * @param  string $class        classname part of class spec, "model" in "example/model"
-    * @param  string $className    full class name to rewrite to
-    * @return DOMDocument
-    */
+     * Generate the dom to add a new block/model/helper rewrite to the config
+     *
+     * @param  string $groupType    rewrite type (helper|model|block)
+     * @param  string $group        module part of class spec, "example" in "example/model"
+     * @param  string $class        classname part of class spec, "model" in "example/model"
+     * @param  string $className    full class name to rewrite to
+     * @return DOMDocument
+     */
     protected function _shim_getRewriteDom($groupType, $group, $class, $className)
     {
         $dom = new DOMDocument('1.0');
@@ -147,30 +146,30 @@ class Nexcessnet_Turpentine_Model_Shim_Mage_Core_App extends Mage_Core_Model_App
     }
 
     /**
-    * Get the real app
-    *
-    * @return Mage_Core_Model_App
-    */
+     * Get the real app
+     *
+     * @return Mage_Core_Model_App
+     */
     protected function _shim_getApp()
     {
         return Mage::app();
     }
 
     /**
-    * Get the config from the real app
-    *
-    * @return Mage_Core_Model_Config
-    */
+     * Get the config from the real app
+     *
+     * @return Mage_Core_Model_Config
+     */
     protected function _shim_getConfig()
     {
         return $this->_shim_getApp()->getConfig();
     }
 
     /**
-    * Get the config shim
-    *
-    * @return Nexcessnet_Turpentine_Model_Shim_Mage_Core_Config
-    */
+     * Get the config shim
+     *
+     * @return Nexcessnet_Turpentine_Model_Shim_Mage_Core_Config
+     */
     protected function _shim_getConfigShim()
     {
         return Mage::getModel('turpentine/shim_mage_core_config');

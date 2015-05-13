@@ -13,7 +13,7 @@
 */
 
 // You might need to fix the path to your app/Mage.php on the line below.
-require_once dirname(__FILE__).'/../../app/Mage.php';
+require_once dirname(__FILE__) . '/../../app/Mage.php';
 
 Mage::app();
 $data = (empty($_REQUEST['data'])) ? '' : $_REQUEST['data'];
@@ -64,7 +64,7 @@ header('Content-Type:text/html; charset=UTF-8');
         $processData = $data;
         $esiHelper = Mage::helper('turpentine/esi');
         $dataPreg = preg_quote($esiHelper->getEsiDataParam(), '|');
-        if (preg_match('|'.$dataPreg.'/([\w\.\-]+=*)|', $data, $matches)) {
+        if (preg_match('|' . $dataPreg . '/([\w\.\-]+=*)|', $data, $matches)) {
             $processData = $matches[1];
         }
         $dataHelper = Mage::helper('turpentine/data');
@@ -76,7 +76,7 @@ header('Content-Type:text/html; charset=UTF-8');
         </div>
         <?php
         $refPreg = preg_quote($esiHelper->getEsiReferrerParam(), '|');
-        if (preg_match('|'.$refPreg.'/([\w\.\-]+),*|', $data, $matches)):
+        if (preg_match('|' . $refPreg . '/([\w\.\-]+),*|', $data, $matches)):
             $processData = $matches[1];
             ?>
             <div class="center">=&nbsp; REFERRER &nbsp;=</div>

@@ -22,21 +22,21 @@ class Nexcessnet_Turpentine_EsiController extends Mage_Core_Controller_Front_Act
 {
 
     /**
-    * It seems this has to exist so we just make it redirect to the base URL
-    * for lack of anything better to do.
-    *
-    * @return null
-    */
+     * It seems this has to exist so we just make it redirect to the base URL
+     * for lack of anything better to do.
+     *
+     * @return null
+     */
     public function indexAction()
     {
         $this->getResponse()->setRedirect(Mage::getBaseUrl());
     }
 
     /**
-    * Spit out the form key for this session
-    *
-    * @return null
-    */
+     * Spit out the form key for this session
+     *
+     * @return null
+     */
     public function getFormKeyAction()
     {
         $resp = $this->getResponse();
@@ -49,10 +49,10 @@ class Nexcessnet_Turpentine_EsiController extends Mage_Core_Controller_Front_Act
     }
 
     /**
-    * Spit out the rendered block from the URL-encoded data
-    *
-    * @return null
-    */
+     * Spit out the rendered block from the URL-encoded data
+     *
+     * @return null
+     */
     public function getBlockAction()
     {
         $resp = $this->getResponse();
@@ -70,20 +70,17 @@ class Nexcessnet_Turpentine_EsiController extends Mage_Core_Controller_Front_Act
                 $debugHelper->logWarn('ESI data HMAC mismatch, expected (%s) but received (%s)', $hmac, $esiDataHmac);
                 $resp->setHttpResponseCode(500);
                 $resp->setBody('ESI data is not valid');
-            }
-            elseif (!($esiDataArray = $dataHelper->thaw($esiDataParamValue)))
+            } elseif (!($esiDataArray = $dataHelper->thaw($esiDataParamValue)))
             {
                 $debugHelper->logWarn('Invalid ESI data in URL: %s', $esiDataParamValue);
                 $resp->setHttpResponseCode(500);
                 $resp->setBody('ESI data is not valid');
-            }
-            elseif (!$esiHelper->getEsiDebugEnabled() && $esiDataArray['esi_method'] !== $req->getParam($esiHelper->getEsiMethodParam()))
+            } elseif (!$esiHelper->getEsiDebugEnabled() && $esiDataArray['esi_method'] !== $req->getParam($esiHelper->getEsiMethodParam()))
             {
                 $resp->setHttpResponseCode(403);
                 $resp->setBody('ESI method mismatch');
                 $debugHelper->logWarn('Blocking change of ESI method: %s -> %s', $esiDataArray['esi_method'], $req->getParam($esiHelper->getEsiMethodParam()));
-            }
-            else
+            } else
             {
                 $esiData = new Varien_Object($esiDataArray);
                 $origRequest = Mage::app()->getRequest();
@@ -93,8 +90,7 @@ class Nexcessnet_Turpentine_EsiController extends Mage_Core_Controller_Front_Act
                 {
                     $referer = htmlspecialchars_decode($referer);
                     $dummyRequest = Mage::helper('turpentine/esi')->getDummyRequest($referer);
-                }
-                else
+                } else
                 {
                     $dummyRequest = Mage::helper('turpentine/esi')->getDummyRequest();
                 }
@@ -135,16 +131,14 @@ class Nexcessnet_Turpentine_EsiController extends Mage_Core_Controller_Front_Act
                     {
                         $resp->setHeader('X-Turpentine-Block', $block->getNameInLayout());
                     }
-                }
-                else
+                } else
                 {
                     $resp->setHttpResponseCode(404);
                     $resp->setBody('ESI block not found');
                 }
                 $appShim->shim_setRequest($origRequest);
             }
-        }
-        else
+        } else
         {
             $resp->setHttpResponseCode(403);
             $resp->setBody('ESI includes are not enabled');
@@ -153,13 +147,13 @@ class Nexcessnet_Turpentine_EsiController extends Mage_Core_Controller_Front_Act
     }
 
     /**
-    * Need to disable this flag to prevent setting the last URL but we
-    * don't want to completely break sessions.
-    *
-    * see Mage_Core_Controller_Front_Action::postDispatch
-    *
-    * @return null
-    */
+     * Need to disable this flag to prevent setting the last URL but we
+     * don't want to completely break sessions.
+     *
+     * see Mage_Core_Controller_Front_Action::postDispatch
+     *
+     * @return null
+     */
     public function postDispatch()
     {
         $flag = $this->getFlag('', self::FLAG_NO_START_SESSION);
@@ -169,11 +163,11 @@ class Nexcessnet_Turpentine_EsiController extends Mage_Core_Controller_Front_Act
     }
 
     /**
-    * Generate the ESI block
-    *
-    * @param  Varien_Object $esiData
-    * @return Mage_Core_Block_Template|null
-    */
+     * Generate the ESI block
+     *
+     * @param  Varien_Object $esiData
+     * @return Mage_Core_Block_Template|null
+     */
     protected function _getEsiBlock($esiData)
     {
         $block = null;
@@ -189,8 +183,7 @@ class Nexcessnet_Turpentine_EsiController extends Mage_Core_Controller_Front_Act
             {
                 Mage::helper('turpentine/debug')->logWarn('Failed to register key/model: %s as %s(%s)', $key, $data['model'], $data['id']);
                 continue;
-            }
-            else
+            } else
             {
                 $value->load($data['id']);
                 Mage::register($key, $value, true);
@@ -201,7 +194,7 @@ class Nexcessnet_Turpentine_EsiController extends Mage_Core_Controller_Front_Act
             ->setPackageName($esiData->getDesignPackage())
                 ->setTheme($esiData->getDesignTheme());
         // dispatch event for adding handles to layout update
-        Mage::dispatchEvent('controller_action_layout_load_before',array('action'=>$this, 'layout'=>$layout));
+        Mage::dispatchEvent('controller_action_layout_load_before', array('action'=>$this, 'layout'=>$layout));
         $layoutUpdate = $layout->getUpdate();
         $layoutUpdate->load($this->_swapCustomerHandles($esiData->getLayoutHandles()));
         foreach ($esiData->getDummyBlocks() as $blockName)
@@ -224,7 +217,7 @@ class Nexcessnet_Turpentine_EsiController extends Mage_Core_Controller_Front_Act
         $nodesToGenerate = $turpentineHelper->getChildBlockNames($blockNode);
         Mage::getModel('turpentine/shim_mage_core_layout')->shim_generateFullBlock($blockNode);
         //find addional blocks that aren't defined in the <block/> but via <reference name="%s">
-        $referenceNodes = $layout->getNode()->xpath(sprintf('//reference[@name=\'%s\']',$esiData->getNameInLayout()));
+        $referenceNodes = $layout->getNode()->xpath(sprintf('//reference[@name=\'%s\']', $esiData->getNameInLayout()));
         if ($referenceNodes)
         {
             foreach ($referenceNodes as $referenceNode)
@@ -259,22 +252,21 @@ class Nexcessnet_Turpentine_EsiController extends Mage_Core_Controller_Front_Act
     }
 
     /**
-    * Swap customer_logged_in and customer_logged_out cached handles based on
-    * actual customer login status. Fixes stale Login/Logout links (and
-    * probably other things).
-    *
-    * This is definitely a hack, need a more general solution to this problem.
-    *
-    * @param  array $handles
-    * @return array
-    */
+     * Swap customer_logged_in and customer_logged_out cached handles based on
+     * actual customer login status. Fixes stale Login/Logout links (and
+     * probably other things).
+     *
+     * This is definitely a hack, need a more general solution to this problem.
+     *
+     * @param  array $handles
+     * @return array
+     */
     protected function _swapCustomerHandles($handles)
     {
         if (Mage::helper('customer')->isLoggedIn())
         {
             $replacement = array('customer_logged_out', 'customer_logged_in');
-        }
-        else
+        } else
         {
             $replacement = array('customer_logged_in', 'customer_logged_out');
         }

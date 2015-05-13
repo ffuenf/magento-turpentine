@@ -29,71 +29,71 @@ class Nexcessnet_Turpentine_Block_Management extends Mage_Adminhtml_Block_Templa
     }
 
     /**
-    * Get the flushAll url
-    *
-    * @return string
-    */
+     * Get the flushAll url
+     *
+     * @return string
+     */
     public function getFlushAllUrl()
     {
         return $this->getUrl('*/varnish_management/flushAll');
     }
 
     /**
-    * Get the flushPartial URL
-    *
-    * @return string
-    */
+     * Get the flushPartial URL
+     *
+     * @return string
+     */
     public function getFlushPartialUrl()
     {
         return $this->getUrl('*/varnish_management/flushPartial');
     }
 
     /**
-    * Get the flushContentType URL
-    *
-    * @return string
-    */
+     * Get the flushContentType URL
+     *
+     * @return string
+     */
     public function getFlushContentTypeUrl()
     {
         return $this->getUrl('*/varnish_management/flushContentType');
     }
 
     /**
-    * Get the applyConfig URL
-    *
-    * @return string
-    */
+     * Get the applyConfig URL
+     *
+     * @return string
+     */
     public function getApplyConfigUrl()
     {
         return $this->getUrl('*/varnish_management/applyConfig');
     }
 
     /**
-    * Get the saveConfig URL
-    *
-    * @return string
-    */
+     * Get the saveConfig URL
+     *
+     * @return string
+     */
     public function getSaveConfigUrl()
     {
         return $this->getUrl('*/varnish_management/saveConfig');
     }
 
     /**
-    * Get the getConfig URL
-    *
-    * @return string
-    */
+     * Get the getConfig URL
+     *
+     * @return string
+     */
     public function getGetConfigUrl()
     {
         return $this->getUrl('*/varnish_management/getConfig');
     }
 
     /**
-    * Get the switchNavigation URL
-    *
-    * @param string $type
-    * @return string
-    */
+     * Get the switchNavigation URL
+     *
+     * @param string $type
+     * @return string
+     */
     public function getSwitchNavigationUrl($type)
     {
         return $this->getUrl('*/varnish_management/switchNavigation', array('type' => $type));

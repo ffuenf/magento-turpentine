@@ -11,9 +11,9 @@ class TurpentineUrlCacheStatus extends Mage_Shell_Abstract
     const LOCK_FILE_PATTERN = 'url_warm_lock_%s.lock';
 
     /**
-    * 1. If we have "part" defined - refresh cache for that part (ids are got from file)
-    * 2. If we don't have "ids" - execute instances with ids
-    */
+     * 1. If we have "part" defined - refresh cache for that part (ids are got from file)
+     * 2. If we don't have "ids" - execute instances with ids
+     */
     public function run()
     {
         if ($this->getArg('help'))
@@ -28,7 +28,7 @@ class TurpentineUrlCacheStatus extends Mage_Shell_Abstract
         }
         if ($this->getArg('part'))
         {
-            $this->runPart((int) $this->getArg('part'));
+            $this->runPart((int)$this->getArg('part'));
             return;
         }
         $this->createInstances();
@@ -39,12 +39,12 @@ class TurpentineUrlCacheStatus extends Mage_Shell_Abstract
         $instancesCount = self::INSTANCES_COUNT;
         if ($this->getArg('instances'))
         {
-            $instancesCount = (int) $this->getArg('instances');
+            $instancesCount = (int)$this->getArg('instances');
         }
         $limit = self::LIMIT;
         if ($this->getArg('limit'))
         {
-            $limit = (int) $this->getArg('limit');
+            $limit = (int)$this->getArg('limit');
         }
         $instanceNumber = 1;
         $collection = $this->_getCollection($limit, $instanceNumber);
@@ -66,11 +66,11 @@ class TurpentineUrlCacheStatus extends Mage_Shell_Abstract
     }
 
     /**
-    * @param int|null $pageSize
-    * @param int|null $page
-    *
-    * @return Nexcessnet_Turpentine_Model_Resource_Mysql4_UrlCacheStatus_Collection
-    */
+     * @param int|null $pageSize
+     * @param int|null $page
+     *
+     * @return Nexcessnet_Turpentine_Model_Resource_Mysql4_UrlCacheStatus_Collection
+     */
     protected function _getCollection($pageSize = null, $page = null)
     {
         $collection = Mage::getModel('turpentine/urlCacheStatus')->getCollection();
@@ -88,13 +88,13 @@ class TurpentineUrlCacheStatus extends Mage_Shell_Abstract
     }
 
     /**
-    * Fill in part file with ids to execute and start another php process to process that ids
-    *
-    * @param $instanceNumber
-    * @param $ids
-    *
-    * @return bool
-    */
+     * Fill in part file with ids to execute and start another php process to process that ids
+     *
+     * @param $instanceNumber
+     * @param $ids
+     *
+     * @return bool
+     */
     protected function _createInstance($instanceNumber, $ids)
     {
         $idsFile = $this->_getIdsFile($instanceNumber, 'w');
@@ -111,10 +111,10 @@ class TurpentineUrlCacheStatus extends Mage_Shell_Abstract
     }
 
     /**
-    * Run part number $number
-    *
-    * @param $number
-    */
+     * Run part number $number
+     *
+     * @param $number
+     */
     public function runPart($number)
     {
         $idsFile = $this->_getIdsFile($number);
@@ -134,8 +134,7 @@ class TurpentineUrlCacheStatus extends Mage_Shell_Abstract
             try
             {
                 $urlCacheStatus->refreshCache();
-            }
-            catch (Exception $e)
+            } catch (Exception $e)
             {
                 Mage::helper('turpentine/debug')->logWarn($e->getMessage());
                 echo $e->getMessage();
@@ -145,16 +144,16 @@ class TurpentineUrlCacheStatus extends Mage_Shell_Abstract
     }
 
     /**
-    * Get file with ids for process with $mode or return false if file is locked by other process
-    *
-    * @param $number
-    * @param $mode
-    *
-    * @return bool|resource
-    */
+     * Get file with ids for process with $mode or return false if file is locked by other process
+     *
+     * @param $number
+     * @param $mode
+     *
+     * @return bool|resource
+     */
     protected function _getIdsFile($number, $mode = 'r')
     {
-        $number   = (int) $number;
+        $number   = (int)$number;
         $locksDir = Mage::getConfig()->getVarDir('turpentine/locks');
         $lockName = $locksDir . DS . sprintf(self::LOCK_FILE_PATTERN, $number);
         $lockFile = fopen($lockName, $mode);
@@ -166,12 +165,12 @@ class TurpentineUrlCacheStatus extends Mage_Shell_Abstract
     }
 
     /**
-    * Try to lock file
-    *
-    * @param resource $file
-    *
-    * @return bool
-    */
+     * Try to lock file
+     *
+     * @param resource $file
+     *
+     * @return bool
+     */
     protected function _lockFile($file)
     {
         $result = false;
@@ -183,10 +182,10 @@ class TurpentineUrlCacheStatus extends Mage_Shell_Abstract
     }
 
     /**
-    * Get the usage string
-    *
-    * @return string
-    */
+     * Get the usage string
+     *
+     * @return string
+     */
     public function usageHelp()
     {
         return <<<USAGE
@@ -203,4 +202,4 @@ class TurpentineUrlCacheStatus extends Mage_Shell_Abstract
 }
 
 $turpentineUrlCacheStatus = new TurpentineUrlCacheStatus();
-$turpentineUrlCacheStatus->run();
+$turpentineUrlCacheStatus->run

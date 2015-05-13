@@ -23,7 +23,7 @@ class Nexcessnet_Turpentine_Model_Session extends Mage_Core_Model_Session_Abstra
 
     protected $_namespace = 'turpentine';
 
-    public function __construct($data=array())
+    public function __construct($data = array())
     {
         $sessionName = isset($data['name']) ? $data['name'] : null;
         $this->init($this->_namespace, $sessionName);
@@ -31,12 +31,12 @@ class Nexcessnet_Turpentine_Model_Session extends Mage_Core_Model_Session_Abstra
     }
 
     /**
-    * Save the messages for a given block to the session
-    *
-    * @param  string $blockName
-    * @param  array $messages
-    * @return null
-    */
+     * Save the messages for a given block to the session
+     *
+     * @param  string $blockName
+     * @param  array $messages
+     * @return null
+     */
     public function saveMessages($blockName, $messages)
     {
         $allMessages = $this->getMessages();
@@ -45,30 +45,29 @@ class Nexcessnet_Turpentine_Model_Session extends Mage_Core_Model_Session_Abstra
     }
 
     /**
-    * Retrieve the messages for a given messages block
-    *
-    * @param  string $blockName
-    * @return array
-    */
+     * Retrieve the messages for a given messages block
+     *
+     * @param  string $blockName
+     * @return array
+     */
     public function loadMessages($blockName)
     {
         $messages = $this->getMessages();
         if (is_array(@$messages[$blockName]))
         {
             return $messages[$blockName];
-        }
-        else
+        } else
         {
             return array();
         }
     }
 
     /**
-    * Clear the messages stored for a block
-    *
-    * @param  string $blockName
-    * @return null
-    */
+     * Clear the messages stored for a block
+     *
+     * @param  string $blockName
+     * @return null
+     */
     public function clearMessages($blockName)
     {
         $messages = $this->getMessages();
@@ -79,7 +78,6 @@ class Nexcessnet_Turpentine_Model_Session extends Mage_Core_Model_Session_Abstra
     /**
     * Retrieve the stored messages
     *
-    * @param  boolean $clear=false
     * @return array
     */
     public function getMessages($clear = false)
@@ -93,10 +91,10 @@ class Nexcessnet_Turpentine_Model_Session extends Mage_Core_Model_Session_Abstra
     }
 
     /**
-    * Store messages
-    *
-    * @param array $messages
-    */
+     * Store messages
+     *
+     * @param array $messages
+     */
     public function setMessages($messages)
     {
         $this->setData('messages', $messages);

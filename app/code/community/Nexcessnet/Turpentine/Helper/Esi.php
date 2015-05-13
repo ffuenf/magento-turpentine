@@ -35,10 +35,10 @@ class Nexcessnet_Turpentine_Helper_Esi extends Nexcessnet_Turpentine_Helper_Core
     const CONFIG_EXTENSION_BLOCKDEBUG = 'turpentine_varnish/general/block_debug';
 
     /**
-    * Cache for layout XML
-    *
-    * @var Mage_Core_Model_Layout_Element|SimpleXMLElement
-    */
+     * Cache for layout XML
+     *
+     * @var Mage_Core_Model_Layout_Element|SimpleXMLElement
+     */
     protected $_layoutXml = null;
 
     /**
@@ -49,30 +49,30 @@ class Nexcessnet_Turpentine_Helper_Esi extends Nexcessnet_Turpentine_Helper_Core
     protected $bEsiBlockLogEnabled;
 
     /**
-    * Get whether ESI includes are enabled or not
-    *
-    * @return bool
-    */
+     * Get whether ESI includes are enabled or not
+     *
+     * @return bool
+     */
     public function getEsiEnabled()
     {
         return Mage::app()->useCache($this->getMageCacheName());
     }
 
     /**
-    * Get if ESI should be used for this request
-    *
-    * @return bool
-    */
+     * Get if ESI should be used for this request
+     *
+     * @return bool
+     */
     public function shouldResponseUseEsi()
     {
         return Mage::helper('turpentine/varnish')->shouldResponseUseVarnish() && $this->getEsiEnabled();
     }
 
     /**
-    * Check if ESI includes are enabled and throw an exception if not
-    *
-    * @return null
-    */
+     * Check if ESI includes are enabled and throw an exception if not
+     *
+     * @return null
+     */
     public function ensureEsiEnabled()
     {
         if (!$this->shouldResponseUseEsi())
@@ -198,10 +198,9 @@ class Nexcessnet_Turpentine_Helper_Esi extends Nexcessnet_Turpentine_Helper_Core
     * turpentine/esi/getBlock while rendering ESI blocks. Not perfect, but may
     * be good enough
     *
-    * @param  string $url=null
     * @return Mage_Core_Controller_Request_Http
     */
-    public function getDummyRequest($url=null)
+    public function getDummyRequest($url = null)
     {
         if ($url === null)
         {
@@ -225,7 +224,7 @@ class Nexcessnet_Turpentine_Helper_Esi extends Nexcessnet_Turpentine_Helper_Core
     /**
     * Get the list of cache clear events to include with every ESI block
     *
-    * @return array
+    * @return string[]
     */
     public function getDefaultCacheClearEvents()
     {
@@ -236,7 +235,7 @@ class Nexcessnet_Turpentine_Helper_Esi extends Nexcessnet_Turpentine_Helper_Core
     /**
     * Get the list of events that should cause the ESI cache to be cleared
     *
-    * @return array
+    * @return string[]
     */
     public function getCacheClearEvents()
     {
@@ -253,29 +252,28 @@ class Nexcessnet_Turpentine_Helper_Esi extends Nexcessnet_Turpentine_Helper_Core
     }
 
     /**
-    * Get the default private ESI block TTL
-    *
-    * @return string
-    */
+     * Get the default private ESI block TTL
+     *
+     * @return string
+     */
     public function getDefaultEsiTtl()
     {
         return trim(Mage::getStoreConfig('web/cookie/cookie_lifetime'));
     }
 
     /**
-    * Get the CORS origin field from the unsecure base URL
-    *
-    * If this isn't added to AJAX responses they won't load properly
-    *
-    * @return string
-    */
+     * Get the CORS origin field from the unsecure base URL
+     *
+     * If this isn't added to AJAX responses they won't load properly
+     *
+     * @return string
+     */
     public function getCorsOrigin($url = null)
     {
         if (is_null($url))
         {
             $baseUrl = Mage::getBaseUrl();
-        }
-        else
+        } else
         {
             $baseUrl = $url;
         }
@@ -286,12 +284,12 @@ class Nexcessnet_Turpentine_Helper_Esi extends Nexcessnet_Turpentine_Helper_Core
     }
 
     /**
-    * Get the layout's XML structure
-    *
-    * This is cached because it's expensive to load for each ESI'd block
-    *
-    * @return Mage_Core_Model_Layout_Element|SimpleXMLElement
-    */
+     * Get the layout's XML structure
+     *
+     * This is cached because it's expensive to load for each ESI'd block
+     *
+     * @return Mage_Core_Model_Layout_Element|SimpleXMLElement
+     */
     public function getLayoutXml()
     {
         Varien_Profiler::start('turpentine::helper::esi::getLayoutXml');
@@ -317,10 +315,10 @@ class Nexcessnet_Turpentine_Helper_Esi extends Nexcessnet_Turpentine_Helper_Core
     }
 
     /**
-    * Get the cache key for the cache clear events
-    *
-    * @return string
-    */
+     * Get the cache key for the cache clear events
+     *
+     * @return string
+     */
     public function getCacheClearEventsCacheKey()
     {
         $design = Mage::getDesign();
@@ -335,10 +333,10 @@ class Nexcessnet_Turpentine_Helper_Esi extends Nexcessnet_Turpentine_Helper_Core
     }
 
     /**
-    * Get the cache key for the file layouts xml
-    *
-    * @return string
-    */
+     * Get the cache key for the file layouts xml
+     *
+     * @return string
+     */
     public function getFileLayoutUpdatesXmlCacheKey()
     {
         $design = Mage::getDesign();
@@ -353,39 +351,39 @@ class Nexcessnet_Turpentine_Helper_Esi extends Nexcessnet_Turpentine_Helper_Core
     }
 
     /**
-    * Generate an ESI tag to be replaced by the content from the given URL
-    *
-    * Generated tag looks like:
-    *     <esi:include src="$url" />
-    *
-    * @param  string $url url to pull content from
-    * @return string
-    */
+     * Generate an ESI tag to be replaced by the content from the given URL
+     *
+     * Generated tag looks like:
+     *     <esi:include src="$url" />
+     *
+     * @param  string $url url to pull content from
+     * @return string
+     */
     public function buildEsiIncludeFragment($url)
     {
         return sprintf('<esi:include src="%s" />', $url);
     }
 
     /**
-    * Generate an ESI tag with content that is removed when ESI processed, and
-    * visible when not
-    *
-    * Generated tag looks like:
-    *     <esi:remove>$content</esi>
-    *
-    * @param  string $content content to be removed
-    * @return string
-    */
+     * Generate an ESI tag with content that is removed when ESI processed, and
+     * visible when not
+     *
+     * Generated tag looks like:
+     *     <esi:remove>$content</esi>
+     *
+     * @param  string $content content to be removed
+     * @return string
+     */
     public function buildEsiRemoveFragment($content)
     {
         return sprintf('<esi:remove>%s</esi>', $content);
     }
 
     /**
-    * Get URL for grabbing form key via ESI
-    *
-    * @return string
-    */
+     * Get URL for grabbing form key via ESI
+     *
+     * @return string
+     */
     public function getFormKeyEsiUrl()
     {
         $urlOptions = array(
@@ -398,10 +396,10 @@ class Nexcessnet_Turpentine_Helper_Esi extends Nexcessnet_Turpentine_Helper_Core
     }
 
     /**
-    * Load the ESI cache clear events from the layout
-    *
-    * @return array
-    */
+     * Load the ESI cache clear events from the layout
+     *
+     * @return array
+     */
     protected function _loadEsiCacheClearEvents()
     {
         Varien_Profiler::start('turpentine::helper::esi::_loadEsiCacheClearEvents');
@@ -410,8 +408,7 @@ class Nexcessnet_Turpentine_Helper_Esi extends Nexcessnet_Turpentine_Helper_Core
         if ($events)
         {
             $events = array_unique(array_map(create_function('$e', 'return (string)$e->getName();'), $events));
-        }
-        else
+        } else
         {
             $events = array();
         }
@@ -420,10 +417,10 @@ class Nexcessnet_Turpentine_Helper_Esi extends Nexcessnet_Turpentine_Helper_Core
     }
 
     /**
-    * Load the layout's XML structure, bypassing any caching
-    *
-    * @return Mage_Core_Model_Layout_Element
-    */
+     * Load the layout's XML structure, bypassing any caching
+     *
+     * @return Mage_Core_Model_Layout_Element
+     */
     protected function _loadLayoutXml()
     {
         Varien_Profiler::start('turpentine::helper::esi::_loadLayoutXml');
@@ -440,23 +437,23 @@ class Nexcessnet_Turpentine_Helper_Esi extends Nexcessnet_Turpentine_Helper_Core
     }
 
     /**
-    * Replace https scheme in ESI URLs with http to prevent secure ESI calls
-    * Varnish does support HTTPS ESI urls, but only properly as of 3.0.5 because of Bug #1333
-    * https://www.varnish-cache.org/trac/ticket/1333
-    * Note: this should only happen if the unsecure base url is configured to use https
-    * @param string $url
-    * @return string
-    */
+     * Replace https scheme in ESI URLs with http to prevent secure ESI calls
+     * Varnish does support HTTPS ESI urls, but only properly as of 3.0.5 because of Bug #1333
+     * https://www.varnish-cache.org/trac/ticket/1333
+     * Note: this should only happen if the unsecure base url is configured to use https
+     * @param string $url
+     * @return string
+     */
     public function unsecureUrl($url)
     {
         return preg_replace('!^https://!', 'http://', $url);
     }
 
     /**
-    * Check if request was a esi request
-    *
-    * @return bool
-    */
+     * Check if request was a esi request
+     *
+     * @return bool
+     */
     public function isEsiRequest()
     {
         return Mage::app()->getRequest()->getControllerName() === 'esi';

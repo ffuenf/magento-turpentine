@@ -23,35 +23,35 @@ $urlCacheStatusTable = $connection->newTable($urlCacheStatusTable)
             'unsigned' => true,
             'nullable' => false,
             'primary'  => true,
-       ),
+        ),
         'Entity Id'
-   )
+    )
     ->addColumn(
         'url',
         Varien_Db_Ddl_Table::TYPE_TEXT,
         255,
         array(
             'nullable' => false,
-       ),
+        ),
         'Page Url'
-   )
+    )
     ->addColumn(
         'expire_at',
         Varien_Db_Ddl_Table::TYPE_DATETIME,
         null,
         array(
             'nullable' => false,
-       ),
+        ),
         'Expire At'
-   )
+    )
     ->addIndex(
         $installer->getIdxName(
             'turpentine/url_cache_status',
             array('url')
-       ),
+        ),
         array('url'),
         array('type' => 'UNIQUE')
-   )
+    )
     ->setComment('Turpentine Url Cache Status Table');
 $connection->createTable($urlCacheStatusTable);
 

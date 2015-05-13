@@ -22,33 +22,33 @@ class Nexcessnet_Turpentine_Block_Core_Messages extends Mage_Core_Block_Messages
 {
 
     /**
-    * Sentinel value to see if getHtml was passed a specific message type,
-    * can't use null because that is the default so no way to tell between
-    * the default and  not actually calling it
-    */
+     * Sentinel value to see if getHtml was passed a specific message type,
+     * can't use null because that is the default so no way to tell between
+     * the default and  not actually calling it
+     */
     const NO_SINGLE_RENDER_TYPE = -1;
 
     /**
-    * Hold the message type to call getHtml with
-    * @var mixed
-    */
+     * Hold the message type to call getHtml with
+     * @var mixed
+     */
     protected $_singleRenderType = null;
 
     /**
-    * Sentinel to check if the toHtml method was skipped (getGroupedHtml was
-    * called directly)
-    *
-    * Better name for this var would be '_magentoDevsAreDumb'
-    *
-    * @var boolean
-    */
+     * Sentinel to check if the toHtml method was skipped (getGroupedHtml was
+     * called directly)
+     *
+     * Better name for this var would be '_magentoDevsAreDumb'
+     *
+     * @var boolean
+     */
     protected $_directCall = false;
 
     /**
-    * List of session types to load messages from for the "messages" block.
-    * Must be listed here because there's no other way to get this info.
-    * @var array
-    */
+     * List of session types to load messages from for the "messages" block.
+     * Must be listed here because there's no other way to get this info.
+     * @var array
+     */
     protected $_messageStorageTypes = array(
         'catalog',
         'checkout',
@@ -60,12 +60,12 @@ class Nexcessnet_Turpentine_Block_Core_Messages extends Mage_Core_Block_Messages
     );
 
     /**
-    * Storage for used types of message storages
-    *
-    * Added for compatibility with Magento 1.5
-    *
-    * @var array
-    */
+     * Storage for used types of message storages
+     *
+     * Added for compatibility with Magento 1.5
+     *
+     * @var array
+     */
     protected $_usedStorageTypes = array('core/session');
 
     public function _prepareLayout()
@@ -74,26 +74,24 @@ class Nexcessnet_Turpentine_Block_Core_Messages extends Mage_Core_Block_Messages
         {
             /* do nothing */
             return $this;
-        }
-        else
+        } else
         {
             return parent::_prepareLayout();
         }
     }
 
     /**
-    * Set messages collection
-    *
-    * @param   Mage_Core_Model_Message_Collection $messages
-    * @return  Mage_Core_Block_Messages
-    */
+     * Set messages collection
+     *
+     * @param   Mage_Core_Model_Message_Collection $messages
+     * @return  Mage_Core_Block_Messages
+     */
     public function setMessages(Mage_Core_Model_Message_Collection $messages)
     {
         if ($this->_fixMessages())
         {
             $this->_saveMessages($messages->getItems());
-        }
-        else
+        } else
         {
             parent::setMessages($messages);
         }
@@ -101,18 +99,17 @@ class Nexcessnet_Turpentine_Block_Core_Messages extends Mage_Core_Block_Messages
     }
 
     /**
-    * Add messages to display
-    *
-    * @param Mage_Core_Model_Message_Collection $messages
-    * @return Mage_Core_Block_Messages
-    */
+     * Add messages to display
+     *
+     * @param Mage_Core_Model_Message_Collection $messages
+     * @return Mage_Core_Block_Messages
+     */
     public function addMessages(Mage_Core_Model_Message_Collection $messages)
     {
         if ($this->_fixMessages())
         {
             $this->_saveMessages($messages->getItems());
-        }
-        else
+        } else
         {
             parent::addMessages($messages);
         }
@@ -120,18 +117,17 @@ class Nexcessnet_Turpentine_Block_Core_Messages extends Mage_Core_Block_Messages
     }
 
     /**
-    * Adding new message to message collection
-    *
-    * @param   Mage_Core_Model_Message_Abstract $message
-    * @return  Mage_Core_Block_Messages
-    */
+     * Adding new message to message collection
+     *
+     * @param   Mage_Core_Model_Message_Abstract $message
+     * @return  Mage_Core_Block_Messages
+     */
     public function addMessage(Mage_Core_Model_Message_Abstract $message)
     {
         if ($this->_fixMessages())
         {
             $this->_saveMessages(array($message));
-        }
-        else
+        } else
         {
             parent::addMessage($message);
         }
@@ -142,10 +138,9 @@ class Nexcessnet_Turpentine_Block_Core_Messages extends Mage_Core_Block_Messages
     * Override this in case some dumb layout decides to use it instead of the
     * standard toHtml stuff
     *
-    * @param  mixed $type=self::NO_SINGLE_RENDER_TYPE
     * @return string
     */
-    public function getHtml($type=self::NO_SINGLE_RENDER_TYPE)
+    public function getHtml($type = self::NO_SINGLE_RENDER_TYPE)
     {
         $this->_singleRenderType = $type;
         return $this->_handleDirectCall('getHtml')->toHtml();
@@ -177,7 +172,8 @@ class Nexcessnet_Turpentine_Block_Core_Messages extends Mage_Core_Block_Messages
     /**
     * Load layout options
     *
-    * @return null
+    * @param string $methodCalled
+    * @return Nexcessnet_Turpentine_Block_Core_Messages
     */
     protected function _handleDirectCall($methodCalled)
     {
@@ -200,7 +196,7 @@ class Nexcessnet_Turpentine_Block_Core_Messages extends Mage_Core_Block_Messages
             }
             $layout->generateXml();
             $layoutShim = Mage::getSingleton('turpentine/shim_mage_core_layout');
-            foreach ($layout->getNode()->xpath(sprintf('//reference[@name=\'%s\']/action',$this->getNameInLayout())) as $node)
+            foreach ($layout->getNode()->xpath(sprintf('//reference[@name=\'%s\']/action', $this->getNameInLayout())) as $node)
             {
                 $layoutShim->shim_generateAction($node);
             }
@@ -209,10 +205,10 @@ class Nexcessnet_Turpentine_Block_Core_Messages extends Mage_Core_Block_Messages
     }
 
     /**
-    * Render the messages block
-    *
-    * @return string
-    */
+     * Render the messages block
+     *
+     * @return string
+     */
     protected function _toHtml()
     {
         if ($this->_fixMessages())
@@ -220,15 +216,13 @@ class Nexcessnet_Turpentine_Block_Core_Messages extends Mage_Core_Block_Messages
             if ($this->_shouldUseInjection())
             {
                 $html = $this->renderView();
-            }
-            else
+            } else
             {
                 $this->_loadMessages();
                 $this->_loadSavedMessages();
                 $html = $this->_real_toHtml();
             }
-        }
-        else
+        } else
         {
             $html = $this->_real_toHtml();
         }
@@ -237,42 +231,42 @@ class Nexcessnet_Turpentine_Block_Core_Messages extends Mage_Core_Block_Messages
     }
 
     /**
-    * Check if this block has either the ajax or esi options set
-    *
-    * @return boolean
-    */
+     * Check if this block has either the ajax or esi options set
+     *
+     * @return boolean
+     */
     protected function _hasInjectOptions()
     {
         return $this->getEsiOptions() && Mage::helper('turpentine/esi')->shouldResponseUseEsi();
     }
 
     /**
-    * Check if the block has injection options, and if they should be used
-    *
-    * @return boolean
-    */
+     * Check if the block has injection options, and if they should be used
+     *
+     * @return boolean
+     */
     protected function _shouldUseInjection()
     {
         return $this->_hasTemplateSet() && $this->_hasInjectOptions() && Mage::app()->getStore()->getCode() !== 'admin';
     }
 
     /**
-    * Check if this block has a template set
-    *
-    * This should be false unless we're rendering with the ajax/esi option stuff
-    *
-    * @return boolean
-    */
+     * Check if this block has a template set
+     *
+     * This should be false unless we're rendering with the ajax/esi option stuff
+     *
+     * @return boolean
+     */
     protected function _hasTemplateSet()
     {
         return (bool)$this->getTemplate();
     }
 
     /**
-    * Preserve messages for later display
-    *
-    * @return null
-    */
+     * Preserve messages for later display
+     *
+     * @return null
+     */
     protected function _saveMessages($messages)
     {
         if ($this->_fixMessages() && !$this->_isEsiRequest())
@@ -283,10 +277,10 @@ class Nexcessnet_Turpentine_Block_Core_Messages extends Mage_Core_Block_Messages
     }
 
     /**
-    * Add messages to display
-    *
-    * @return null
-    */
+     * Add messages to display
+     *
+     * @return null
+     */
     protected function _loadMessages()
     {
         if ($this->getNameInLayout() == 'messages')
@@ -297,18 +291,17 @@ class Nexcessnet_Turpentine_Block_Core_Messages extends Mage_Core_Block_Messages
                 $this->addStorageType($storage);
                 $this->_loadMessagesFromStorage($storage);
             }
-        }
-        else
+        } else
         {
             $this->_loadMessagesFromStorage('core/session');
         }
     }
 
     /**
-    * Load messages saved to turpentine/session
-    *
-    * @return null
-    */
+     * Load messages saved to turpentine/session
+     *
+     * @return null
+     */
     protected function _loadSavedMessages()
     {
         $session = Mage::getSingleton('turpentine/session');
@@ -320,11 +313,11 @@ class Nexcessnet_Turpentine_Block_Core_Messages extends Mage_Core_Block_Messages
     }
 
     /**
-    * Load messages from the specified session storage
-    *
-    * @param  string $type
-    * @return null
-    */
+     * Load messages from the specified session storage
+     *
+     * @param  string $type
+     * @return null
+     */
     protected function _loadMessagesFromStorage($type) {
         foreach (Mage::getSingleton($type)
         ->getMessages(true)->getItems() as $msg) {
@@ -333,25 +326,25 @@ class Nexcessnet_Turpentine_Block_Core_Messages extends Mage_Core_Block_Messages
     }
 
     /**
-    * Clear messages saved to turpentine/session
-    *
-    * @return null
-    */
+     * Clear messages saved to turpentine/session
+     *
+     * @return null
+     */
     protected function _clearMessages()
     {
         Mage::getSingleton('turpentine/session')->clearMessages($this->getNameInLayout());
     }
 
     /**
-    * Render output using parent methods
-    *
-    * @return string
-    */
+     * Render output using parent methods
+     *
+     * @return string
+     */
     protected function _real_toHtml()
     {
         if (!$this->_directCall)
         {
-            switch($this->getNameInLayout())
+            switch ($this->getNameInLayout())
             {
                 case 'global_messages':
                 $this->_directCall = 'getHtml';
@@ -362,7 +355,7 @@ class Nexcessnet_Turpentine_Block_Core_Messages extends Mage_Core_Block_Messages
                 break;
             }
         }
-        switch($this->_directCall)
+        switch ($this->_directCall)
         {
             case 'getHtml':
             $html = parent::getHtml($this->_singleRenderType);
@@ -377,24 +370,24 @@ class Nexcessnet_Turpentine_Block_Core_Messages extends Mage_Core_Block_Messages
     }
 
     /**
-    * Check if we should fix the messages behavior to work with turpentine,
-    * disable-able for compatibility with other extensions
-    *
-    * @return bool
-    */
+     * Check if we should fix the messages behavior to work with turpentine,
+     * disable-able for compatibility with other extensions
+     *
+     * @return bool
+     */
     protected function _fixMessages()
     {
         return Mage::helper('turpentine/esi')->shouldFixFlashMessages();
     }
 
     /**
-    * Check if this is an AJAX request
-    *
-    * Not very accurate, currently just checks if the module/controller/action
-    * looks like the dummy request that is set by the esi controller
-    *
-    * @return boolean
-    */
+     * Check if this is an AJAX request
+     *
+     * Not very accurate, currently just checks if the module/controller/action
+     * looks like the dummy request that is set by the esi controller
+     *
+     * @return boolean
+     */
     protected function _isEsiRequest()
     {
         return is_a(Mage::app()->getRequest(), 'Nexcessnet_Turpentine_Model_Dummy_Request');

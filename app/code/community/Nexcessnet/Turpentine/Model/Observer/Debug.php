@@ -22,22 +22,22 @@ class Nexcessnet_Turpentine_Model_Observer_Debug extends Varien_Event_Observer
 {
 
     /**
-    * Log an occurance of a specific event
-    *
-    * @param  Varien_Object $eventObject
-    * @return null
-    */
+     * Log an occurance of a specific event
+     *
+     * @param  Varien_Object $eventObject
+     * @return null
+     */
     public function logEvent($eventObject)
     {
         Mage::helper('turpentine/debug')->log('EVENT: %s', $eventObject->getEvent()->getName());
     }
 
     /**
-    * Log a backtrace on an event
-    *
-    * @param  Varien_Object $eventObject
-    * @return null
-    */
+     * Log a backtrace on an event
+     *
+     * @param  Varien_Object $eventObject
+     * @return null
+     */
     public function logBackTrace($eventObject)
     {
         $this->logEvent($eventObject);

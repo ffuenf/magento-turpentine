@@ -23,11 +23,11 @@ class Nexcessnet_Turpentine_Model_Varnish_Configurator_Version2 extends Nexcessn
 
     const VCL_TEMPLATE_FILE = 'version-2.vcl';
     /**
-    * Generate the Varnish 2.1-compatible VCL
-    *
-    * @param bool $doClean if true, VCL will be cleaned (whitespaces stripped, etc.)
-    * @return string
-    */
+     * Generate the Varnish 2.1-compatible VCL
+     *
+     * @param bool $doClean if true, VCL will be cleaned (whitespaces stripped, etc.)
+     * @return string
+     */
     public function generate($doClean=true) {
         $tplFile = $this->_getVclTemplateFilename(self::VCL_TEMPLATE_FILE);
         $vcl = $this->_formatTemplate(file_get_contents($tplFile), $this->_getTemplateVars());
@@ -45,10 +45,10 @@ class Nexcessnet_Turpentine_Model_Varnish_Configurator_Version2 extends Nexcessn
     }
 
     /**
-    * Build the list of template variables to apply to the VCL template
-    *
-    * @return array
-    */
+     * Build the list of template variables to apply to the VCL template
+     *
+     * @return array
+     */
     protected function _getTemplateVars() {
         $vars = parent::_getTemplateVars();
         $vars['esi_public_ttl'] = $this->_getDefaultTtl();

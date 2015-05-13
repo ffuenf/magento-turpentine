@@ -107,8 +107,8 @@ class Nexcessnet_Turpentine_Helper_Varnish extends Nexcessnet_Turpentine_Helper_
     *
     * @param  string $host           [description]
     * @param  string|int $port           [description]
-    * @param  string $secretKey=null [description]
-    * @param  string $version=null   [description]
+    * @param  string $secretKey [description]
+    * @param  string $version   [description]
     * @return Nexcessnet_Turpentine_Model_Varnish_Admin_Socket
     */
     public function getSocket($host, $port, $secretKey = null, $version = null)
@@ -126,10 +126,10 @@ class Nexcessnet_Turpentine_Helper_Varnish extends Nexcessnet_Turpentine_Helper_
     }
 
     /**
-    * Get management sockets for all the configured Varnish servers
-    *
-    * @return array
-    */
+     * Get management sockets for all the configured Varnish servers
+     *
+     * @return array
+     */
     public function getSockets()
     {
         $sockets = array();
@@ -151,31 +151,31 @@ class Nexcessnet_Turpentine_Helper_Varnish extends Nexcessnet_Turpentine_Helper_
     }
 
     /**
-    * Get the cache type Magento uses
-    *
-    * @return string
-    */
+     * Get the cache type Magento uses
+     *
+     * @return string
+     */
     public function getMageCacheName()
     {
         return self::MAGE_CACHE_NAME;
     }
 
     /**
-    * Get the configured default object TTL
-    *
-    * @return string
-    */
+     * Get the configured default object TTL
+     *
+     * @return string
+     */
     public function getDefaultTtl()
     {
         return Mage::getStoreConfig('turpentine_vcl/ttls/default_ttl');
     }
 
     /**
-    * Check if the product list toolbar fix is enabled and we're not in the
-    * admin section
-    *
-    * @return bool
-    */
+     * Check if the product list toolbar fix is enabled and we're not in the
+     * admin section
+     *
+     * @return bool
+     */
     public function shouldFixProductListToolbar()
     {
         return Mage::helper('turpentine/data')->useProductListToolbarFix() &&
@@ -183,10 +183,10 @@ class Nexcessnet_Turpentine_Helper_Varnish extends Nexcessnet_Turpentine_Helper_
     }
 
     /**
-    * Check if the Varnish bypass is enabled
-    *
-    * @return boolean
-    */
+     * Check if the Varnish bypass is enabled
+     *
+     * @return boolean
+     */
     public function isBypassEnabled()
     {
         $cookieName = Mage::helper('turpentine/data')->getBypassCookieName();
@@ -195,10 +195,10 @@ class Nexcessnet_Turpentine_Helper_Varnish extends Nexcessnet_Turpentine_Helper_
     }
 
     /**
-    * Check if the notification about the Varnish bypass must be displayed
-    *
-    * @return boolean
-    */
+     * Check if the notification about the Varnish bypass must be displayed
+     *
+     * @return boolean
+     */
     public function shouldDisplayNotice()
     {
         return $this->getVarnishEnabled() && $this->isBypassEnabled();
@@ -212,14 +212,14 @@ class Nexcessnet_Turpentine_Helper_Varnish extends Nexcessnet_Turpentine_Helper_
     }
 
     /**
-    * Check if this is a version of Magento that needs the form_key fix.
-    * Relevant versions are:
-    *
-    *     CE 1.8+
-    *     EE 1.13+
-    *
-    * @return bool
-    */
+     * Check if this is a version of Magento that needs the form_key fix.
+     * Relevant versions are:
+     *
+     *     CE 1.8+
+     *     EE 1.13+
+     *
+     * @return bool
+     */
     public function csrfFixupNeeded()
     {
         $result = false;
@@ -230,8 +230,7 @@ class Nexcessnet_Turpentine_Helper_Varnish extends Nexcessnet_Turpentine_Helper_
             {
                 $isEnterprise = true;
             }
-        }
-        else
+        } else
         {
             if (Mage::getConfig()->getModuleConfig('Enterprise_Enterprise'))
             {
@@ -244,8 +243,7 @@ class Nexcessnet_Turpentine_Helper_Varnish extends Nexcessnet_Turpentine_Helper_
             {
                 $result = true;
             }
-        }
-        else
+        } else
         {
             if (version_compare(Mage::getVersion(), '1.8', '>='))
             {
@@ -256,20 +254,20 @@ class Nexcessnet_Turpentine_Helper_Varnish extends Nexcessnet_Turpentine_Helper_
     }
 
     /**
-    * Return array of ttls per regexp got from configuration
-    *
-    * @see Nexcessnet_Turpentine_Model_Varnish_Configurator_Abstract::_getUrlTtls()
-    *
-    * structure:
-    * array(
-    *     array(
-    *         'regex' => <regexp>
-    *         'ttl'   => <ttl>
-    *    )
-    *)
-    *
-    * @return array
-    */
+     * Return array of ttls per regexp got from configuration
+     *
+     * @see Nexcessnet_Turpentine_Model_Varnish_Configurator_Abstract::_getUrlTtls()
+     *
+     * structure:
+     * array(
+     *     array(
+     *         'regex' => <regexp>
+     *         'ttl'   => <ttl>
+     *    )
+     *)
+     *
+     * @return array
+     */
     public function getUrlTtls()
     {
         if (!is_null($this->_urlTtls))

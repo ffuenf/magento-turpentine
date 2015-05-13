@@ -22,21 +22,21 @@ class Nexcessnet_Turpentine_Model_PageCache_Container_Notices extends Enterprise
 {
 
     /**
-    * Generate placeholder content before application was initialized and apply to page content if possible
-    *
-    * @param string $content
-    * @return boolean
-    */
+     * Generate placeholder content before application was initialized and apply to page content if possible
+     *
+     * @param string $content
+     * @return boolean
+     */
     public function applyWithoutApp(&$content)
     {
         return false;
     }
 
     /**
-    * Render block content
-    *
-    * @return string
-    */
+     * Render block content
+     *
+     * @return string
+     */
     protected function _renderBlock()
     {
         $block = new Nexcessnet_Turpentine_Block_Notices();

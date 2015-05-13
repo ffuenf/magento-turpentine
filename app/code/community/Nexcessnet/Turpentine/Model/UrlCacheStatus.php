@@ -14,8 +14,8 @@ class Nexcessnet_Turpentine_Model_UrlCacheStatus extends Mage_Core_Model_Abstrac
     const LOGFILE = 'turpentine_url_cache_status.log';
 
     /**
-    * @var string
-    */
+     * @var string
+     */
     protected $_eventPrefix = 'turpentine_urlcachestatus';
 
     protected function _construct()
@@ -24,10 +24,10 @@ class Nexcessnet_Turpentine_Model_UrlCacheStatus extends Mage_Core_Model_Abstrac
     }
 
     /**
-    * Request page by url and set new expire at
-    *
-    * @throws Exception
-    */
+     * Request page by url and set new expire at
+     *
+     * @throws Exception
+     */
     public function refreshCache()
     {
         $url = $this->getUrl();
@@ -53,10 +53,10 @@ class Nexcessnet_Turpentine_Model_UrlCacheStatus extends Mage_Core_Model_Abstrac
     }
 
     /**
-    * Set expire_at date to current(so they are expired) for all occurrences found by url $regexp
-    *
-    * @param string $regex
-    */
+     * Set expire_at date to current(so they are expired) for all occurrences found by url $regexp
+     *
+     * @param string $regex
+     */
     public function  expireByRegex($regex)
     {
         $collection = $this->getCollection();
@@ -70,12 +70,12 @@ class Nexcessnet_Turpentine_Model_UrlCacheStatus extends Mage_Core_Model_Abstrac
     }
 
     /**
-    * Renew expire_at date to (currentDate + ttl) for $url or model's url
-    *
-    * @param string $url
-    *
-    * @throws Mage_Core_Exception
-    */
+     * Renew expire_at date to (currentDate + ttl) for $url or model's url
+     *
+     * @param string $url
+     *
+     * @throws Mage_Core_Exception
+     */
     public function renewExpireAt($url = null)
     {
         if (is_null($url))
@@ -93,11 +93,12 @@ class Nexcessnet_Turpentine_Model_UrlCacheStatus extends Mage_Core_Model_Abstrac
     /**
     * Get next expire_at date for url
     *
+    * @param string $url
     * @return Zend_Date
     */
     public function getNextExpireAtDate($url)
     {
-        $currentTimestamp  = Mage::getSingleton('core/date')->gmtTimestamp();
+        $currentTimestamp = Mage::getSingleton('core/date')->gmtTimestamp();
         $urlTtls = Mage::helper('turpentine/varnish')->getUrlTtls();
         $ttl = Mage::helper('turpentine/varnish')->getDefaultTtl();
         foreach ($urlTtls as $urlTtl)
@@ -108,7 +109,7 @@ class Nexcessnet_Turpentine_Model_UrlCacheStatus extends Mage_Core_Model_Abstrac
                 break;
             }
         }
-        $expireAtTimestamp = $currentTimestamp + (int) $ttl;
+        $expireAtTimestamp = $currentTimestamp + (int)$ttl;
         $date = new Zend_Date($expireAtTimestamp);
         return $date;
     }

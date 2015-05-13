@@ -22,13 +22,13 @@ class Nexcessnet_Turpentine_Model_Observer_Varnish extends Varien_Event_Observer
 {
 
     /**
-    * Check sentinel flags and set headers/cookies as needed
-    *
-    * Events: http_response_send_before
-    *
-    * @param  mixed $eventObject
-    * @return null
-    */
+     * Check sentinel flags and set headers/cookies as needed
+     *
+     * Events: http_response_send_before
+     *
+     * @param  mixed $eventObject
+     * @return null
+     */
     public function setCacheFlagHeader($eventObject)
     {
         $response = $eventObject->getResponse();
@@ -43,11 +43,11 @@ class Nexcessnet_Turpentine_Model_Observer_Varnish extends Varien_Event_Observer
     }
 
     /**
-    * Add a rewrite for catalog/product_list_toolbar if config option enabled
-    *
-    * @param Varien_Object $eventObject
-    * @return null
-    */
+     * Add a rewrite for catalog/product_list_toolbar if config option enabled
+     *
+     * @param Varien_Object $eventObject
+     * @return null
+     */
     public function addProductListToolbarRewrite($eventObject)
     {
         if (Mage::helper('turpentine/varnish')->shouldFixProductListToolbar())
@@ -57,11 +57,11 @@ class Nexcessnet_Turpentine_Model_Observer_Varnish extends Varien_Event_Observer
     }
 
     /**
-    * Re-apply and save Varnish configuration on config change
-    *
-    * @param  mixed $eventObject
-    * @return null
-    */
+     * Re-apply and save Varnish configuration on config change
+     *
+     * @param  mixed $eventObject
+     * @return null
+     */
     public function adminSystemConfigChangedSection($eventObject)
     {
         if (Mage::helper('turpentine/varnish')->getVarnishEnabled() && Mage::helper('turpentine/data')->getAutoApplyOnSave())
@@ -73,8 +73,7 @@ class Nexcessnet_Turpentine_Model_Observer_Varnish extends Varien_Event_Observer
                 if ($value === true)
                 {
                     $session->addSuccess(Mage::helper('turpentine/data')->__('VCL successfully applied to: ' . $name));
-                }
-                else
+                } else
                 {
                     $session->addError(Mage::helper('turpentine/data')->__(sprintf('Failed to apply the VCL to %s: %s', $name, $value)));
                 }
@@ -83,15 +82,13 @@ class Nexcessnet_Turpentine_Model_Observer_Varnish extends Varien_Event_Observer
             if (is_null($cfgr))
             {
                 $session->addError(Mage::helper('turpentine/data')->__('Failed to load configurator'));
-            }
-            else
+            } else
             {
                 $result = $cfgr->save($cfgr->generate());
                 if ($result[0])
                 {
                     $session->addSuccess(Mage::helper('turpentine/data')->__('The VCL file has been saved.'));
-                }
-                else
+                } else
                 {
                     $session->addError(Mage::helper('turpentine/data')->__('Failed to save the VCL file: ' . $result[1]['message']));
                 }
