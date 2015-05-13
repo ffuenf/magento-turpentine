@@ -29,11 +29,35 @@ class Nexcessnet_Turpentine_Helper_Cron extends Mage_Core_Helper_Abstract
     const CRAWLER_URLS_CACHE_ID = 'turpentine_crawler_url_queue';
 
     /**
+     * Path for crawler_enable
+     */
+    const CONFIG_EXTENSION_CRAWLERENABLE = 'turpentine_varnish/general/crawler_enable';
+
+    /**
+     * Path for crawler_debug
+     */
+    const CONFIG_EXTENSION_CRAWLERDEBUG = 'turpentine_varnish/general/crawler_debug';
+
+    /**
     * Crawler client singleton
     *
     * @var Varien_Http_Client
     */
     protected $_crawlerClient = null;
+
+    /**
+     * Variable for if the crawler is enabled
+     *
+     * @var bool
+     */
+    protected $bCrawlerEnabled;
+
+    /**
+     * Variable for if crawler debugging is enabled
+     *
+     * @var bool
+     */
+    protected $bCrawlerDebugEnabled;
 
     /**
     * Get the execution time used so far
@@ -143,7 +167,7 @@ class Nexcessnet_Turpentine_Helper_Cron extends Mage_Core_Helper_Abstract
     */
     public function getCrawlerEnabled()
     {
-        return Mage::getStoreConfig('turpentine_varnish/general/crawler_enable');
+        return Mage::getStoreFlag(self::CONFIG_EXTENSION_CRAWLERENABLE, 'bCrawlerEnabled');
     }
 
     /**
@@ -153,7 +177,7 @@ class Nexcessnet_Turpentine_Helper_Cron extends Mage_Core_Helper_Abstract
     */
     public function getCrawlerDebugEnabled()
     {
-        return Mage::getStoreConfig('turpentine_varnish/general/crawler_debug');
+        return Mage::getStoreFlag(self::CONFIG_EXTENSION_CRAWLERDEBUG, 'bCrawlerDebugEnabled');
     }
 
     /**

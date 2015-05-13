@@ -24,6 +24,42 @@ abstract class Nexcessnet_Turpentine_Model_Varnish_Configurator_Abstract
     const VCL_CUSTOM_C_CODE_FILE = 'uuid.c';
 
     /**
+     * Path for normalization/encoding
+     */
+    const CONFIG_EXTENSION_NORMALIZATION_ENCODING = 'turpentine_vcl/normalization/encoding';
+
+    /**
+     * Path for normalization/user_agent
+     */
+    const CONFIG_EXTENSION_NORMALIZATION_USERAGENT = 'turpentine_vcl/normalization/user_agent';
+
+    /**
+     * Path for normalization/host
+     */
+    const CONFIG_EXTENSION_NORMALIZATION_HOST = 'turpentine_vcl/normalization/host';
+
+    /**
+     * Variable for if Turpentine should normalize the encoding
+     *
+     * @var bool
+     */
+    protected $bNormalizeEncoding;
+
+    /**
+     * Variable for if Turpentine should normalize the user_agent
+     *
+     * @var bool
+     */
+    protected $bNormalizeUserAgent;
+
+    /**
+     * Variable for if Turpentine should normalize the host
+     *
+     * @var bool
+     */
+    protected $bNormalizeHost;
+
+    /**
     * Get the correct version of a configurator from a socket
     *
     * @param  Nexcessnet_Turpentine_Model_Varnish_Admin_Socket $socket
@@ -696,15 +732,15 @@ EOS;
             'custom_c_code' => file_get_contents($this->_getVclTemplateFilename(self::VCL_CUSTOM_C_CODE_FILE)),
             'esi_private_ttl' => Mage::helper('turpentine/esi')->getDefaultEsiTtl(),
         );
-        if (Mage::getStoreConfig('turpentine_vcl/normalization/encoding'))
+        if (Mage::getStoreFlag(self::CONFIG_EXTENSION_NORMALIZATION_ENCODING, 'bNormalizeEncoding'))
         {
             $vars['normalize_encoding'] = $this->_vcl_sub_normalize_encoding();
         }
-        if (Mage::getStoreConfig('turpentine_vcl/normalization/user_agent'))
+        if (Mage::getStoreFlag(self::CONFIG_EXTENSION_NORMALIZATION_USERAGENT, 'bNormalizeUserAgent'))
         {
             $vars['normalize_user_agent'] = $this->_vcl_sub_normalize_user_agent();
         }
-        if (Mage::getStoreConfig('turpentine_vcl/normalization/host'))
+        if (Mage::getStoreFlag(self::CONFIG_EXTENSION_NORMALIZATION_HOST, 'bNormalizeHost'))
         {
             $vars['normalize_host'] = $this->_vcl_sub_normalize_host();
         }
