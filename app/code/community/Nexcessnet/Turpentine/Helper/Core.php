@@ -1,5 +1,7 @@
 <?php
 
+namespace Nexcessnet\Turpentine;
+
 class Nexcessnet_Turpentine_Helper_Core extends Mage_Core_Helper_Abstract
 {
     /**

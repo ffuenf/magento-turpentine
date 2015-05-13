@@ -18,6 +18,8 @@
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+namespace Nexcessnet\Turpentine;
+
 class Nexcessnet_Turpentine_Varnish_ManagementController extends Mage_Adminhtml_Controller_Action
 {
 

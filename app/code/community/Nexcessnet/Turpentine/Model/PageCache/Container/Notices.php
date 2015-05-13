@@ -18,6 +18,8 @@
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+namespace Nexcessnet\Turpentine;
+
 class Nexcessnet_Turpentine_Model_PageCache_Container_Notices extends Enterprise_PageCache_Model_Container_Abstract
 {
 

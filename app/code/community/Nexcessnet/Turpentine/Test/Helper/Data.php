@@ -6,6 +6,8 @@
 * @package   Nexcessnet_Turpentine
 */
 
+namespace Nexcessnet\Turpentine;
+
 class Nexcessnet_Turpentine_Test_Helper_Data extends EcomDev_PHPUnit_Test_Case
 {
 

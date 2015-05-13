@@ -18,11 +18,11 @@
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-require_once(dirname($_SERVER['argv'][0]) . '/abstract.php');
-
 namespace Nexcessnet\Turpentine;
 
-class Turpentine_Shell_Varnishadm extends Mage_Shell_Abstract {
+require_once(dirname($_SERVER['argv'][0]) . '/abstract.php');
+
+class Nexcessnet_Turpentine_Shell_Varnishadm extends Mage_Shell_Abstract {
     /**
      * Get the real cleaned argv
      * 
@@ -78,5 +78,5 @@ USAGE;
     }
 }
 
-$shell = new Turpentine_Shell_Varnishadm();
+$shell = new Nexcessnet_Turpentine_Shell_Varnishadm();
 $shell->run();

@@ -62,6 +62,9 @@
 * @method array ban()
 * @method array ban_list()
 */
+
+namespace Nexcessnet\Turpentine;
+
 class Nexcessnet_Turpentine_Model_Varnish_Admin_Socket
 {
 

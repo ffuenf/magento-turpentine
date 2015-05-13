@@ -8,6 +8,9 @@
 *
 * @author Oleksandr Velykzhanin <alexander.velykzhanin@flagbit.de>
 */
+
+namespace Nexcessnet\Turpentine;
+
 class Nexcessnet_Turpentine_Model_UrlCacheStatus extends Mage_Core_Model_Abstract
 {
 
