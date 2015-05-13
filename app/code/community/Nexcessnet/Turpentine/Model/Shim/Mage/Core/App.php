@@ -58,7 +58,7 @@ class Nexcessnet_Turpentine_Model_Shim_Mage_Core_App extends Mage_Core_Model_App
      * @param string $method name of the method to call
      * @return Nexcessnet_Turpentine_Model_Shim_Mage_Core_App
      */
-    public function shim_addEventObserver($area, $eventName, $obsName,$type=null, $class=null, $method=null)
+    public function shim_addEventObserver($area, $eventName, $obsName, $type = null, $class = null, $method = null)
     {
         $eventConfig = new Varien_Simplexml_Config();
         $eventConfig->loadDom($this->_shim_getEventDom($area, $eventName, $obsName, $type, $class, $method));
@@ -100,7 +100,7 @@ class Nexcessnet_Turpentine_Model_Shim_Mage_Core_App extends Mage_Core_Model_App
      * @param string $method
      * @return DOMDocument
      */
-    protected function _shim_getEventDom($area, $eventName, $obsName, $type=null, $class=null, $method=null)
+    protected function _shim_getEventDom($area, $eventName, $obsName, $type = null, $class = null, $method = null)
     {
         $dom = new DOMDocument('1.0');
         $config = $dom->createElement('config');
