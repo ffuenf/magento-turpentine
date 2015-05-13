@@ -338,10 +338,10 @@ class Nexcessnet_Turpentine_Model_Varnish_Admin_Socket
     }
 
     /**
-    * Establish a connection to the configured Varnish instance
-    *
-    * @return boolean
-    */
+     * Establish a connection to the configured Varnish instance
+     *
+     * @return boolean
+     */
     protected function _connect()
     {
         $this->_varnishConn = fsockopen($this->_host, $this->_port, $errno, $errstr, $this->_timeout);
@@ -383,12 +383,10 @@ class Nexcessnet_Turpentine_Model_Varnish_Admin_Socket
         {
             // Varnish before 3.0 does not spit out a version number
             return '2.1';
-        }
-        elseif (preg_match(self::REGEXP_VARNISH_VERSION, $bannerText[4], $matches) === 1)
+        } elseif (preg_match(self::REGEXP_VARNISH_VERSION, $bannerText[4], $matches) === 1)
         {
             return $matches['vmajor'] . '.' . $matches['vminor'];
-        }
-        else
+        } else
         {
             Mage::throwException('Unable to detect varnish version');
         }
@@ -500,12 +498,12 @@ class Nexcessnet_Turpentine_Model_Varnish_Admin_Socket
     }
 
     /**
-    * [_command description]
-    * @param  string  $verb       command name
-    * @param  integer $okCode code that indicates command was successful
-    * @param  string  ...         command args
-    * @return array
-    */
+     * [_command description]
+     * @param  string  $verb       command name
+     * @param  integer $okCode code that indicates command was successful
+     * @param  string  ...         command args
+     * @return array
+     */
     protected function _command($verb, $okCode = 200)
     {
         $params = func_get_args();

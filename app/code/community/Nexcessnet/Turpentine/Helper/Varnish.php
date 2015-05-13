@@ -39,78 +39,78 @@ class Nexcessnet_Turpentine_Helper_Varnish extends Nexcessnet_Turpentine_Helper_
     protected $bVarnishDebugEnabled;
 
     /**
-    * Get whether Varnish caching is enabled or not
-    *
-    * @return bool
-    */
+     * Get whether Varnish caching is enabled or not
+     *
+     * @return bool
+     */
     public function getVarnishEnabled()
     {
         return Mage::app()->useCache($this->getMageCacheName());
     }
 
     /**
-    * Get whether Varnish debugging is enabled or not
-    *
-    * @return bool
-    */
+     * Get whether Varnish debugging is enabled or not
+     *
+     * @return bool
+     */
     public function getVarnishDebugEnabled()
     {
         return $this->getStoreFlag(self::CONFIG_EXTENSION_VARNISHDEBUG, 'bVarnishDebugEnabled');
     }
 
     /**
-    * Check if the request passed through Varnish (has the correct secret
-    * handshake header)
-    *
-    * @return boolean
-    */
+     * Check if the request passed through Varnish (has the correct secret
+     * handshake header)
+     *
+     * @return boolean
+     */
     public function isRequestFromVarnish()
     {
         return $this->getSecretHandshake() == Mage::app()->getRequest()->getHeader('X-Turpentine-Secret-Handshake');
     }
 
     /**
-    * Check if Varnish should be used for this request
-    *
-    * @return bool
-    */
+     * Check if Varnish should be used for this request
+     *
+     * @return bool
+     */
     public function shouldResponseUseVarnish()
     {
         return $this->getVarnishEnabled() && $this->isRequestFromVarnish();
     }
 
     /**
-    * Get the secret handshake value
-    *
-    * @return string
-    */
+     * Get the secret handshake value
+     *
+     * @return string
+     */
     public function getSecretHandshake()
     {
         return '1';
         /**
-        * If we use the below code for the secret handshake, it will make the
-        * secret handshake not-forgable but will break multistore setups that
-        * don't share the same encryption key, which it turns out is a common
-        * use case, even though it is kind of a hack and really shouldn't be
-        * done. Fortunately forging the secret handshake shouldn't really be
-        * a security vulnerability since it won't show any information that
-        * wouldn't be available anyways (like debug headers), it would just
-        * cause ESI injection despite the request not passing through Varnish
-        * for ESI parsing/handling.
-        */
+         * If we use the below code for the secret handshake, it will make the
+         * secret handshake not-forgable but will break multistore setups that
+         * don't share the same encryption key, which it turns out is a common
+         * use case, even though it is kind of a hack and really shouldn't be
+         * done. Fortunately forging the secret handshake shouldn't really be
+         * a security vulnerability since it won't show any information that
+         * wouldn't be available anyways (like debug headers), it would just
+         * cause ESI injection despite the request not passing through Varnish
+         * for ESI parsing/handling.
+         */
         // return Mage::helper('turpentine/data')->secureHash(
         //     Mage::getStoreConfig('turpentine_varnish/servers/auth_key'));
     }
 
     /**
-    * Get a Varnish management socket
-    *
-    * @param  string $host           [description]
-    * @param  string|int $port           [description]
-    * @param  string $secretKey [description]
-    * @param  string $version   [description]
-    * @return Nexcessnet_Turpentine_Model_Varnish_Admin_Socket
-    */
+     * Get a Varnish management socket
+     *
+     * @param  string $host           [description]
+     * @param  string|int $port           [description]
+     * @param  string $secretKey [description]
+     * @param  string $version   [description]
+     * @return Nexcessnet_Turpentine_Model_Varnish_Admin_Socket
+     */
     public function getSocket($host, $port, $secretKey = null, $version = null)
     {
         $socket = Mage::getModel('turpentine/varnish_admin_socket', array('host' => $host, 'port' => $port));

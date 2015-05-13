@@ -47,34 +47,34 @@ class Nexcessnet_Turpentine_Helper_Cron extends Nexcessnet_Turpentine_Helper_Cor
     }
 
     /**
-    * Get the max execution time (or 0 if unlimited)
-    *
-    * @return int
-    */
+     * Get the max execution time (or 0 if unlimited)
+     *
+     * @return int
+     */
     public function getAllowedRunTime()
     {
         return (int)ini_get('max_execution_time');
     }
 
     /**
-    * Add a single URL to the queue, returns whether it was actually added
-    * to the queue or not (false if it was already in the queue)
-    *
-    * @param string $url
-    * @return integer
-    */
+     * Add a single URL to the queue, returns whether it was actually added
+     * to the queue or not (false if it was already in the queue)
+     *
+     * @param string $url
+     * @return integer
+     */
     public function addUrlToCrawlerQueue($url)
     {
         return $this->addUrlsToCrawlerQueue(array($url));
     }
 
     /**
-    * Add a list of URLs to the queue, returns how many unique URLs were
-    * actually added to the queue
-    *
-    * @param array $urls
-    * @return int
-    */
+     * Add a list of URLs to the queue, returns how many unique URLs were
+     * actually added to the queue
+     *
+     * @param array $urls
+     * @return int
+     */
     public function addUrlsToCrawlerQueue(array $urls)
     {
         // TODO: remove this debug message

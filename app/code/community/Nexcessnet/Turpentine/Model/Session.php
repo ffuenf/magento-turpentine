@@ -76,10 +76,10 @@ class Nexcessnet_Turpentine_Model_Session extends Mage_Core_Model_Session_Abstra
     }
 
     /**
-    * Retrieve the stored messages
-    *
-    * @return array
-    */
+     * Retrieve the stored messages
+     *
+     * @return array
+     */
     public function getMessages($clear = false)
     {
         $messages = $this->getData('messages');

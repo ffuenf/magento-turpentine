@@ -91,11 +91,11 @@ class Nexcessnet_Turpentine_Model_UrlCacheStatus extends Mage_Core_Model_Abstrac
     }
 
     /**
-    * Get next expire_at date for url
-    *
-    * @param string $url
-    * @return Zend_Date
-    */
+     * Get next expire_at date for url
+     *
+     * @param string $url
+     * @return Zend_Date
+     */
     public function getNextExpireAtDate($url)
     {
         $currentTimestamp = Mage::getSingleton('core/date')->gmtTimestamp();

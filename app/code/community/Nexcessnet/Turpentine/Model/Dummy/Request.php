@@ -43,8 +43,7 @@ class Nexcessnet_Turpentine_Model_Dummy_Request extends Mage_Core_Controller_Req
         try
         {
             parent::__construct($uri);
-        }
-        catch (Exception $e)
+        } catch (Exception $e)
         {
             Mage::helper('turpentine/debug')->logError('Bad URI given to dummy request: ' . $uri);
             Mage::helper('turpentine/debug')->logBackTrace();
@@ -267,7 +266,7 @@ class Nexcessnet_Turpentine_Model_Dummy_Request extends Mage_Core_Controller_Req
      * @param string $requestUri
      * @return Zend_Controller_Request_Http
      */
-    public function setRequestUri($requestUri=null)
+    public function setRequestUri($requestUri = null)
     {
         if ($requestUri === null)
         {

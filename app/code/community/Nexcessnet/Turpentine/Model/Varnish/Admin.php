@@ -52,8 +52,7 @@ class Nexcessnet_Turpentine_Model_Varnish_Admin
                 // We don't use "ban_url" here, because we want to do lurker friendly bans.
                 // Lurker friendly bans get cleaned up, so they don't slow down Varnish.
                 $socket->ban('obj.http.X-Varnish-URL', '~', $subPattern);
-            }
-            catch (Mage_Core_Exception $e)
+            } catch (Mage_Core_Exception $e)
             {
                 $result[$socketName] = $e->getMessage();
                 continue;
@@ -90,8 +89,7 @@ class Nexcessnet_Turpentine_Model_Varnish_Admin
             try
             {
                 call_user_func_array(array($socket, 'ban'), $args);
-            }
-            catch (Mage_Core_Exception $e)
+            } catch (Mage_Core_Exception $e)
             {
                 $result[$socketName] = $e->getMessage();
                 continue;
@@ -138,8 +136,7 @@ class Nexcessnet_Turpentine_Model_Varnish_Admin
                     $socket->vcl_inline($vclName, $vcl);
                     sleep(1); //this is probably not really needed
                     $socket->vcl_use($vclName);
-                }
-                catch (Mage_Core_Exception $e)
+                } catch (Mage_Core_Exception $e)
                 {
                     $result[$socketName] = $e->getMessage();
                     continue;

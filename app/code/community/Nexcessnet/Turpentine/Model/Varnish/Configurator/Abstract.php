@@ -34,8 +34,7 @@ abstract class Nexcessnet_Turpentine_Model_Varnish_Configurator_Abstract
         try
         {
             $version = $socket->getVersion();
-        }
-        catch (Mage_Core_Exception $e)
+        } catch (Mage_Core_Exception $e)
         {
             Mage::getSingleton('core/session')->addError('Error determining Varnish version: ' . $e->getMessage());
             return null;

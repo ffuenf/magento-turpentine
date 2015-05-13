@@ -135,11 +135,11 @@ class Nexcessnet_Turpentine_Block_Core_Messages extends Mage_Core_Block_Messages
     }
 
     /**
-    * Override this in case some dumb layout decides to use it instead of the
-    * standard toHtml stuff
-    *
-    * @return string
-    */
+     * Override this in case some dumb layout decides to use it instead of the
+     * standard toHtml stuff
+     *
+     * @return string
+     */
     public function getHtml($type = self::NO_SINGLE_RENDER_TYPE)
     {
         $this->_singleRenderType = $type;
@@ -147,34 +147,34 @@ class Nexcessnet_Turpentine_Block_Core_Messages extends Mage_Core_Block_Messages
     }
 
     /**
-    * Override this in case some dumb layout decides to use it directly instead
-    * of the standard toHtml stuff (i.e. most of core magento)
-    *
-    * @return string
-    */
+     * Override this in case some dumb layout decides to use it directly instead
+     * of the standard toHtml stuff (i.e. most of core magento)
+     *
+     * @return string
+     */
     public function getGroupedHtml()
     {
         return $this->_handleDirectCall('getGroupedHtml')->toHtml();
     }
 
     /**
-    * Add used storage type
-    *
-    * Method added for compatibility with Magento 1.5
-    *
-    * @param string $type
-    */
+     * Add used storage type
+     *
+     * Method added for compatibility with Magento 1.5
+     *
+     * @param string $type
+     */
     public function addStorageType($type)
     {
         $this->_usedStorageTypes[] = $type;
     }
 
     /**
-    * Load layout options
-    *
-    * @param string $methodCalled
-    * @return Nexcessnet_Turpentine_Block_Core_Messages
-    */
+     * Load layout options
+     *
+     * @param string $methodCalled
+     * @return Nexcessnet_Turpentine_Block_Core_Messages
+     */
     protected function _handleDirectCall($methodCalled)
     {
         // this doesn't actually do anything because _real_toHtml() won't be

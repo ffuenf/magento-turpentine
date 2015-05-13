@@ -35,8 +35,7 @@ class Nexcessnet_Turpentine_Helper_Debug extends Nexcessnet_Turpentine_Helper_Co
             try
             {
                 $message = vsprintf(@$args[0], @array_slice($args, 1));
-            }
-            catch (Exception $e)
+            } catch (Exception $e)
             {
                 return parent::__call($name, $args);
             }
@@ -94,11 +93,11 @@ class Nexcessnet_Turpentine_Helper_Debug extends Nexcessnet_Turpentine_Helper_Co
     }
 
     /**
-    * Log a backtrace, can pass a already generated backtrace to use
-    *
-    * @param  array $backTrace
-    * @return null
-    */
+     * Log a backtrace, can pass a already generated backtrace to use
+     *
+     * @param  array $backTrace
+     * @return null
+     */
     public function logBackTrace($backTrace = null)
     {
         if (is_null($backTrace))
@@ -119,11 +118,11 @@ class Nexcessnet_Turpentine_Helper_Debug extends Nexcessnet_Turpentine_Helper_Co
     }
 
     /**
-    * Like var_dump to the log
-    *
-    * @param  mixed $value
-    * @return null
-    */
+     * Like var_dump to the log
+     *
+     * @param  mixed $value
+     * @return null
+     */
     public function logValue($value, $name = null)
     {
         if (is_null($name))

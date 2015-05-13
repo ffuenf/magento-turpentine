@@ -82,124 +82,124 @@ class Nexcessnet_Turpentine_Helper_Esi extends Nexcessnet_Turpentine_Helper_Core
     }
 
     /**
-    * Get the name of the URL param that holds the ESI block hash
-    *
-    * @return string
-    */
+     * Get the name of the URL param that holds the ESI block hash
+     *
+     * @return string
+     */
     public function getEsiDataParam()
     {
         return self::ESI_DATA_PARAM;
     }
 
     /**
-    * Get the URL param name for the ESI block cache type
-    *
-    * @return string
-    */
+     * Get the URL param name for the ESI block cache type
+     *
+     * @return string
+     */
     public function getEsiCacheTypeParam()
     {
         return self::ESI_CACHE_TYPE_PARAM;
     }
 
     /**
-    * Get the URL param name for the ESI block scope
-    *
-    * @return string
-    */
+     * Get the URL param name for the ESI block scope
+     *
+     * @return string
+     */
     public function getEsiScopeParam()
     {
         return self::ESI_SCOPE_PARAM;
     }
 
     /**
-    * Get the URL param name for the ESI block TTL
-    *
-    * @return string
-    */
+     * Get the URL param name for the ESI block TTL
+     *
+     * @return string
+     */
     public function getEsiTtlParam()
     {
         return self::ESI_TTL_PARAM;
     }
 
     /**
-    * Get the URL param name for the ESI inclusion method
-    *
-    * @return string
-    */
+     * Get the URL param name for the ESI inclusion method
+     *
+     * @return string
+     */
     public function getEsiMethodParam()
     {
         return self::ESI_METHOD_PARAM;
     }
 
     /**
-    * Get the URL param name for the ESI HMAC
-    *
-    * @return string
-    */
+     * Get the URL param name for the ESI HMAC
+     *
+     * @return string
+     */
     public function getEsiHmacParam()
     {
         return self::ESI_HMAC_PARAM;
     }
 
     /**
-    * Get referrer param
-    *
-    * @return string
-    */
+     * Get referrer param
+     *
+     * @return string
+     */
     public function getEsiReferrerParam()
     {
         return Mage_Core_Controller_Varien_Action::PARAM_NAME_BASE64_URL;
     }
 
     /**
-    * Get whether ESI debugging is enabled or not
-    *
-    * @return bool
-    */
+     * Get whether ESI debugging is enabled or not
+     *
+     * @return bool
+     */
     public function getEsiDebugEnabled()
     {
         return Mage::helper('turpentine/varnish')->getVarnishDebugEnabled();
     }
 
     /**
-    * Get whether block name logging is enabled or not
-    *
-    * @return bool
-    */
+     * Get whether block name logging is enabled or not
+     *
+     * @return bool
+     */
     public function getEsiBlockLogEnabled()
     {
         return $this->getStoreFlag(self::CONFIG_EXTENSION_BLOCKDEBUG, 'bEsiBlockLogEnabled');
     }
 
     /**
-    * Check if the flash messages are enabled and we're not in the admin section
-    *
-    * @return bool
-    */
+     * Check if the flash messages are enabled and we're not in the admin section
+     *
+     * @return bool
+     */
     public function shouldFixFlashMessages()
     {
         return Mage::helper('turpentine/data')->useFlashMessagesFix() && Mage::app()->getStore()->getCode() !== 'admin';
     }
 
     /**
-    * Get URL for redirects and dummy requests
-    *
-    * @return string
-    */
+     * Get URL for redirects and dummy requests
+     *
+     * @return string
+     */
     public function getDummyUrl()
     {
         return Mage::getUrl('checkout/cart');
     }
 
     /**
-    * Get mock request
-    *
-    * Used to pretend that the request was for the base URL instead of
-    * turpentine/esi/getBlock while rendering ESI blocks. Not perfect, but may
-    * be good enough
-    *
-    * @return Mage_Core_Controller_Request_Http
-    */
+     * Get mock request
+     *
+     * Used to pretend that the request was for the base URL instead of
+     * turpentine/esi/getBlock while rendering ESI blocks. Not perfect, but may
+     * be good enough
+     *
+     * @return Mage_Core_Controller_Request_Http
+     */
     public function getDummyRequest($url = null)
     {
         if ($url === null)
@@ -212,20 +212,20 @@ class Nexcessnet_Turpentine_Helper_Esi extends Nexcessnet_Turpentine_Helper_Core
     }
 
     /**
-    * Get the cache type Magento uses
-    *
-    * @return string
-    */
+     * Get the cache type Magento uses
+     *
+     * @return string
+     */
     public function getMageCacheName()
     {
         return self::MAGE_CACHE_NAME;
     }
 
     /**
-    * Get the list of cache clear events to include with every ESI block
-    *
-    * @return string[]
-    */
+     * Get the list of cache clear events to include with every ESI block
+     *
+     * @return string[]
+     */
     public function getDefaultCacheClearEvents()
     {
         $events = array('customer_login', 'customer_logout');
@@ -233,10 +233,10 @@ class Nexcessnet_Turpentine_Helper_Esi extends Nexcessnet_Turpentine_Helper_Core
     }
 
     /**
-    * Get the list of events that should cause the ESI cache to be cleared
-    *
-    * @return string[]
-    */
+     * Get the list of events that should cause the ESI cache to be cleared
+     *
+     * @return string[]
+     */
     public function getCacheClearEvents()
     {
         Varien_Profiler::start('turpentine::helper::esi::getCacheClearEvents');
