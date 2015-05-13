@@ -21,8 +21,7 @@
 class Nexcessnet_Turpentine_Block_Management extends Mage_Adminhtml_Block_Template
 {
 
-    public function __construct()
-    {
+    public function __construct() {
         $this->_controller = 'varnish_management';
         // $this->setTemplate('turpentine/varnish_management.phtml');
         parent::__construct();
@@ -33,8 +32,7 @@ class Nexcessnet_Turpentine_Block_Management extends Mage_Adminhtml_Block_Templa
      *
      * @return string
      */
-    public function getFlushAllUrl()
-    {
+    public function getFlushAllUrl() {
         return $this->getUrl('*/varnish_management/flushAll');
     }
 
@@ -43,8 +41,7 @@ class Nexcessnet_Turpentine_Block_Management extends Mage_Adminhtml_Block_Templa
      *
      * @return string
      */
-    public function getFlushPartialUrl()
-    {
+    public function getFlushPartialUrl() {
         return $this->getUrl('*/varnish_management/flushPartial');
     }
 
@@ -53,8 +50,7 @@ class Nexcessnet_Turpentine_Block_Management extends Mage_Adminhtml_Block_Templa
      *
      * @return string
      */
-    public function getFlushContentTypeUrl()
-    {
+    public function getFlushContentTypeUrl() {
         return $this->getUrl('*/varnish_management/flushContentType');
     }
 
@@ -63,8 +59,7 @@ class Nexcessnet_Turpentine_Block_Management extends Mage_Adminhtml_Block_Templa
      *
      * @return string
      */
-    public function getApplyConfigUrl()
-    {
+    public function getApplyConfigUrl() {
         return $this->getUrl('*/varnish_management/applyConfig');
     }
 
@@ -73,8 +68,7 @@ class Nexcessnet_Turpentine_Block_Management extends Mage_Adminhtml_Block_Templa
      *
      * @return string
      */
-    public function getSaveConfigUrl()
-    {
+    public function getSaveConfigUrl() {
         return $this->getUrl('*/varnish_management/saveConfig');
     }
 
@@ -83,8 +77,7 @@ class Nexcessnet_Turpentine_Block_Management extends Mage_Adminhtml_Block_Templa
      *
      * @return string
      */
-    public function getGetConfigUrl()
-    {
+    public function getGetConfigUrl() {
         return $this->getUrl('*/varnish_management/getConfig');
     }
 
@@ -94,8 +87,7 @@ class Nexcessnet_Turpentine_Block_Management extends Mage_Adminhtml_Block_Templa
      * @param string $type
      * @return string
      */
-    public function getSwitchNavigationUrl($type)
-    {
+    public function getSwitchNavigationUrl($type) {
         return $this->getUrl('*/varnish_management/switchNavigation', array('type' => $type));
     }
 }

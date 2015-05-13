@@ -21,8 +21,7 @@
 class Nexcessnet_Turpentine_Block_Catalog_Product_List_Toolbar extends Mage_Catalog_Block_Product_List_Toolbar
 {
 
-    public function _construct()
-    {
+    public function _construct() {
         parent::_construct();
         $this->disableParamsMemorizing();
         // Remove params that may have been memorized before this fix was active.

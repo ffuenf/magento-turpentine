@@ -14,47 +14,38 @@ class TurpentineUrlCacheStatus extends Mage_Shell_Abstract
      * 1. If we have "part" defined - refresh cache for that part (ids are got from file)
      * 2. If we don't have "ids" - execute instances with ids
      */
-    public function run()
-    {
-        if ($this->getArg('help'))
-        {
+    public function run() {
+        if ($this->getArg('help')) {
             echo $this->usageHelp();
             return;
         }
-        if (!Mage::helper('turpentine/varnish')->getVarnishEnabled() || !Mage::helper('turpentine/crawler')->getSmartCrawlerEnabled())
-        {
+        if (!Mage::helper('turpentine/varnish')->getVarnishEnabled() || !Mage::helper('turpentine/crawler')->getSmartCrawlerEnabled()) {
             echo "Varnish or smart crawler is disabled";
             return;
         }
-        if ($this->getArg('part'))
-        {
+        if ($this->getArg('part')) {
             $this->runPart((int)$this->getArg('part'));
             return;
         }
         $this->createInstances();
     }
 
-    public function createInstances()
-    {
+    public function createInstances() {
         $instancesCount = self::INSTANCES_COUNT;
-        if ($this->getArg('instances'))
-        {
+        if ($this->getArg('instances')) {
             $instancesCount = (int)$this->getArg('instances');
         }
         $limit = self::LIMIT;
-        if ($this->getArg('limit'))
-        {
+        if ($this->getArg('limit')) {
             $limit = (int)$this->getArg('limit');
         }
         $instanceNumber = 1;
         $collection = $this->_getCollection($limit, $instanceNumber);
         $lastPage   = $collection->getLastPageNumber();
-        while ($instanceNumber <= $instancesCount && $instanceNumber <= $lastPage)
-        {
+        while ($instanceNumber <= $instancesCount && $instanceNumber <= $lastPage) {
             $ids = array();
             $collection = $this->_getCollection($limit, $instanceNumber);
-            foreach ($collection as $item)
-            {
+            foreach ($collection as $item) {
                 $ids[] = $item->getId();
             }
             do
@@ -71,17 +62,14 @@ class TurpentineUrlCacheStatus extends Mage_Shell_Abstract
      *
      * @return Nexcessnet_Turpentine_Model_Resource_Mysql4_UrlCacheStatus_Collection
      */
-    protected function _getCollection($pageSize = null, $page = null)
-    {
+    protected function _getCollection($pageSize = null, $page = null) {
         $collection = Mage::getModel('turpentine/urlCacheStatus')->getCollection();
         $collection->addFieldToFilter('expire_at', array('lteq' => Mage::getSingleton('core/date')->gmtDate()))
             ->setOrder('expire_at', 'ASC');
-        if (!is_null($pageSize))
-        {
+        if (!is_null($pageSize)) {
             $collection->setPageSize($pageSize);
         }
-        if (!is_null($page))
-        {
+        if (!is_null($page)) {
             $collection->setCurPage($page);
         }
         return $collection;
@@ -95,11 +83,9 @@ class TurpentineUrlCacheStatus extends Mage_Shell_Abstract
      *
      * @return bool
      */
-    protected function _createInstance($instanceNumber, $ids)
-    {
+    protected function _createInstance($instanceNumber, $ids) {
         $idsFile = $this->_getIdsFile($instanceNumber, 'w');
-        if (!$idsFile)
-        {
+        if (!$idsFile) {
             Mage::helper('turpentine/debug')->logInfo("Instance with number {$instanceNumber} already running");
             return false;
         }
@@ -115,11 +101,9 @@ class TurpentineUrlCacheStatus extends Mage_Shell_Abstract
      *
      * @param $number
      */
-    public function runPart($number)
-    {
+    public function runPart($number) {
         $idsFile = $this->_getIdsFile($number);
-        if (!$idsFile)
-        {
+        if (!$idsFile) {
             Mage::helper('turpentine/debug')->logInfo("Crawler part file is locked {$number}");
             return;
         }
@@ -129,13 +113,11 @@ class TurpentineUrlCacheStatus extends Mage_Shell_Abstract
             ->setOrder('expire_at', 'ASC')
                 ->addFieldToFilter('entity_id', array('in' => $ids));
         /** @var Nexcessnet_Turpentine_Model_UrlCacheStatus $urlCacheStatus */
-        foreach ($collection as $urlCacheStatus)
-        {
+        foreach ($collection as $urlCacheStatus) {
             try
             {
                 $urlCacheStatus->refreshCache();
-            } catch (Exception $e)
-            {
+            } catch (Exception $e) {
                 Mage::helper('turpentine/debug')->logWarn($e->getMessage());
                 echo $e->getMessage();
             }
@@ -151,14 +133,12 @@ class TurpentineUrlCacheStatus extends Mage_Shell_Abstract
      *
      * @return bool|resource
      */
-    protected function _getIdsFile($number, $mode = 'r')
-    {
+    protected function _getIdsFile($number, $mode = 'r') {
         $number   = (int)$number;
         $locksDir = Mage::getConfig()->getVarDir('turpentine/locks');
         $lockName = $locksDir . DS . sprintf(self::LOCK_FILE_PATTERN, $number);
         $lockFile = fopen($lockName, $mode);
-        if (!$this->_lockFile($lockFile))
-        {
+        if (!$this->_lockFile($lockFile)) {
             return false;
         }
         return $lockFile;
@@ -171,11 +151,9 @@ class TurpentineUrlCacheStatus extends Mage_Shell_Abstract
      *
      * @return bool
      */
-    protected function _lockFile($file)
-    {
+    protected function _lockFile($file) {
         $result = false;
-        if (flock($file, LOCK_EX | LOCK_NB))
-        {
+        if (flock($file, LOCK_EX | LOCK_NB)) {
             $result = true;
         }
         return $result;
@@ -186,8 +164,7 @@ class TurpentineUrlCacheStatus extends Mage_Shell_Abstract
      *
      * @return string
      */
-    public function usageHelp()
-    {
+    public function usageHelp() {
         return <<<USAGE
             Usage:  php turpentineUrlCacheStatus.php -- [options]
         --instances <count>           Create "count" instances for warmup (optional, default 10)

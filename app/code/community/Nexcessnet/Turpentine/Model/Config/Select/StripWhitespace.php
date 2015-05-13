@@ -21,8 +21,7 @@
 class Nexcessnet_Turpentine_Model_Config_Select_stripWhitespace
 {
     
-    public function toOptionArray()
-    {
+    public function toOptionArray() {
         $helper = Mage::helper('turpentine');
         return array(
             array('value' => 'always', 'label' => $helper->__('Always')),

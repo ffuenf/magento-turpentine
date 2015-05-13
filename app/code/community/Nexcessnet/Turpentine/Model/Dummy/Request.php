@@ -36,20 +36,17 @@ class Nexcessnet_Turpentine_Model_Dummy_Request extends Mage_Core_Controller_Req
      * @return void
      * @throws Zend_Controller_Request_Exception when invalid URI passed
      */
-    public function __construct($uri = null)
-    {
+    public function __construct($uri = null) {
         $this->_initFakeSuperGlobals();
         $this->_fixupFakeSuperGlobals($uri);
         try
         {
             parent::__construct($uri);
-        } catch (Exception $e)
-        {
+        } catch (Exception $e) {
             Mage::helper('turpentine/debug')->logError('Bad URI given to dummy request: ' . $uri);
             Mage::helper('turpentine/debug')->logBackTrace();
             Mage::logException($e);
-            if (Mage::helper('turpentine/esi')->getEsiDebugEnabled())
-            {
+            if (Mage::helper('turpentine/esi')->getEsiDebugEnabled()) {
                 throw $e;
             }
         }
@@ -63,10 +60,8 @@ class Nexcessnet_Turpentine_Model_Dummy_Request extends Mage_Core_Controller_Req
      * @param string $key
      * @return mixed
      */
-    public function __get($key)
-    {
-        switch (true)
-        {
+    public function __get($key) {
+        switch (true) {
             case isset($this->_params[$key]):
             return $this->_params[$key];
             case isset($this->GET[$key]):
@@ -94,10 +89,8 @@ class Nexcessnet_Turpentine_Model_Dummy_Request extends Mage_Core_Controller_Req
      * @param string $key
      * @return boolean
      */
-    public function __isset($key)
-    {
-        switch (true)
-        {
+    public function __isset($key) {
+        switch (true) {
             case isset($this->_params[$key]):
             return true;
             case isset($this->GET[$key]):
@@ -122,17 +115,13 @@ class Nexcessnet_Turpentine_Model_Dummy_Request extends Mage_Core_Controller_Req
      * @param  null|mixed $value
      * @return Zend_Controller_Request_Http
      */
-    public function setQuery($spec, $value = null)
-    {
-        if ((null === $value) && !is_array($spec))
-        {
+    public function setQuery($spec, $value = null) {
+        if ((null === $value) && !is_array($spec)) {
             #require_once 'Zend/Controller/Exception.php';
             throw new Zend_Controller_Exception('Invalid value passed to setQuery(); must be either array of values or key/value pair');
         }
-        if ((null === $value) && is_array($spec))
-        {
-            foreach ($spec as $key => $value)
-            {
+        if ((null === $value) && is_array($spec)) {
+            foreach ($spec as $key => $value) {
                 $this->setQuery($key, $value);
             }
             return $this;
@@ -151,10 +140,8 @@ class Nexcessnet_Turpentine_Model_Dummy_Request extends Mage_Core_Controller_Req
      * @param mixed $default Default value to use if key not found
      * @return mixed Returns null if key does not exist
      */
-    public function getQuery($key = null, $default = null)
-    {
-        if (null === $key)
-        {
+    public function getQuery($key = null, $default = null) {
+        if (null === $key) {
             return $this->GET;
         }
         return (isset($this->GET[$key])) ? $this->GET[$key] : $default;
@@ -170,10 +157,8 @@ class Nexcessnet_Turpentine_Model_Dummy_Request extends Mage_Core_Controller_Req
      * @param mixed $default Default value to use if key not found
      * @return mixed Returns null if key does not exist
      */
-    public function getPost($key = null, $default = null)
-    {
-        if (null === $key)
-        {
+    public function getPost($key = null, $default = null) {
+        if (null === $key) {
             return $this->POST;
         }
         return (isset($this->POST[$key])) ? $this->POST[$key] : $default;
@@ -188,10 +173,8 @@ class Nexcessnet_Turpentine_Model_Dummy_Request extends Mage_Core_Controller_Req
      * @param mixed $default Default value to use if key not found
      * @return mixed Returns null if key does not exist
      */
-    public function getServer($key = null, $default = null)
-    {
-        if (null === $key)
-        {
+    public function getServer($key = null, $default = null) {
+        if (null === $key) {
             return $this->SERVER;
         }
         return (isset($this->SERVER[$key])) ? $this->SERVER[$key] : $default;
@@ -206,10 +189,8 @@ class Nexcessnet_Turpentine_Model_Dummy_Request extends Mage_Core_Controller_Req
      * @param mixed $default Default value to use if key not found
      * @return mixed Returns null if key does not exist
      */
-    public function getEnv($key = null, $default = null)
-    {
-        if (null === $key)
-        {
+    public function getEnv($key = null, $default = null) {
+        if (null === $key) {
             return $this->ENV;
         }
         return (isset($this->ENV[$key])) ? $this->ENV[$key] : $default;
@@ -224,10 +205,8 @@ class Nexcessnet_Turpentine_Model_Dummy_Request extends Mage_Core_Controller_Req
      * @return string|false HTTP header value, or false if not found
      * @throws Zend_Controller_Request_Exception
      */
-    public function getHeader($header)
-    {
-        if (empty($header))
-        {
+    public function getHeader($header) {
+        if (empty($header)) {
             #require_once 'Zend/Controller/Request/Exception.php';
             throw new Zend_Controller_Request_Exception('An HTTP header name is required');
         }
@@ -238,18 +217,14 @@ class Nexcessnet_Turpentine_Model_Dummy_Request extends Mage_Core_Controller_Req
         }
         // This seems to be the only way to get the Authorization header on
         // Apache
-        if (function_exists('apache_request_headers'))
-        {
+        if (function_exists('apache_request_headers')) {
             $headers = apache_request_headers();
-            if (isset($headers[$header]))
-            {
+            if (isset($headers[$header])) {
                 return $headers[$header];
             }
             $header = strtolower($header);
-            foreach ($headers as $key => $value)
-            {
-                if (strtolower($key) == $header)
-                {
+            foreach ($headers as $key => $value) {
+                if (strtolower($key) == $header) {
                     return $value;
                 }
             }
@@ -266,12 +241,9 @@ class Nexcessnet_Turpentine_Model_Dummy_Request extends Mage_Core_Controller_Req
      * @param string $requestUri
      * @return Zend_Controller_Request_Http
      */
-    public function setRequestUri($requestUri = null)
-    {
-        if ($requestUri === null)
-        {
-            if (isset($this->SERVER['HTTP_X_REWRITE_URL']))
-            { // check this first so IIS will catch
+    public function setRequestUri($requestUri = null) {
+        if ($requestUri === null) {
+            if (isset($this->SERVER['HTTP_X_REWRITE_URL'])) { // check this first so IIS will catch
                 $requestUri = $this->SERVER['HTTP_X_REWRITE_URL'];
             } elseif (
             // IIS7 with URL Rewrite: make sure we get the unencoded url (double slash problem)
@@ -279,37 +251,30 @@ class Nexcessnet_Turpentine_Model_Dummy_Request extends Mage_Core_Controller_Req
                 && $this->SERVER['IIS_WasUrlRewritten'] == '1'
                     && isset($this->SERVER['UNENCODED_URL'])
                         && $this->SERVER['UNENCODED_URL'] != ''
-                            )
-            {
+                            ) {
                 $requestUri = $this->SERVER['UNENCODED_URL'];
-            } elseif (isset($this->SERVER['REQUEST_URI']))
-            {
+            } elseif (isset($this->SERVER['REQUEST_URI'])) {
                 $requestUri = $this->SERVER['REQUEST_URI'];
                 // Http proxy reqs setup request uri with scheme and host [and port] + the url path, only use url path
                 $schemeAndHttpHost = $this->getScheme() . '://' . $this->getHttpHost();
-                if (strpos($requestUri, $schemeAndHttpHost) === 0)
-                {
+                if (strpos($requestUri, $schemeAndHttpHost) === 0) {
                     $requestUri = substr($requestUri, strlen($schemeAndHttpHost));
                 }
-            } elseif (isset($this->SERVER['ORIG_PATH_INFO']))
-            { // IIS 5.0, PHP as CGI
+            } elseif (isset($this->SERVER['ORIG_PATH_INFO'])) { // IIS 5.0, PHP as CGI
                 $requestUri = $this->SERVER['ORIG_PATH_INFO'];
-                if (!empty($this->SERVER['QUERY_STRING']))
-                {
+                if (!empty($this->SERVER['QUERY_STRING'])) {
                     $requestUri .= '?' . $this->SERVER['QUERY_STRING'];
                 }
             } else
             {
                 return $this;
             }
-        } elseif (!is_string($requestUri))
-        {
+        } elseif (!is_string($requestUri)) {
             return $this;
         } else
         {
             // Set GET items, if available
-            if (false !== ($pos = strpos($requestUri, '?')))
-            {
+            if (false !== ($pos = strpos($requestUri, '?'))) {
                 // Get key => value pairs and set $_GET
                 $query = substr($requestUri, $pos + 1);
                 parse_str($query, $vars);
@@ -340,23 +305,17 @@ class Nexcessnet_Turpentine_Model_Dummy_Request extends Mage_Core_Controller_Req
      * @param mixed $baseUrl
      * @return Zend_Controller_Request_Http
      */
-    public function setBaseUrl($baseUrl = null)
-    {
-        if ((null !== $baseUrl) && !is_string($baseUrl))
-        {
+    public function setBaseUrl($baseUrl = null) {
+        if ((null !== $baseUrl) && !is_string($baseUrl)) {
             return $this;
         }
-        if ($baseUrl === null)
-        {
+        if ($baseUrl === null) {
             $filename = (isset($this->SERVER['SCRIPT_FILENAME'])) ? basename($this->SERVER['SCRIPT_FILENAME']) : '';
-            if (isset($this->SERVER['SCRIPT_NAME']) && basename($this->SERVER['SCRIPT_NAME']) === $filename)
-            {
+            if (isset($this->SERVER['SCRIPT_NAME']) && basename($this->SERVER['SCRIPT_NAME']) === $filename) {
                 $baseUrl = $this->SERVER['SCRIPT_NAME'];
-            } elseif (isset($this->SERVER['PHP_SELF']) && basename($this->SERVER['PHP_SELF']) === $filename)
-            {
+            } elseif (isset($this->SERVER['PHP_SELF']) && basename($this->SERVER['PHP_SELF']) === $filename) {
                 $baseUrl = $this->SERVER['PHP_SELF'];
-            } elseif (isset($this->SERVER['ORIG_SCRIPT_NAME']) && basename($this->SERVER['ORIG_SCRIPT_NAME']) === $filename)
-            {
+            } elseif (isset($this->SERVER['ORIG_SCRIPT_NAME']) && basename($this->SERVER['ORIG_SCRIPT_NAME']) === $filename) {
                 $baseUrl = $this->SERVER['ORIG_SCRIPT_NAME']; // 1and1 shared hosting compatibility
             } else
             {
@@ -378,26 +337,22 @@ class Nexcessnet_Turpentine_Model_Dummy_Request extends Mage_Core_Controller_Req
             }
             // Does the baseUrl have anything in common with the request_uri?
             $requestUri = $this->getRequestUri();
-            if (0 === strpos($requestUri, $baseUrl))
-            {
+            if (0 === strpos($requestUri, $baseUrl)) {
                 // full $baseUrl matches
                 $this->_baseUrl = $baseUrl;
                 return $this;
             }
-            if (0 === strpos($requestUri, dirname($baseUrl)))
-            {
+            if (0 === strpos($requestUri, dirname($baseUrl))) {
                 // directory portion of $baseUrl matches
                 $this->_baseUrl = rtrim(dirname($baseUrl), '/');
                 return $this;
             }
             $truncatedRequestUri = $requestUri;
-            if (($pos = strpos($requestUri, '?')) !== false)
-            {
+            if (($pos = strpos($requestUri, '?')) !== false) {
                 $truncatedRequestUri = substr($requestUri, 0, $pos);
             }
             $basename = basename($baseUrl);
-            if (empty($basename) || !strpos($truncatedRequestUri, $basename))
-            {
+            if (empty($basename) || !strpos($truncatedRequestUri, $basename)) {
                 // no match whatsoever; set it blank
                 $this->_baseUrl = '';
                 return $this;
@@ -406,8 +361,7 @@ class Nexcessnet_Turpentine_Model_Dummy_Request extends Mage_Core_Controller_Req
             // out of baseUrl. $pos !== 0 makes sure it is not matching a value
             // from PATH_INFO or QUERY_STRING
             if ((strlen($requestUri) >= strlen($baseUrl))
-                && ((false !== ($pos = strpos($requestUri, $baseUrl))) && ($pos !== 0)))
-            {
+                && ((false !== ($pos = strpos($requestUri, $baseUrl))) && ($pos !== 0))) {
                 $baseUrl = substr($requestUri, 0, $pos + strlen($baseUrl));
             }
         }
@@ -421,27 +375,22 @@ class Nexcessnet_Turpentine_Model_Dummy_Request extends Mage_Core_Controller_Req
      * @param string|null $basePath
      * @return Zend_Controller_Request_Http
      */
-    public function setBasePath($basePath = null)
-    {
-        if ($basePath === null)
-        {
+    public function setBasePath($basePath = null) {
+        if ($basePath === null) {
             $filename = (isset($this->SERVER['SCRIPT_FILENAME'])) ? basename($this->SERVER['SCRIPT_FILENAME']) : '';
             $baseUrl = $this->getBaseUrl();
-            if (empty($baseUrl))
-            {
+            if (empty($baseUrl)) {
                 $this->_basePath = '';
                 return $this;
             }
-            if (basename($baseUrl) === $filename)
-            {
+            if (basename($baseUrl) === $filename) {
                 $basePath = dirname($baseUrl);
             } else
             {
                 $basePath = $baseUrl;
             }
         }
-        if (substr(PHP_OS, 0, 3) === 'WIN')
-        {
+        if (substr(PHP_OS, 0, 3) === 'WIN') {
             $basePath = str_replace('\\', '/', $basePath);
         }
         $this->_basePath = rtrim($basePath, '/');
@@ -461,18 +410,14 @@ class Nexcessnet_Turpentine_Model_Dummy_Request extends Mage_Core_Controller_Req
      * @param mixed $default Default value to use if key not found
      * @return mixed
      */
-    public function getParam($key, $default = null)
-    {
+    public function getParam($key, $default = null) {
         $keyName = (null !== ($alias = $this->getAlias($key))) ? $alias : $key;
         $paramSources = $this->getParamSources();
-        if (isset($this->_params[$keyName]))
-        {
+        if (isset($this->_params[$keyName])) {
             return $this->_params[$keyName];
-        } elseif (in_array('_GET', $paramSources) && (isset($this->GET[$keyName])))
-        {
+        } elseif (in_array('_GET', $paramSources) && (isset($this->GET[$keyName]))) {
             return $this->GET[$keyName];
-        } elseif (in_array('_POST', $paramSources) && (isset($this->POST[$keyName])))
-        {
+        } elseif (in_array('_POST', $paramSources) && (isset($this->POST[$keyName]))) {
             return $this->POST[$keyName];
         }
         return $default;
@@ -487,16 +432,13 @@ class Nexcessnet_Turpentine_Model_Dummy_Request extends Mage_Core_Controller_Req
      *
      * @return array
      */
-    public function getParams()
-    {
+    public function getParams() {
         $return = $this->_params;
         $paramSources = $this->getParamSources();
-        if (in_array('_GET', $paramSources) && isset($this->GET) && is_array($this->GET))
-        {
+        if (in_array('_GET', $paramSources) && isset($this->GET) && is_array($this->GET)) {
             $return += $this->GET;
         }
-        if (in_array('_POST', $paramSources) && isset($this->POST) && is_array($this->POST))
-        {
+        if (in_array('_POST', $paramSources) && isset($this->POST) && is_array($this->POST)) {
             $return += $this->POST;
         }
         return $return;
@@ -508,14 +450,11 @@ class Nexcessnet_Turpentine_Model_Dummy_Request extends Mage_Core_Controller_Req
      * @param bool $trimPort
      * @return string
      */
-    public function getHttpHost($trimPort = true)
-    {
-        if (!isset($this->SERVER['HTTP_HOST']))
-        {
+    public function getHttpHost($trimPort = true) {
+        if (!isset($this->SERVER['HTTP_HOST'])) {
             return false;
         }
-        if ($trimPort)
-        {
+        if ($trimPort) {
             $host = explode(':', $this->SERVER['HTTP_HOST']);
             return $host[0];
         }
@@ -530,10 +469,8 @@ class Nexcessnet_Turpentine_Model_Dummy_Request extends Mage_Core_Controller_Req
      *
      * @return Mage_Core_Controller_Request_Http
      */
-    public function setPost($key, $value = null)
-    {
-        if (is_array($key))
-        {
+    public function setPost($key, $value = null) {
+        if (is_array($key)) {
             $this->POST = $key;
         } else
         {
@@ -547,8 +484,7 @@ class Nexcessnet_Turpentine_Model_Dummy_Request extends Mage_Core_Controller_Req
      *
      * @return null
      */
-    protected function _initFakeSuperGlobals()
-    {
+    protected function _initFakeSuperGlobals() {
         $this->GET = array();
         $this->POST = $_POST;
         $this->SERVER = $_SERVER;
@@ -561,12 +497,10 @@ class Nexcessnet_Turpentine_Model_Dummy_Request extends Mage_Core_Controller_Req
      * @param  string $uri
      * @return null
      */
-    protected function _fixupFakeSuperGlobals($uri)
-    {
+    protected function _fixupFakeSuperGlobals($uri) {
         $parsedUrl = parse_url($uri);
         $this->SERVER['REQUEST_URI'] = $parsedUrl['path'];
-        if (isset($parsedUrl['query']) && $parsedUrl['query'])
-        {
+        if (isset($parsedUrl['query']) && $parsedUrl['query']) {
             $this->SERVER['QUERY_STRING'] = $parsedUrl['query'];
             $this->SERVER['REQUEST_URI'] .= '?' . $this->SERVER['QUERY_STRING'];
         } else
@@ -574,14 +508,12 @@ class Nexcessnet_Turpentine_Model_Dummy_Request extends Mage_Core_Controller_Req
             $this->SERVER['QUERY_STRING'] = null;
         }
         parse_str($this->SERVER['QUERY_STRING'], $this->GET);
-        if (isset($this->SERVER['SCRIPT_URI']))
-        {
+        if (isset($this->SERVER['SCRIPT_URI'])) {
             $start = strpos($this->SERVER['SCRIPT_URI'], '/', 9);
             $sub = substr($this->SERVER['SCRIPT_URI'], $start);
             $this->SERVER['SCRIPT_URI'] = substr($this->SERVER['SCRIPT_URI'], 0, $start) . @str_replace($this->SERVER['SCRIPT_URL'], $parsedUrl['path'], $sub, $c = 1);
         }
-        if (isset($this->SERVER['SCRIPT_URL']))
-        {
+        if (isset($this->SERVER['SCRIPT_URL'])) {
             $this->SERVER['SCRIPT_URL'] = $parsedUrl['path'];
         }
     }
@@ -595,16 +527,12 @@ class Nexcessnet_Turpentine_Model_Dummy_Request extends Mage_Core_Controller_Req
      *
      * @return null
      */
-    public function fakeRouterDispatch()
-    {
-        if ($this->_cmsRouterMatch())
-        {
+    public function fakeRouterDispatch() {
+        if ($this->_cmsRouterMatch()) {
             Mage::helper('turpentine/debug')->logDebug('Matched router: cms');
-        } elseif ($this->_standardRouterMatch())
-        {
+        } elseif ($this->_standardRouterMatch()) {
             Mage::helper('turpentine/debug')->logDebug('Matched router: standard');
-        } elseif ($this->_defaultRouterMatch())
-        {
+        } elseif ($this->_defaultRouterMatch()) {
             Mage::helper('turpentine/debug')->logDebug('Matched router: default');
         } else
         {
@@ -617,17 +545,14 @@ class Nexcessnet_Turpentine_Model_Dummy_Request extends Mage_Core_Controller_Req
      *
      * @return boolean
      */
-    protected function _defaultRouterMatch()
-    {
+    protected function _defaultRouterMatch() {
         $noRoute = explode('/', Mage::app()->getStore()->getConfig('web/default/no_route'));
         $moduleName = isset($noRoute[0]) ? $noRoute[0] : 'core';
         $controllerName = isset($noRoute[1]) ? $noRoute[1] : 'index';
         $actionName = isset($noRoute[2]) ? $noRoute[2] : 'index';
-        if (Mage::app()->getStore()->isAdmin())
-        {
+        if (Mage::app()->getStore()->isAdmin()) {
             $adminFrontName = (string)Mage::getConfig()->getNode('admin/routers/adminhtml/args/frontName');
-            if ($adminFrontName != $moduleName)
-            {
+            if ($adminFrontName != $moduleName) {
                 $moduleName = 'core';
                 $controllerName = 'index';
                 $actionName = 'noRoute';
@@ -645,14 +570,12 @@ class Nexcessnet_Turpentine_Model_Dummy_Request extends Mage_Core_Controller_Req
      *
      * @return bool
      */
-    protected function _standardRouterMatch()
-    {
+    protected function _standardRouterMatch() {
         $router = Mage::app()->getFrontController()->getRouter('standard');
         // $router->fetchDefault();
         $front = $router->getFront();
         $path = trim($this->getPathInfo(), '/');
-        if ($path)
-        {
+        if ($path) {
             $p = explode('/', $path);
         } else
         {
@@ -660,13 +583,11 @@ class Nexcessnet_Turpentine_Model_Dummy_Request extends Mage_Core_Controller_Req
             $p = explode('/', Mage::getStoreConfig('web/default/front'));
         }
         // get module name
-        if ($this->getModuleName())
-        {
+        if ($this->getModuleName()) {
             $module = $this->getModuleName();
         } else
         {
-            if (!empty($p[0]))
-            {
+            if (!empty($p[0])) {
                 $module = $p[0];
             } else
             {
@@ -674,10 +595,8 @@ class Nexcessnet_Turpentine_Model_Dummy_Request extends Mage_Core_Controller_Req
                 $this->setAlias(Mage_Core_Model_Url_Rewrite::REWRITE_REQUEST_PATH_ALIAS, '');
             }
         }
-        if (!$module)
-        {
-            if (Mage::app()->getStore()->isAdmin())
-            {
+        if (!$module) {
+            if (Mage::app()->getStore()->isAdmin()) {
                 $module = 'admin';
             } else
             {
@@ -695,17 +614,14 @@ class Nexcessnet_Turpentine_Model_Dummy_Request extends Mage_Core_Controller_Req
          * Going through modules to find appropriate controller
          */
         $found = false;
-        foreach ($modules as $realModule)
-        {
+        foreach ($modules as $realModule) {
             $this->setRouteName($router->getRouteByFrontName($module));
             // get controller name
-            if ($this->getControllerName())
-            {
+            if ($this->getControllerName()) {
                 $controller = $this->getControllerName();
             } else
             {
-                if (!empty($p[1]))
-                {
+                if (!empty($p[1])) {
                     $controller = $p[1];
                 } else
                 {
@@ -714,10 +630,8 @@ class Nexcessnet_Turpentine_Model_Dummy_Request extends Mage_Core_Controller_Req
                 }
             }
             // get action name
-            if (empty($action))
-            {
-                if ($this->getActionName())
-                {
+            if (empty($action)) {
+                if ($this->getActionName()) {
                     $action = $this->getActionName();
                 } else
                 {
@@ -729,33 +643,27 @@ class Nexcessnet_Turpentine_Model_Dummy_Request extends Mage_Core_Controller_Req
 
             // $controllerClassName = $router->_validateControllerClassName($realModule, $controller);
             $controllerClassName = $router->getControllerClassName($realModule, $controller);
-            if (!$controllerClassName)
-            {
+            if (!$controllerClassName) {
                 continue;
             } else
             {
                 $controllerFileName = $router->getControllerFileName($realModule, $controller);
-                if (!$router->validateControllerFileName($controllerFileName))
-                {
+                if (!$router->validateControllerFileName($controllerFileName)) {
                     return false;
                 }
-                if (!class_exists($controllerClassName, false))
-                {
-                    if (!file_exists($controllerFileName))
-                    {
+                if (!class_exists($controllerClassName, false)) {
+                    if (!file_exists($controllerFileName)) {
                         return false;
                     }
                     include_once $controllerFileName;
-                    if (!class_exists($controllerClassName, false))
-                    {
+                    if (!class_exists($controllerClassName, false)) {
                         throw Mage::exception('Mage_Core', Mage::helper('core')->__('Controller file was loaded but class does not exist'));
                     }
                 }
             }
             // instantiate controller class
             $controllerInstance = Mage::getControllerInstance($controllerClassName, $this, $front->getResponse());
-            if (!$controllerInstance->hasAction($action))
-            {
+            if (!$controllerInstance->hasAction($action)) {
                 continue;
             }
             $found = true;
@@ -764,8 +672,7 @@ class Nexcessnet_Turpentine_Model_Dummy_Request extends Mage_Core_Controller_Req
         /**
          * if we did not found any suitable
          */
-        if (!$found)
-        {
+        if (!$found) {
             /*
             if ($router->_noRouteShouldBeApplied()) {
             $controller = 'index';
@@ -794,8 +701,7 @@ class Nexcessnet_Turpentine_Model_Dummy_Request extends Mage_Core_Controller_Req
         $this->setActionName($action);
         $this->setControllerModule($realModule);
         // set parameters from pathinfo
-        for ($i = 3, $l = sizeof($p); $i < $l; $i += 2)
-        {
+        for ($i = 3, $l = sizeof($p); $i < $l; $i += 2) {
             $this->setParam($p[$i], isset($p[$i + 1]) ? urldecode($p[$i + 1]) : '');
         }
         // dispatch action
@@ -809,15 +715,13 @@ class Nexcessnet_Turpentine_Model_Dummy_Request extends Mage_Core_Controller_Req
      *
      * @return bool
      */
-    protected function _cmsRouterMatch()
-    {
+    protected function _cmsRouterMatch() {
         $router = Mage::app()->getFrontController()->getRouter('cms');
         $identifier = trim($this->getPathInfo(), '/');
         $condition = new Varien_Object(array('identifier' => $identifier, 'continue' => true));
         Mage::dispatchEvent('cms_controller_router_match_before', array('router' => $router, 'condition' => $condition));
         $identifier = $condition->getIdentifier();
-        if ($condition->getRedirectUrl())
-        {
+        if ($condition->getRedirectUrl()) {
             Mage::app()->getFrontController()
                 ->getResponse()
                     ->setRedirect($condition->getRedirectUrl())
@@ -825,14 +729,12 @@ class Nexcessnet_Turpentine_Model_Dummy_Request extends Mage_Core_Controller_Req
             $this->setDispatched(true);
             return true;
         }
-        if (!$condition->getContinue())
-        {
+        if (!$condition->getContinue()) {
             return false;
         }
         $page   = Mage::getModel('cms/page');
         $pageId = $page->checkIdentifier($identifier, Mage::app()->getStore()->getId());
-        if (!$pageId)
-        {
+        if (!$pageId) {
             return false;
         }
         $this->setModuleName('cms')

@@ -40,8 +40,7 @@ class Nexcessnet_Turpentine_Helper_Cron extends Nexcessnet_Turpentine_Helper_Cor
      *
      * @return int
      */
-    public function getRunTime()
-    {
+    public function getRunTime() {
         $usage = getrusage();
         return $usage['ru_utime.tv_sec'];
     }
@@ -51,8 +50,7 @@ class Nexcessnet_Turpentine_Helper_Cron extends Nexcessnet_Turpentine_Helper_Cor
      *
      * @return int
      */
-    public function getAllowedRunTime()
-    {
+    public function getAllowedRunTime() {
         return (int)ini_get('max_execution_time');
     }
 
@@ -63,8 +61,7 @@ class Nexcessnet_Turpentine_Helper_Cron extends Nexcessnet_Turpentine_Helper_Cor
      * @param string $url
      * @return integer
      */
-    public function addUrlToCrawlerQueue($url)
-    {
+    public function addUrlToCrawlerQueue($url) {
         return $this->addUrlsToCrawlerQueue(array($url));
     }
 
@@ -75,13 +72,10 @@ class Nexcessnet_Turpentine_Helper_Cron extends Nexcessnet_Turpentine_Helper_Cor
      * @param array $urls
      * @return int
      */
-    public function addUrlsToCrawlerQueue(array $urls)
-    {
+    public function addUrlsToCrawlerQueue(array $urls) {
         // TODO: remove this debug message
-        if ($this->getCrawlerDebugEnabled())
-        {
-            foreach ($urls as $url)
-            {
+        if ($this->getCrawlerDebugEnabled()) {
+            foreach ($urls as $url) {
                 Mage::helper('turpentine/debug')->log('Adding URL to queue: %s', $url);
             }
         }
@@ -97,8 +91,7 @@ class Nexcessnet_Turpentine_Helper_Cron extends Nexcessnet_Turpentine_Helper_Cor
      *
      * @return string|null
      */
-    public function getNextUrl()
-    {
+    public function getNextUrl() {
         $urls = $this->_readUrlQueue();
         $nextUrl = array_shift($urls);
         $this->_writeUrlQueue($urls);
@@ -110,8 +103,7 @@ class Nexcessnet_Turpentine_Helper_Cron extends Nexcessnet_Turpentine_Helper_Cor
      *
      * @return array
      */
-    public function getUrlQueue()
-    {
+    public function getUrlQueue() {
         return $this->_readUrlQueue();
     }
 
@@ -120,10 +112,8 @@ class Nexcessnet_Turpentine_Helper_Cron extends Nexcessnet_Turpentine_Helper_Cor
      *
      * @return Varien_Http_Client
      */
-    public function getCrawlerClient()
-    {
-        if (is_null($this->_crawlerClient))
-        {
+    public function getCrawlerClient() {
+        if (is_null($this->_crawlerClient)) {
             $this->_crawlerClient = new Varien_Http_Client(null, array(
                 'useragent' => sprintf(
                 'Nexcessnet_Turpentine/%s Magento/%s Varien_Http_Client',
@@ -141,8 +131,7 @@ class Nexcessnet_Turpentine_Helper_Cron extends Nexcessnet_Turpentine_Helper_Cor
      *
      * @return bool
      */
-    public function getCrawlerEnabled()
-    {
+    public function getCrawlerEnabled() {
         return Mage::getStoreConfig('turpentine_varnish/general/crawler_enable');
     }
 
@@ -151,8 +140,7 @@ class Nexcessnet_Turpentine_Helper_Cron extends Nexcessnet_Turpentine_Helper_Cor
      *
      * @return bool
      */
-    public function getCrawlerDebugEnabled()
-    {
+    public function getCrawlerDebugEnabled() {
         return Mage::getStoreConfig('turpentine_varnish/general/crawler_debug');
     }
 
@@ -161,30 +149,25 @@ class Nexcessnet_Turpentine_Helper_Cron extends Nexcessnet_Turpentine_Helper_Cor
      *
      * @return array
      */
-    public function getAllUrls()
-    {
+    public function getAllUrls() {
         $urls = array();
         $origStore = Mage::app()->getStore();
         $visibility = array(
             Mage_Catalog_Model_Product_Visibility::VISIBILITY_BOTH,
             Mage_Catalog_Model_Product_Visibility::VISIBILITY_IN_CATALOG,
         );
-        foreach (Mage::app()->getStores() as $storeId => $store)
-        {
+        foreach (Mage::app()->getStores() as $storeId => $store) {
             Mage::app()->setCurrentStore($store);
             $baseUrl = $store->getBaseUrl(Mage_Core_Model_Store::URL_TYPE_LINK);
             $urls[] = $baseUrl;
-            foreach (Mage::getModel('catalog/category')->getCollection($storeId)->addIsActiveFilter() as $cat)
-            {
+            foreach (Mage::getModel('catalog/category')->getCollection($storeId)->addIsActiveFilter() as $cat) {
                 $urls[] = $cat->getUrl();
-                foreach ($cat->getProductCollection($storeId)->addUrlRewrite($cat->getId())->addAttributeToFilter('visibility', $visibility) as $prod)
-                {
+                foreach ($cat->getProductCollection($storeId)->addUrlRewrite($cat->getId())->addAttributeToFilter('visibility', $visibility) as $prod) {
                     $urls[] = $prod->getProductUrl();
                 }
             }
             $sitemap = (Mage::getConfig()->getNode('modules/MageWorx_XSitemap') !== FALSE) ? 'xsitemap/cms_page' : 'sitemap/cms_page';
-            foreach (Mage::getResourceModel($sitemap)->getCollection($storeId) as $item)
-            {
+            foreach (Mage::getResourceModel($sitemap)->getCollection($storeId) as $item) {
                 $urls[] = $baseUrl . $item->getUrl();
             }
         }
@@ -198,17 +181,14 @@ class Nexcessnet_Turpentine_Helper_Cron extends Nexcessnet_Turpentine_Helper_Cor
      * @param Mage_Catalog_Model_Product $product
      * @return int
      */
-    public function addProductToCrawlerQueue($product)
-    {
+    public function addProductToCrawlerQueue($product) {
         $productUrls = array();
         $origStore = Mage::app()->getStore();
-        foreach (Mage::app()->getStores() as $storeId => $store)
-        {
+        foreach (Mage::app()->getStores() as $storeId => $store) {
             Mage::app()->setCurrentStore($store);
             $baseUrl = $store->getBaseUrl(Mage_Core_Model_Store::URL_TYPE_LINK);
             $productUrls[] = $product->getProductUrl();
-            foreach ($product->getCategoryIds() as $catId)
-            {
+            foreach ($product->getCategoryIds() as $catId) {
                 $cat = Mage::getModel('catalog/category')->load($catId);
                 $productUrls[] = rtrim($baseUrl, '/') . '/' . ltrim($product->getUrlModel()->getUrlPath($product, $cat), '/');
             }
@@ -223,12 +203,10 @@ class Nexcessnet_Turpentine_Helper_Cron extends Nexcessnet_Turpentine_Helper_Cor
      * @param Mage_Catalog_Model_Category $category
      * @return int
      */
-    public function addCategoryToCrawlerQueue($category)
-    {
+    public function addCategoryToCrawlerQueue($category) {
         $catUrls = array();
         $origStore = Mage::app()->getStore();
-        foreach (Mage::app()->getStores() as $storeId => $store)
-        {
+        foreach (Mage::app()->getStores() as $storeId => $store) {
             Mage::app()->setCurrentStore($store);
             $catUrls[] = $category->getUrl();
         }
@@ -242,13 +220,11 @@ class Nexcessnet_Turpentine_Helper_Cron extends Nexcessnet_Turpentine_Helper_Cor
      * @param int $cmsPageId
      * @return int
      */
-    public function addCmsPageToCrawlerQueue($cmsPageId)
-    {
+    public function addCmsPageToCrawlerQueue($cmsPageId) {
         $page = Mage::getModel('cms/page')->load($cmsPageId);
         $pageUrls = array();
         $origStore = Mage::app()->getStore();
-        foreach (Mage::app()->getStores() as $storeId => $store)
-        {
+        foreach (Mage::app()->getStores() as $storeId => $store) {
             Mage::app()->setCurrentStore($store);
             $page->setStoreId($storeId);
             $pageUrls[] = Mage::getUrl(null, array('_direct' => $page->getIdentifier()));
@@ -262,11 +238,9 @@ class Nexcessnet_Turpentine_Helper_Cron extends Nexcessnet_Turpentine_Helper_Cor
      *
      * @return array
      */
-    protected function _readUrlQueue()
-    {
+    protected function _readUrlQueue() {
         $readQueue = @unserialize(Mage::app()->loadCache(self::CRAWLER_URLS_CACHE_ID));
-        if (!is_array($readQueue))
-        {
+        if (!is_array($readQueue)) {
             // This is the first time the queue has been read since the last
             // cache flush (or the queue is corrupt)
             // Returning an empty array here would be the proper behavior,
@@ -284,8 +258,7 @@ class Nexcessnet_Turpentine_Helper_Cron extends Nexcessnet_Turpentine_Helper_Cor
      * @param  array  $urls
      * @return null
      */
-    protected function _writeUrlQueue(array $urls)
-    {
+    protected function _writeUrlQueue(array $urls) {
         return Mage::app()->saveCache(serialize($urls), self::CRAWLER_URLS_CACHE_ID);
     }
 }

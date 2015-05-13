@@ -36,8 +36,7 @@
 */
 class Mage_Core_Model_Session extends Mage_Core_Model_Session_Abstract
 {
-    public function __construct($data = array())
-    {
+    public function __construct($data = array()) {
         $name = isset($data['name']) ? $data['name'] : null;
         $this->init('core', $name);
     }
@@ -47,10 +46,8 @@ class Mage_Core_Model_Session extends Mage_Core_Model_Session_Abstract
      *
      * @return string A 16 bit unique key for forms
      */
-    public function getFormKey()
-    {
-        if (Mage::registry('replace_form_key') && !Mage::app()->getRequest()->getParam('form_key', false))
-        {
+    public function getFormKey() {
+        if (Mage::registry('replace_form_key') && !Mage::app()->getRequest()->getParam('form_key', false)) {
             // flag request for ESI processing
             Mage::register('turpentine_esi_flag', true, true);
             return '{{form_key_esi_placeholder}}';
@@ -60,10 +57,8 @@ class Mage_Core_Model_Session extends Mage_Core_Model_Session_Abstract
         }
     }
 
-    public function real_getFormKey()
-    {
-        if (!$this->getData('_form_key'))
-        {
+    public function real_getFormKey() {
+        if (!$this->getData('_form_key')) {
             $this->setData('_form_key', Mage::helper('core')->getRandomString(16));
         }
         return $this->getData('_form_key');

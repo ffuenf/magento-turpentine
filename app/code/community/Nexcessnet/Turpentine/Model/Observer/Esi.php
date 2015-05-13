@@ -29,11 +29,9 @@ class Nexcessnet_Turpentine_Model_Observer_Esi extends Varien_Event_Observer
      * @param  Varien_Object $eventObject
      * @return null
      */
-    public function setFlagHeaders($eventObject)
-    {
+    public function setFlagHeaders($eventObject) {
         $response = $eventObject->getResponse();
-        if (Mage::helper('turpentine/esi')->shouldResponseUseEsi())
-        {
+        if (Mage::helper('turpentine/esi')->shouldResponseUseEsi()) {
             $response->setHeader('X-Turpentine-Esi', Mage::registry('turpentine_esi_flag') ? '1' : '0');
             Mage::helper('turpentine/debug')->logDebug('Set ESI flag header to: %s', (Mage::registry('turpentine_esi_flag') ? '1' : '0'));
         }
@@ -51,19 +49,13 @@ class Nexcessnet_Turpentine_Model_Observer_Esi extends Varien_Event_Observer
      * @param  Varien_Object $eventObject
      * @return null
      */
-    public function checkCacheFlag($eventObject)
-    {
-        if (Mage::helper('turpentine/varnish')->shouldResponseUseVarnish())
-        {
+    public function checkCacheFlag($eventObject) {
+        if (Mage::helper('turpentine/varnish')->shouldResponseUseVarnish()) {
             $layoutXml = $eventObject->getLayout()->getUpdate()->asSimplexml();
-            foreach ($layoutXml->xpath('//turpentine_cache_flag') as $node)
-            {
-                foreach ($node->attributes() as $attr => $value)
-                {
-                    if ($attr == 'value')
-                    {
-                        if (!(string)$value)
-                        {
+            foreach ($layoutXml->xpath('//turpentine_cache_flag') as $node) {
+                foreach ($node->attributes() as $attr => $value) {
+                    if ($attr == 'value') {
+                        if (!(string)$value) {
                             Mage::register('turpentine_nocache_flag', true, true);
                             return; //only need to set the flag once
                         }
@@ -80,20 +72,16 @@ class Nexcessnet_Turpentine_Model_Observer_Esi extends Varien_Event_Observer
      * @param  Varien_Object $eventObject
      * @return null
      */
-    public function checkRedirectUrl($eventObject)
-    {
+    public function checkRedirectUrl($eventObject) {
         $esiHelper = Mage::helper('turpentine/esi');
         $url = $eventObject->getTransport()->getUrl();
         $referer = Mage::helper('core/http')->getHttpReferer();
         $dummyUrl = $esiHelper->getDummyUrl();
         $reqUenc = Mage::helper('core')->urlDecode(Mage::app()->getRequest()->getParam('uenc'));
-        if ($this->_checkIsEsiUrl($url))
-        {
-            if ($this->_checkIsNotEsiUrl($reqUenc) && Mage::getBaseUrl() == $url)
-            {
+        if ($this->_checkIsEsiUrl($url)) {
+            if ($this->_checkIsNotEsiUrl($reqUenc) && Mage::getBaseUrl() == $url) {
                 $newUrl = $this->_fixupUencUrl($reqUenc);
-            } elseif ($this->_checkIsNotEsiUrl($referer))
-            {
+            } elseif ($this->_checkIsNotEsiUrl($referer)) {
                 $newUrl = $referer;
             } else
             {
@@ -102,8 +90,7 @@ class Nexcessnet_Turpentine_Model_Observer_Esi extends Varien_Event_Observer
             // TODO: make sure this actually looks like a URL
             $eventObject->getTransport()->setUrl($newUrl);
         }
-        if ($eventObject->getTransport()->getUrl() != $url)
-        {
+        if ($eventObject->getTransport()->getUrl() != $url) {
             Mage::helper('turpentine/debug')->logDebug('Detected redirect to ESI URL, changing: %s => %s', $url, $eventObject->getTransport()->getUrl());
         }
     }
@@ -114,13 +101,11 @@ class Nexcessnet_Turpentine_Model_Observer_Esi extends Varien_Event_Observer
      * @param  Varien_Object $eventObject
      * @return null
      */
-    public function loadCacheClearEvents($eventObject)
-    {
+    public function loadCacheClearEvents($eventObject) {
         Varien_Profiler::start('turpentine::observer::esi::loadCacheClearEvents');
         $events = Mage::helper('turpentine/esi')->getCacheClearEvents();
         $appShim = Mage::getSingleton('turpentine/shim_mage_core_app');
-        foreach ($events as $ccEvent)
-        {
+        foreach ($events as $ccEvent) {
             $appShim->shim_addEventObserver('global', $ccEvent, 'turpentine_ban_' . $ccEvent, 'singleton', 'turpentine/observer_ban', 'banClientEsiCache');
         }
         Varien_Profiler::stop('turpentine::observer::esi::loadCacheClearEvents');
@@ -136,10 +121,8 @@ class Nexcessnet_Turpentine_Model_Observer_Esi extends Varien_Event_Observer
      * @param Varien_Object $eventObject
      * @return null
      */
-    public function addMessagesBlockRewrite($eventObject)
-    {
-        if (Mage::helper('turpentine/esi')->shouldFixFlashMessages())
-        {
+    public function addMessagesBlockRewrite($eventObject) {
+        if (Mage::helper('turpentine/esi')->shouldFixFlashMessages()) {
             Varien_Profiler::start('turpentine::observer::esi::addMessagesBlockRewrite');
             Mage::getSingleton('turpentine/shim_mage_core_app')->shim_addClassRewrite('block', 'core', 'messages', 'Nexcessnet_Turpentine_Block_Core_Messages');
             Varien_Profiler::stop('turpentine::observer::esi::addMessagesBlockRewrite');
@@ -153,13 +136,11 @@ class Nexcessnet_Turpentine_Model_Observer_Esi extends Varien_Event_Observer
      * @param Varien_Object $eventObject
      * @return null
      */
-    public function setReplaceFormKeyFlag($eventObject)
-    {
+    public function setReplaceFormKeyFlag($eventObject) {
         $esiHelper = Mage::helper('turpentine/esi');
         $varnishHelper = Mage::helper('turpentine/varnish');
         $request = Mage::app()->getRequest();
-        if ($esiHelper->shouldResponseUseEsi() && $varnishHelper->csrfFixupNeeded() && !$request->isPost())
-        {
+        if ($esiHelper->shouldResponseUseEsi() && $varnishHelper->csrfFixupNeeded() && !$request->isPost()) {
             Mage::register('replace_form_key', true);
         }
     }
@@ -170,10 +151,8 @@ class Nexcessnet_Turpentine_Model_Observer_Esi extends Varien_Event_Observer
      * @param  Varien_Object $eventObject
      * @return null
      */
-    public function replaceFormKeyPlaceholder($eventObject)
-    {
-        if (Mage::registry('replace_form_key'))
-        {
+    public function replaceFormKeyPlaceholder($eventObject) {
+        if (Mage::registry('replace_form_key')) {
             $esiHelper = Mage::helper('turpentine/esi');
             $response = $eventObject->getResponse();
             $responseBody = $response->getBody();
@@ -192,25 +171,20 @@ class Nexcessnet_Turpentine_Model_Observer_Esi extends Varien_Event_Observer
      * @param  Varien_Object $eventObject
      * @return null
      */
-    public function injectEsi($eventObject)
-    {
+    public function injectEsi($eventObject) {
         $blockObject = $eventObject->getBlock();
         $dataHelper = Mage::helper('turpentine/data');
         $esiHelper = Mage::helper('turpentine/esi');
         $debugHelper = Mage::helper('turpentine/debug');
-        if ($esiHelper->getEsiBlockLogEnabled())
-        {
+        if ($esiHelper->getEsiBlockLogEnabled()) {
             $debugHelper->logInfo('Checking ESI block candidate: %s', $blockObject->getNameInLayout());
         }
-        if ($esiHelper->shouldResponseUseEsi() && $blockObject instanceof Mage_Core_Block_Template && $esiOptions = $blockObject->getEsiOptions())
-        {
-            if (Mage::app()->getStore()->getCode() == 'admin')
-            {
+        if ($esiHelper->shouldResponseUseEsi() && $blockObject instanceof Mage_Core_Block_Template && $esiOptions = $blockObject->getEsiOptions()) {
+            if (Mage::app()->getStore()->getCode() == 'admin') {
                 // admin blocks are not allowed to be cached for now
                 $debugHelper->logWarn('Ignoring attempt to inject adminhtml block: %s', $blockObject->getNameInLayout());
                 return;
-            } elseif ($esiHelper->getEsiBlockLogEnabled())
-            {
+            } elseif ($esiHelper->getEsiBlockLogEnabled()) {
                 $debugHelper->logInfo('Block check passed, injecting block: %s', $blockObject->getNameInLayout());
             }
             Varien_Profiler::start('turpentine::observer::esi::injectEsi');
@@ -223,8 +197,7 @@ class Nexcessnet_Turpentine_Model_Observer_Esi extends Varien_Event_Observer
             $referrerParam = $esiHelper->getEsiReferrerParam();
             $esiOptions = $this->_getDefaultEsiOptions($esiOptions);
             // change the block's template to the stripped down ESI template
-            switch ($esiOptions[$methodParam])
-            {
+            switch ($esiOptions[$methodParam]) {
                 case 'ajax':
                 $blockObject->setTemplate('turpentine/ajax.phtml');
                 break;
@@ -245,24 +218,20 @@ class Nexcessnet_Turpentine_Model_Observer_Esi extends Varien_Event_Observer
                 $hmacParam => $dataHelper->getHmac($frozenData),
                 $dataParam => $frozenData,
             );
-            if ($esiOptions[$methodParam] == 'ajax')
-            {
+            if ($esiOptions[$methodParam] == 'ajax') {
                 $urlOptions['_secure'] = Mage::app()->getStore()->isCurrentlySecure();
             }
-            if ($esiOptions[$scopeParam] == 'page')
-            {
+            if ($esiOptions[$scopeParam] == 'page') {
                 $urlOptions[$referrerParam] = Mage::helper('core')->urlEncode(Mage::getUrl('*/*/*', array('_use_rewrite' => true, '_current' => true)));
             }
             $esiUrl = $esiHelper->unsecureUrl(Mage::getUrl('turpentine/esi/getBlock', $urlOptions));
             $blockObject->setEsiUrl($esiUrl);
             // avoid caching the ESI template output to prevent the double-esi-
             // include/"ESI processing not enabled" bug
-            foreach (array('lifetime', 'tags', 'key') as $dataKey)
-            {
+            foreach (array('lifetime', 'tags', 'key') as $dataKey) {
                 $blockObject->unsetData('cache_' . $dataKey);
             }
-            if (strlen($esiUrl) > 2047)
-            {
+            if (strlen($esiUrl) > 2047) {
                 Mage::helper('turpentine/debug')->logWarn('ESI url is probably too long (%d > 2047 characters): %s', strlen($esiUrl), $esiUrl);
             }
             Varien_Profiler::stop('turpentine::observer::esi::injectEsi');
@@ -276,8 +245,7 @@ class Nexcessnet_Turpentine_Model_Observer_Esi extends Varien_Event_Observer
      * @param  array $esiOptions
      * @return Varien_Object
      */
-    protected function _getEsiData($blockObject, $esiOptions)
-    {
+    protected function _getEsiData($blockObject, $esiOptions) {
         Varien_Profiler::start('turpentine::observer::esi::_getEsiData');
         $esiHelper = Mage::helper('turpentine/esi');
         $cacheTypeParam = $esiHelper->getEsiCacheTypeParam();
@@ -291,22 +259,18 @@ class Nexcessnet_Turpentine_Model_Observer_Esi extends Varien_Event_Observer
         $esiData->setBlockType(get_class($blockObject));
         $esiData->setLayoutHandles($this->_getBlockLayoutHandles($blockObject));
         $esiData->setEsiMethod($esiOptions[$methodParam]);
-        if ($esiOptions[$cacheTypeParam] == 'private')
-        {
-            if (is_array(@$esiOptions['flush_events']))
-            {
+        if ($esiOptions[$cacheTypeParam] == 'private') {
+            if (is_array(@$esiOptions['flush_events'])) {
                 $esiData->setFlushEvents(array_merge($esiHelper->getDefaultCacheClearEvents(), array_keys($esiOptions['flush_events'])));
             } else
             {
                 $esiData->setFlushEvents($esiHelper->getDefaultCacheClearEvents());
             }
         }
-        if ($esiOptions[$scopeParam] == 'page')
-        {
+        if ($esiOptions[$scopeParam] == 'page') {
             $esiData->setParentUrl(Mage::app()->getRequest()->getRequestString());
         }
-        if (is_array($esiOptions['dummy_blocks']))
-        {
+        if (is_array($esiOptions['dummy_blocks'])) {
             $esiData->setDummyBlocks($esiOptions['dummy_blocks']);
         } else
         {
@@ -314,15 +278,11 @@ class Nexcessnet_Turpentine_Model_Observer_Esi extends Varien_Event_Observer
         }
         $simpleRegistry = array();
         $complexRegistry = array();
-        if (is_array($esiOptions['registry_keys']))
-        {
-            foreach ($esiOptions['registry_keys'] as $key => $options)
-            {
+        if (is_array($esiOptions['registry_keys'])) {
+            foreach ($esiOptions['registry_keys'] as $key => $options) {
                 $value = Mage::registry($key);
-                if ($value)
-                {
-                    if (is_object($value) && $value instanceof Mage_Core_Model_Abstract)
-                    {
+                if ($value) {
+                    if (is_object($value) && $value instanceof Mage_Core_Model_Abstract) {
                         $complexRegistry[$key] = $this->_getComplexRegistryData($options, $value);
                     } else
                     {
@@ -360,8 +320,7 @@ class Nexcessnet_Turpentine_Model_Observer_Esi extends Varien_Event_Observer
      * @param  Mage_Core_Block_Template $block
      * @return array
      */
-    protected function _getBlockLayoutHandles($block)
-    {
+    protected function _getBlockLayoutHandles($block) {
         Varien_Profiler::start('turpentine::observer::esi::_getBlockLayoutHandles');
         $layout = $block->getLayout();
         $layoutXml = Mage::helper('turpentine/esi')->getLayoutXml();
@@ -370,21 +329,17 @@ class Nexcessnet_Turpentine_Model_Observer_Esi extends Varien_Event_Observer
         // default handle probably)
         $blockNode = current($layout->getNode()->xpath(sprintf('//block[@name=\'%s\']', $block->getNameInLayout())));
         $childBlocks = Mage::helper('turpentine/data')->getChildBlockNames($blockNode);
-        foreach ($childBlocks as $blockName)
-        {
-            foreach ($layout->getUpdate()->getHandles() as $handle)
-            {
+        foreach ($childBlocks as $blockName) {
+            foreach ($layout->getUpdate()->getHandles() as $handle) {
                 // check if this handle has any block or reference tags that
                 // refer to this block or a child block, unless the handle name
                 // is blank
-                if ($handle !== '' && $layoutXml->xpath(sprintf('//%s//*[@name=\'%s\']', $handle, $blockName)))
-                {
+                if ($handle !== '' && $layoutXml->xpath(sprintf('//%s//*[@name=\'%s\']', $handle, $blockName))) {
                     $activeHandles[] = $handle;
                 }
             }
         }
-        if (!$activeHandles)
-        {
+        if (!$activeHandles) {
             $activeHandles[] = 'default';
         }
         Varien_Profiler::stop('turpentine::observer::esi::_getBlockLayoutHandles');
@@ -396,8 +351,7 @@ class Nexcessnet_Turpentine_Model_Observer_Esi extends Varien_Event_Observer
      *
      * @return array
      */
-    protected function _getDefaultEsiOptions($options)
-    {
+    protected function _getDefaultEsiOptions($options) {
         $esiHelper = Mage::helper('turpentine/esi');
         $ttlParam = $esiHelper->getEsiTtlParam();
         $methodParam = $esiHelper->getEsiMethodParam();
@@ -411,12 +365,9 @@ class Nexcessnet_Turpentine_Model_Observer_Esi extends Varien_Event_Observer
         );
         $options = array_merge($defaults, $options);
         // set the default TTL
-        if (!isset($options[$ttlParam]))
-        {
-            if ($options[$cacheTypeParam] == 'private')
-            {
-                switch ($options[$methodParam])
-                {
+        if (!isset($options[$ttlParam])) {
+            if ($options[$cacheTypeParam] == 'private') {
+                switch ($options[$methodParam]) {
                     case 'ajax':
                     $options[$ttlParam] = '0';
                     break;
@@ -440,8 +391,7 @@ class Nexcessnet_Turpentine_Model_Observer_Esi extends Varien_Event_Observer
      * @param  mixed $value
      * @return array
      */
-    protected function _getComplexRegistryData($valueOptions, $value)
-    {
+    protected function _getComplexRegistryData($valueOptions, $value) {
         $idMethod = @$valueOptions['id_method'] ? $valueOptions['id_method'] : 'getId';
         $model = @$valueOptions['model'] ? $valueOptions['model'] : Mage::helper('turpentine/data')->getModelName($value);
         $data = array('model' => $model, 'id' => $value->{$idMethod}());
@@ -455,12 +405,10 @@ class Nexcessnet_Turpentine_Model_Observer_Esi extends Varien_Event_Observer
      * @param  string $uencUrl
      * @return string
      */
-    protected function _fixupUencUrl($uencUrl)
-    {
+    protected function _fixupUencUrl($uencUrl) {
         $esiHelper = Mage::helper('turpentine/esi');
         $corsOrigin = $esiHelper->getCorsOrigin();
-        if ($corsOrigin != $esiHelper->getCorsOrigin($uencUrl))
-        {
+        if ($corsOrigin != $esiHelper->getCorsOrigin($uencUrl)) {
             return $corsOrigin . parse_url($uencUrl, PHP_URL_PATH);
         } else
         {
@@ -474,8 +422,7 @@ class Nexcessnet_Turpentine_Model_Observer_Esi extends Varien_Event_Observer
      * @param  string $url
      * @return bool
      */
-    protected function _checkIsNotEsiUrl($url)
-    {
+    protected function _checkIsNotEsiUrl($url) {
         return $url && !preg_match('~/turpentine/esi/getBlock/~', $url);
     }
 
@@ -485,8 +432,7 @@ class Nexcessnet_Turpentine_Model_Observer_Esi extends Varien_Event_Observer
      * @param  string $url
      * @return bool
      */
-    protected function _checkIsEsiUrl($url)
-    {
+    protected function _checkIsEsiUrl($url) {
         return !$this->_checkIsNotEsiUrl($url);
     }
 }

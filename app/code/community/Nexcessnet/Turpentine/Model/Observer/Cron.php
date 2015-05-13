@@ -42,22 +42,17 @@ class Nexcessnet_Turpentine_Model_Observer_Cron extends Varien_Event_Observer
      * @param  Varien_Object $eventObject
      * @return null
      */
-    public function crawlUrls($eventObject)
-    {
+    public function crawlUrls($eventObject) {
         $helper = Mage::helper('turpentine/cron');
-        if ($helper->getCrawlerEnabled())
-        {
+        if ($helper->getCrawlerEnabled()) {
             $maxRunTime = $helper->getAllowedRunTime();
-            if ($maxRunTime === 0)
-            {
+            if ($maxRunTime === 0) {
                 $maxRunTime = self::MAX_CRAWL_TIME;
             }
             // just in case we have a silly short max_execution_time
             $maxRunTime = abs($maxRunTime - self::EXEC_TIME_BUFFER);
-            while (($helper->getRunTime() < $maxRunTime) && $url = $helper->getNextUrl())
-            {
-                if (!$this->_crawlUrl($url))
-                {
+            while (($helper->getRunTime() < $maxRunTime) && $url = $helper->getNextUrl()) {
+                if (!$this->_crawlUrl($url)) {
                     Mage::helper('turpentine/debug')->logWarn('Failed to crawl URL: %s', $url);
                 }
             }
@@ -70,11 +65,9 @@ class Nexcessnet_Turpentine_Model_Observer_Cron extends Varien_Event_Observer
      * @param  Varien_Object $eventObject
      * @return null
      */
-    public function queueAllUrls($eventObject)
-    {
+    public function queueAllUrls($eventObject) {
         $helper = Mage::helper('turpentine/cron');
-        if ($helper->getCrawlerEnabled())
-        {
+        if ($helper->getCrawlerEnabled()) {
             $helper->addUrlsToCrawlerQueue($helper->getAllUrls());
         }
     }
@@ -85,8 +78,7 @@ class Nexcessnet_Turpentine_Model_Observer_Cron extends Varien_Event_Observer
      * @param  string $url
      * @return bool
      */
-    protected function _crawlUrl($url)
-    {
+    protected function _crawlUrl($url) {
         $client = Mage::helper('turpentine/cron')->getCrawlerClient();
         $client->setUri($url);
         Mage::helper('turpentine/debug')->logDebug('Crawling URL: %s', $url);

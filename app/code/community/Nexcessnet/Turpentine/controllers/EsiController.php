@@ -27,8 +27,7 @@ class Nexcessnet_Turpentine_EsiController extends Mage_Core_Controller_Front_Act
      *
      * @return null
      */
-    public function indexAction()
-    {
+    public function indexAction() {
         $this->getResponse()->setRedirect(Mage::getBaseUrl());
     }
 
@@ -37,8 +36,7 @@ class Nexcessnet_Turpentine_EsiController extends Mage_Core_Controller_Front_Act
      *
      * @return null
      */
-    public function getFormKeyAction()
-    {
+    public function getFormKeyAction() {
         $resp = $this->getResponse();
         $resp->setBody(Mage::getSingleton('core/session')->real_getFormKey());
         $resp->setHeader('X-Turpentine-Cache', '1');
@@ -53,30 +51,25 @@ class Nexcessnet_Turpentine_EsiController extends Mage_Core_Controller_Front_Act
      *
      * @return null
      */
-    public function getBlockAction()
-    {
+    public function getBlockAction() {
         $resp = $this->getResponse();
         $cacheFlag = false;
-        if (Mage::helper('turpentine/esi')->shouldResponseUseEsi())
-        {
+        if (Mage::helper('turpentine/esi')->shouldResponseUseEsi()) {
             $req = $this->getRequest();
             $esiHelper = Mage::helper('turpentine/esi');
             $dataHelper = Mage::helper('turpentine/data');
             $debugHelper = Mage::helper('turpentine/debug');
             $esiDataHmac = $req->getParam($esiHelper->getEsiHmacParam());
             $esiDataParamValue = $req->getParam($esiHelper->getEsiDataParam());
-            if ($esiDataHmac !== ($hmac = $dataHelper->getHmac($esiDataParamValue)))
-            {
+            if ($esiDataHmac !== ($hmac = $dataHelper->getHmac($esiDataParamValue))) {
                 $debugHelper->logWarn('ESI data HMAC mismatch, expected (%s) but received (%s)', $hmac, $esiDataHmac);
                 $resp->setHttpResponseCode(500);
                 $resp->setBody('ESI data is not valid');
-            } elseif (!($esiDataArray = $dataHelper->thaw($esiDataParamValue)))
-            {
+            } elseif (!($esiDataArray = $dataHelper->thaw($esiDataParamValue))) {
                 $debugHelper->logWarn('Invalid ESI data in URL: %s', $esiDataParamValue);
                 $resp->setHttpResponseCode(500);
                 $resp->setBody('ESI data is not valid');
-            } elseif (!$esiHelper->getEsiDebugEnabled() && $esiDataArray['esi_method'] !== $req->getParam($esiHelper->getEsiMethodParam()))
-            {
+            } elseif (!$esiHelper->getEsiDebugEnabled() && $esiDataArray['esi_method'] !== $req->getParam($esiHelper->getEsiMethodParam())) {
                 $resp->setHttpResponseCode(403);
                 $resp->setBody('ESI method mismatch');
                 $debugHelper->logWarn('Blocking change of ESI method: %s -> %s', $esiDataArray['esi_method'], $req->getParam($esiHelper->getEsiMethodParam()));
@@ -86,8 +79,7 @@ class Nexcessnet_Turpentine_EsiController extends Mage_Core_Controller_Front_Act
                 $origRequest = Mage::app()->getRequest();
                 Mage::app()->setCurrentStore(Mage::app()->getStore($esiData->getStoreId()));
                 $appShim = Mage::getModel('turpentine/shim_mage_core_app');
-                if ($referer = $this->_getRefererUrl())
-                {
+                if ($referer = $this->_getRefererUrl()) {
                     $referer = htmlspecialchars_decode($referer);
                     $dummyRequest = Mage::helper('turpentine/esi')->getDummyRequest($referer);
                 } else
@@ -96,18 +88,14 @@ class Nexcessnet_Turpentine_EsiController extends Mage_Core_Controller_Front_Act
                 }
                 $appShim->shim_setRequest($dummyRequest);
                 $block = $this->_getEsiBlock($esiData);
-                if ($block)
-                {
+                if ($block) {
                     $blockEsiOptions = $block->getEsiOptions();
                     $block->setEsiOptions(false);
                     $resp->setBody($block->toHtml());
-                    if ((int)$req->getParam($esiHelper->getEsiTtlParam()) > 0)
-                    {
+                    if ((int)$req->getParam($esiHelper->getEsiTtlParam()) > 0) {
                         $cacheFlag = true;
-                        if (isset($blockEsiOptions['only_cache_if']))
-                        {
-                            switch ($blockEsiOptions['only_cache_if'])
-                            {
+                        if (isset($blockEsiOptions['only_cache_if'])) {
+                            switch ($blockEsiOptions['only_cache_if']) {
                                 case 'empty':
                                 $cacheFlag = ('' === $resp->getBody());
                                 break;
@@ -119,16 +107,13 @@ class Nexcessnet_Turpentine_EsiController extends Mage_Core_Controller_Front_Act
                             }
                         }
                     }
-                    if ($esiData->getEsiMethod() == 'ajax')
-                    {
+                    if ($esiData->getEsiMethod() == 'ajax') {
                         $resp->setHeader('Access-Control-Allow-Origin', $esiHelper->getCorsOrigin());
                     }
-                    if (!is_null($flushEvents = $esiData->getFlushEvents()))
-                    {
+                    if (!is_null($flushEvents = $esiData->getFlushEvents())) {
                         $resp->setHeader('X-Turpentine-Flush-Events', implode(',', $flushEvents));
                     }
-                    if ($esiHelper->getEsiDebugEnabled())
-                    {
+                    if ($esiHelper->getEsiDebugEnabled()) {
                         $resp->setHeader('X-Turpentine-Block', $block->getNameInLayout());
                     }
                 } else
@@ -154,8 +139,7 @@ class Nexcessnet_Turpentine_EsiController extends Mage_Core_Controller_Front_Act
      *
      * @return null
      */
-    public function postDispatch()
-    {
+    public function postDispatch() {
         $flag = $this->getFlag('', self::FLAG_NO_START_SESSION);
         $this->setFlag('', self::FLAG_NO_START_SESSION, true);
         parent::postDispatch();
@@ -168,19 +152,15 @@ class Nexcessnet_Turpentine_EsiController extends Mage_Core_Controller_Front_Act
      * @param  Varien_Object $esiData
      * @return Mage_Core_Block_Template|null
      */
-    protected function _getEsiBlock($esiData)
-    {
+    protected function _getEsiBlock($esiData) {
         $block = null;
         Varien_Profiler::start('turpentine::controller::esi::_getEsiBlock');
-        foreach ($esiData->getSimpleRegistry() as $key => $value)
-        {
+        foreach ($esiData->getSimpleRegistry() as $key => $value) {
             Mage::register($key, $value, true);
         }
-        foreach ($esiData->getComplexRegistry() as $key => $data)
-        {
+        foreach ($esiData->getComplexRegistry() as $key => $data) {
             $value = Mage::getModel($data['model']);
-            if (!is_object($value))
-            {
+            if (!is_object($value)) {
                 Mage::helper('turpentine/debug')->logWarn('Failed to register key/model: %s as %s(%s)', $key, $data['model'], $data['id']);
                 continue;
             } else
@@ -197,20 +177,17 @@ class Nexcessnet_Turpentine_EsiController extends Mage_Core_Controller_Front_Act
         Mage::dispatchEvent('controller_action_layout_load_before', array('action'=>$this, 'layout'=>$layout));
         $layoutUpdate = $layout->getUpdate();
         $layoutUpdate->load($this->_swapCustomerHandles($esiData->getLayoutHandles()));
-        foreach ($esiData->getDummyBlocks() as $blockName)
-        {
+        foreach ($esiData->getDummyBlocks() as $blockName) {
             $layout->createBlock('Mage_Core_Block_Template', $blockName);
         }
-        if (!$this->getFlag('', self::FLAG_NO_DISPATCH_BLOCK_EVENT))
-        {
+        if (!$this->getFlag('', self::FLAG_NO_DISPATCH_BLOCK_EVENT)) {
             Mage::dispatchEvent('controller_action_layout_generate_xml_before', array('action'=>$this, 'layout'=>$layout));
         }
         $layout->generateXml();
         /** @var Nexcessnet_Turpentine_Helper_Data $turpentineHelper */
         $turpentineHelper = Mage::helper('turpentine/data')->setLayout($layout);
         $blockNode = current($layout->getNode()->xpath(sprintf('//block[@name=\'%s\']', $esiData->getNameInLayout())));
-        if (!($blockNode instanceof Mage_Core_Model_Layout_Element))
-        {
+        if (!($blockNode instanceof Mage_Core_Model_Layout_Element)) {
             Mage::helper('turpentine/debug')->logWarn('No block node found with @name="%s"', $esiData->getNameInLayout());
             return null;
         }
@@ -218,32 +195,25 @@ class Nexcessnet_Turpentine_EsiController extends Mage_Core_Controller_Front_Act
         Mage::getModel('turpentine/shim_mage_core_layout')->shim_generateFullBlock($blockNode);
         //find addional blocks that aren't defined in the <block/> but via <reference name="%s">
         $referenceNodes = $layout->getNode()->xpath(sprintf('//reference[@name=\'%s\']', $esiData->getNameInLayout()));
-        if ($referenceNodes)
-        {
-            foreach ($referenceNodes as $referenceNode)
-            {
-                if ($referenceNode instanceof Mage_Core_Model_Layout_Element)
-                {
+        if ($referenceNodes) {
+            foreach ($referenceNodes as $referenceNode) {
+                if ($referenceNode instanceof Mage_Core_Model_Layout_Element) {
                     $referencesToGenerate = $turpentineHelper->getChildBlockNames($referenceNode);
                     $nodesToGenerate = array_merge($nodesToGenerate, $referencesToGenerate);
                 }
             }
         }
         // dispatch event for adding xml layout elements
-        if (!$this->getFlag('', self::FLAG_NO_DISPATCH_BLOCK_EVENT))
-        {
+        if (!$this->getFlag('', self::FLAG_NO_DISPATCH_BLOCK_EVENT)) {
             Mage::dispatchEvent('controller_action_layout_generate_blocks_before', array('action'=>$this, 'layout'=>$layout));
         }
-        foreach (array_unique($nodesToGenerate) as $nodeName)
-        {
-            foreach ($layout->getNode()->xpath(sprintf('//reference[@name=\'%s\']', $nodeName)) as $node)
-            {
+        foreach (array_unique($nodesToGenerate) as $nodeName) {
+            foreach ($layout->getNode()->xpath(sprintf('//reference[@name=\'%s\']', $nodeName)) as $node) {
                 $layout->generateBlocks($node);
             }
         }
         $block = $layout->getBlock($esiData->getNameInLayout());
-        if (!$this->getFlag('', self::FLAG_NO_DISPATCH_BLOCK_EVENT))
-        {
+        if (!$this->getFlag('', self::FLAG_NO_DISPATCH_BLOCK_EVENT)) {
             Mage::dispatchEvent('controller_action_layout_generate_blocks_after', array('action'=>$this, 'layout'=>$layout));
         }
         $this->_isLayoutLoaded = true;
@@ -261,17 +231,14 @@ class Nexcessnet_Turpentine_EsiController extends Mage_Core_Controller_Front_Act
      * @param  array $handles
      * @return array
      */
-    protected function _swapCustomerHandles($handles)
-    {
-        if (Mage::helper('customer')->isLoggedIn())
-        {
+    protected function _swapCustomerHandles($handles) {
+        if (Mage::helper('customer')->isLoggedIn()) {
             $replacement = array('customer_logged_out', 'customer_logged_in');
         } else
         {
             $replacement = array('customer_logged_in', 'customer_logged_out');
         }
-        if (($pos = array_search($replacement[0], $handles)) !== false)
-        {
+        if (($pos = array_search($replacement[0], $handles)) !== false) {
             $handles[$pos] = $replacement[1];
         }
         return $handles;

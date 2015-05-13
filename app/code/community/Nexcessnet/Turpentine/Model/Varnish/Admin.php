@@ -29,8 +29,7 @@ class Nexcessnet_Turpentine_Model_Varnish_Admin
      *
      * @return bool
      */
-    public function flushAll()
-    {
+    public function flushAll() {
         return $this->flushUrl('.*');
     }
 
@@ -40,33 +39,28 @@ class Nexcessnet_Turpentine_Model_Varnish_Admin
      * @param  string $subPattern regex to match against URLs
      * @return bool
      */
-    public function flushUrl($subPattern)
-    {
+    public function flushUrl($subPattern) {
         $result = array();
         $clearedFlag = false;
-        foreach (Mage::helper('turpentine/varnish')->getSockets() as $socket)
-        {
+        foreach (Mage::helper('turpentine/varnish')->getSockets() as $socket) {
             $socketName = $socket->getConnectionString();
             try
             {
                 // We don't use "ban_url" here, because we want to do lurker friendly bans.
                 // Lurker friendly bans get cleaned up, so they don't slow down Varnish.
                 $socket->ban('obj.http.X-Varnish-URL', '~', $subPattern);
-            } catch (Mage_Core_Exception $e)
-            {
+            } catch (Mage_Core_Exception $e) {
                 $result[$socketName] = $e->getMessage();
                 continue;
             }
             $result[$socketName] = true;
             $clearedFlag = true;
         }
-        if ($clearedFlag && Mage::helper('turpentine/crawler')->getSmartCrawlerEnabled())
-        {
+        if ($clearedFlag && Mage::helper('turpentine/crawler')->getSmartCrawlerEnabled()) {
             try
             {
                 Mage::getModel('turpentine/urlCacheStatus')->expireByRegex($subPattern);
-            } catch (Exception $e)
-            {
+            } catch (Exception $e) {
                 Mage::logException($e);
             }
         }
@@ -79,18 +73,15 @@ class Nexcessnet_Turpentine_Model_Varnish_Admin
      * @param  mixed ...
      * @return array
      */
-    public function flushExpression()
-    {
+    public function flushExpression() {
         $args = func_get_args();
         $result = array();
-        foreach (Mage::helper('turpentine/varnish')->getSockets() as $socket)
-        {
+        foreach (Mage::helper('turpentine/varnish')->getSockets() as $socket) {
             $socketName = $socket->getConnectionString();
             try
             {
                 call_user_func_array(array($socket, 'ban'), $args);
-            } catch (Mage_Core_Exception $e)
-            {
+            } catch (Mage_Core_Exception $e) {
                 $result[$socketName] = $e->getMessage();
                 continue;
             }
@@ -105,8 +96,7 @@ class Nexcessnet_Turpentine_Model_Varnish_Admin
      * @param  string $contentType
      * @return array
      */
-    public function flushContentType($contentType)
-    {
+    public function flushContentType($contentType) {
         return $this->flushExpression('obj.http.Content-Type', '~', $contentType);
     }
 
@@ -115,16 +105,13 @@ class Nexcessnet_Turpentine_Model_Varnish_Admin
      *
      * @return bool
      */
-    public function applyConfig()
-    {
+    public function applyConfig() {
         $result = array();
         $helper = Mage::helper('turpentine');
-        foreach (Mage::helper('turpentine/varnish')->getSockets() as $socket)
-        {
+        foreach (Mage::helper('turpentine/varnish')->getSockets() as $socket) {
             $cfgr = Nexcessnet_Turpentine_Model_Varnish_Configurator_Abstract::getFromSocket($socket);
             $socketName = $socket->getConnectionString();
-            if (is_null($cfgr))
-            {
+            if (is_null($cfgr)) {
                 $result[$socketName] = 'Failed to load configurator';
             } else
             {
@@ -136,8 +123,7 @@ class Nexcessnet_Turpentine_Model_Varnish_Admin
                     $socket->vcl_inline($vclName, $vcl);
                     sleep(1); //this is probably not really needed
                     $socket->vcl_use($vclName);
-                } catch (Mage_Core_Exception $e)
-                {
+                } catch (Mage_Core_Exception $e) {
                     $result[$socketName] = $e->getMessage();
                     continue;
                 }
@@ -152,27 +138,22 @@ class Nexcessnet_Turpentine_Model_Varnish_Admin
      *
      * @return Nexcessnet_Turpentine_Model_Varnish_Configurator_Abstract
      */
-    public function getConfigurator()
-    {
+    public function getConfigurator() {
         $sockets = Mage::helper('turpentine/varnish')->getSockets();
         $cfgr = Nexcessnet_Turpentine_Model_Varnish_Configurator_Abstract::getFromSocket($sockets[0]);
         return $cfgr;
     }
 
-    protected function _testEsiSyntaxParam($socket)
-    {
+    protected function _testEsiSyntaxParam($socket) {
         $session = Mage::getSingleton('adminhtml/session');
         $helper = Mage::helper('turpentine/varnish');
         $result = false;
-        if ($helper->csrfFixupNeeded())
-        {
-            if ($socket->getVersion() === '4.0')
-            {
+        if ($helper->csrfFixupNeeded()) {
+            if ($socket->getVersion() === '4.0') {
                 $paramName = 'feature';
                 $value = $socket->param_show($paramName);
                 $value = explode("\n", $value['text']);
-                if (isset($value[1]) && strpos($value[1], '+esi_ignore_other_elements') !== false)
-                {
+                if (isset($value[1]) && strpos($value[1], '+esi_ignore_other_elements') !== false) {
                     $result = true;
                 } else
                 {
@@ -185,11 +166,9 @@ class Nexcessnet_Turpentine_Model_Varnish_Admin
             {
                 $paramName = 'esi_syntax';
                 $value = $socket->param_show($paramName);
-                if (preg_match('~(\d)\s+\[bitmap\]~', $value['text'], $match))
-                {
+                if (preg_match('~(\d)\s+\[bitmap\]~', $value['text'], $match)) {
                     $value = hexdec($match[1]);
-                    if ($value & self::MASK_ESI_SYNTAX)
-                    { //bitwise intentional
+                    if ($value & self::MASK_ESI_SYNTAX) { //bitwise intentional
                         // setting is correct, all is fine
                         $result = true;
                     } else
@@ -201,8 +180,7 @@ class Nexcessnet_Turpentine_Model_Varnish_Admin
                     }
                 }
             }
-            if ($result === false)
-            {
+            if ($result === false) {
                 // error
                 Mage::helper('turpentine/debug')->logWarning(sprintf('Failed to parse param.show output to check %s value', $paramName));
                 $result = true;

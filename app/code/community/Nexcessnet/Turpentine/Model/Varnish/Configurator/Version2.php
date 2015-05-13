@@ -34,11 +34,9 @@ class Nexcessnet_Turpentine_Model_Varnish_Configurator_Version2 extends Nexcessn
         return $doClean ? $this->_cleanVcl($vcl) : $vcl;
     }
 
-    protected function _getAdvancedSessionValidation()
-    {
+    protected function _getAdvancedSessionValidation() {
         $validation = '';
-        foreach ($this->_getAdvancedSessionValidationTargets() as $target)
-        {
+        foreach ($this->_getAdvancedSessionValidationTargets() as $target) {
             $validation .= sprintf('set req.hash += %s;' . PHP_EOL, $target);
         }
         return $validation;

@@ -43,8 +43,7 @@ class Nexcessnet_Turpentine_Helper_Varnish extends Nexcessnet_Turpentine_Helper_
      *
      * @return bool
      */
-    public function getVarnishEnabled()
-    {
+    public function getVarnishEnabled() {
         return Mage::app()->useCache($this->getMageCacheName());
     }
 
@@ -53,8 +52,7 @@ class Nexcessnet_Turpentine_Helper_Varnish extends Nexcessnet_Turpentine_Helper_
      *
      * @return bool
      */
-    public function getVarnishDebugEnabled()
-    {
+    public function getVarnishDebugEnabled() {
         return $this->getStoreFlag(self::CONFIG_EXTENSION_VARNISHDEBUG, 'bVarnishDebugEnabled');
     }
 
@@ -64,8 +62,7 @@ class Nexcessnet_Turpentine_Helper_Varnish extends Nexcessnet_Turpentine_Helper_
      *
      * @return boolean
      */
-    public function isRequestFromVarnish()
-    {
+    public function isRequestFromVarnish() {
         return $this->getSecretHandshake() == Mage::app()->getRequest()->getHeader('X-Turpentine-Secret-Handshake');
     }
 
@@ -74,8 +71,7 @@ class Nexcessnet_Turpentine_Helper_Varnish extends Nexcessnet_Turpentine_Helper_
      *
      * @return bool
      */
-    public function shouldResponseUseVarnish()
-    {
+    public function shouldResponseUseVarnish() {
         return $this->getVarnishEnabled() && $this->isRequestFromVarnish();
     }
 
@@ -84,8 +80,7 @@ class Nexcessnet_Turpentine_Helper_Varnish extends Nexcessnet_Turpentine_Helper_
      *
      * @return string
      */
-    public function getSecretHandshake()
-    {
+    public function getSecretHandshake() {
         return '1';
         /**
          * If we use the below code for the secret handshake, it will make the
@@ -111,15 +106,12 @@ class Nexcessnet_Turpentine_Helper_Varnish extends Nexcessnet_Turpentine_Helper_
      * @param  string $version   [description]
      * @return Nexcessnet_Turpentine_Model_Varnish_Admin_Socket
      */
-    public function getSocket($host, $port, $secretKey = null, $version = null)
-    {
+    public function getSocket($host, $port, $secretKey = null, $version = null) {
         $socket = Mage::getModel('turpentine/varnish_admin_socket', array('host' => $host, 'port' => $port));
-        if ($secretKey)
-        {
+        if ($secretKey) {
             $socket->setAuthSecret($secretKey);
         }
-        if ($version)
-        {
+        if ($version) {
             $socket->setVersion($version);
         }
         return $socket;
@@ -130,20 +122,17 @@ class Nexcessnet_Turpentine_Helper_Varnish extends Nexcessnet_Turpentine_Helper_
      *
      * @return array
      */
-    public function getSockets()
-    {
+    public function getSockets() {
         $sockets = array();
         $servers = Mage::helper('turpentine/data')->cleanExplode(PHP_EOL,
         Mage::getStoreConfig('turpentine_varnish/servers/server_list'));
         $key = str_replace('\n', PHP_EOL,
         Mage::getStoreConfig('turpentine_varnish/servers/auth_key'));
         $version = Mage::getStoreConfig('turpentine_varnish/servers/version');
-        if ($version == 'auto')
-        {
+        if ($version == 'auto') {
             $version = null;
         }
-        foreach ($servers as $server)
-        {
+        foreach ($servers as $server) {
             $parts = explode(':', $server);
             $sockets[] = $this->getSocket($parts[0], $parts[1], $key, $version);
         }
@@ -155,8 +144,7 @@ class Nexcessnet_Turpentine_Helper_Varnish extends Nexcessnet_Turpentine_Helper_
      *
      * @return string
      */
-    public function getMageCacheName()
-    {
+    public function getMageCacheName() {
         return self::MAGE_CACHE_NAME;
     }
 
@@ -165,8 +153,7 @@ class Nexcessnet_Turpentine_Helper_Varnish extends Nexcessnet_Turpentine_Helper_
      *
      * @return string
      */
-    public function getDefaultTtl()
-    {
+    public function getDefaultTtl() {
         return Mage::getStoreConfig('turpentine_vcl/ttls/default_ttl');
     }
 
@@ -176,8 +163,7 @@ class Nexcessnet_Turpentine_Helper_Varnish extends Nexcessnet_Turpentine_Helper_
      *
      * @return bool
      */
-    public function shouldFixProductListToolbar()
-    {
+    public function shouldFixProductListToolbar() {
         return Mage::helper('turpentine/data')->useProductListToolbarFix() &&
             Mage::app()->getStore()->getCode() !== 'admin';
     }
@@ -187,8 +173,7 @@ class Nexcessnet_Turpentine_Helper_Varnish extends Nexcessnet_Turpentine_Helper_
      *
      * @return boolean
      */
-    public function isBypassEnabled()
-    {
+    public function isBypassEnabled() {
         $cookieName = Mage::helper('turpentine/data')->getBypassCookieName();
         $cookieValue = Mage::getModel('core/cookie')->get($cookieName);
         return $cookieValue === $this->getSecretHandshake();
@@ -199,13 +184,11 @@ class Nexcessnet_Turpentine_Helper_Varnish extends Nexcessnet_Turpentine_Helper_
      *
      * @return boolean
      */
-    public function shouldDisplayNotice()
-    {
+    public function shouldDisplayNotice() {
         return $this->getVarnishEnabled() && $this->isBypassEnabled();
     }
 
-    public function getFormKeyFixupActionsList()
-    {
+    public function getFormKeyFixupActionsList() {
         $data = Mage::getStoreConfig('turpentine_varnish/miscellaneous/formkey_fixup_actions');
         $actions = array_filter(explode(PHP_EOL, trim($data)));
         return $actions;
@@ -220,33 +203,26 @@ class Nexcessnet_Turpentine_Helper_Varnish extends Nexcessnet_Turpentine_Helper_
      *
      * @return bool
      */
-    public function csrfFixupNeeded()
-    {
+    public function csrfFixupNeeded() {
         $result = false;
         $isEnterprise = false; // ce
-        if (method_exists('Mage', 'getEdition'))
-        {
-            if (Mage::getEdition() === Mage::EDITION_ENTERPRISE)
-            {
+        if (method_exists('Mage', 'getEdition')) {
+            if (Mage::getEdition() === Mage::EDITION_ENTERPRISE) {
                 $isEnterprise = true;
             }
         } else
         {
-            if (Mage::getConfig()->getModuleConfig('Enterprise_Enterprise'))
-            {
+            if (Mage::getConfig()->getModuleConfig('Enterprise_Enterprise')) {
                 $isEnterprise = true;
             }
         }
-        if ($isEnterprise)
-        {
-            if (version_compare(Mage::getVersion(), '1.13', '>='))
-            {
+        if ($isEnterprise) {
+            if (version_compare(Mage::getVersion(), '1.13', '>=')) {
                 $result = true;
             }
         } else
         {
-            if (version_compare(Mage::getVersion(), '1.8', '>='))
-            {
+            if (version_compare(Mage::getVersion(), '1.8', '>=')) {
                 $result = true;
             }
         }
@@ -268,20 +244,16 @@ class Nexcessnet_Turpentine_Helper_Varnish extends Nexcessnet_Turpentine_Helper_
      *
      * @return array
      */
-    public function getUrlTtls()
-    {
-        if (!is_null($this->_urlTtls))
-        {
+    public function getUrlTtls() {
+        if (!is_null($this->_urlTtls)) {
             return $this->_urlTtls;
         }
         $ttls = array();
         $configTtls = Mage::helper('turpentine/data')->cleanExplode(PHP_EOL, Mage::getStoreConfig('turpentine_vcl/ttls/url_ttls'));
-        if (!count($configTtls))
-        {
+        if (!count($configTtls)) {
             return $ttls;
         }
-        foreach ($configTtls as $configTtl)
-        {
+        foreach ($configTtls as $configTtl) {
             $explodedTtlConfig = explode(',', trim($configTtl));
             $ttls[] = array(
                 'regex' => $explodedTtlConfig[0],
