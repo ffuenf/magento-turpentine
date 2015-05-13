@@ -27,7 +27,8 @@ class Nexcessnet_Turpentine_Model_Observer_Debug extends Varien_Event_Observer
      * @param  Varien_Object $eventObject
      * @return null
      */
-    public function logEvent($eventObject) {
+    public function logEvent($eventObject)
+    {
         Mage::helper('turpentine/debug')->log('EVENT: %s', $eventObject->getEvent()->getName());
     }
 
@@ -37,7 +38,8 @@ class Nexcessnet_Turpentine_Model_Observer_Debug extends Varien_Event_Observer
      * @param  Varien_Object $eventObject
      * @return null
      */
-    public function logBackTrace($eventObject) {
+    public function logBackTrace($eventObject)
+    {
         $this->logEvent($eventObject);
         Mage::helper('turpentine/debug')->logBackTrace();
     }

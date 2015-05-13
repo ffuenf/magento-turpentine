@@ -28,7 +28,8 @@ class Nexcessnet_Turpentine_Helper_Debug extends Nexcessnet_Turpentine_Helper_Co
      * @param  array $args
      * @return mixed
      */
-    public function __call($name, $args) {
+    public function __call($name, $args)
+    {
         if (substr($name, 0, 3) === 'log') {
             try
             {
@@ -48,8 +49,7 @@ class Nexcessnet_Turpentine_Helper_Debug extends Nexcessnet_Turpentine_Helper_Co
                 case 'Debug':
                 if (Mage::helper('turpentine/varnish')->getVarnishDebugEnabled()) {
                     return $this->_log(Zend_Log::DEBUG, $message);
-                } else
-                {
+                } else {
                     return;
                 }
                 default:
@@ -65,7 +65,8 @@ class Nexcessnet_Turpentine_Helper_Debug extends Nexcessnet_Turpentine_Helper_Co
      *
      * @param mixed $value
      */
-    public function dump($value) {
+    public function dump($value)
+    {
         Mage::register('turpentine_nocache_flag', true, true);
         $this->logValue($value);
         echo '<pre>' . PHP_EOL;
@@ -80,7 +81,8 @@ class Nexcessnet_Turpentine_Helper_Debug extends Nexcessnet_Turpentine_Helper_Co
      * @param  mixed  ...
      * @return null
      */
-    public function log($message) {
+    public function log($message)
+    {
         $args = func_get_args();
         return call_user_func_array(array($this, 'logDebug'), $args);
     }
@@ -91,7 +93,8 @@ class Nexcessnet_Turpentine_Helper_Debug extends Nexcessnet_Turpentine_Helper_Co
      * @param  array $backTrace
      * @return null
      */
-    public function logBackTrace($backTrace = null) {
+    public function logBackTrace($backTrace = null)
+    {
         if (is_null($backTrace)) {
             $backTrace = debug_backtrace();
             array_shift($backTrace);
@@ -113,7 +116,8 @@ class Nexcessnet_Turpentine_Helper_Debug extends Nexcessnet_Turpentine_Helper_Co
      * @param  mixed $value
      * @return null
      */
-    public function logValue($value, $name = null) {
+    public function logValue($value, $name = null)
+    {
         if (is_null($name)) {
             $name = 'VALUE';
         }
@@ -127,7 +131,8 @@ class Nexcessnet_Turpentine_Helper_Debug extends Nexcessnet_Turpentine_Helper_Co
      * @param  string $message
      * @return string
      */
-    protected function _log($level, $message) {
+    protected function _log($level, $message)
+    {
         $message = 'TURPENTINE: ' . $message;
         Mage::log($message, $level, $this->_getLogFileName());
         return $message;
@@ -137,7 +142,8 @@ class Nexcessnet_Turpentine_Helper_Debug extends Nexcessnet_Turpentine_Helper_Co
      * Get the name of the log file to use
      * @return string
      */
-    protected function _getLogFileName() {
+    protected function _getLogFileName()
+    {
         if ($this->useCustomLogFile()) {
             return $this->getCustomLogFileName();
         }
@@ -148,7 +154,8 @@ class Nexcessnet_Turpentine_Helper_Debug extends Nexcessnet_Turpentine_Helper_Co
      * Check if custom log file should be used
      * @return bool
      */
-    public function useCustomLogFile() {
+    public function useCustomLogFile()
+    {
         return Mage::getStoreConfigFlag('turpentine_varnish/logging/use_custom_log_file');
     }
 
@@ -156,7 +163,8 @@ class Nexcessnet_Turpentine_Helper_Debug extends Nexcessnet_Turpentine_Helper_Co
      * Get custom log file name
      * @return string
      */
-    public function getCustomLogFileName() {
+    public function getCustomLogFileName()
+    {
         return (string)Mage::getStoreConfig('turpentine_varnish/logging/custom_log_file_name');
     }
 
@@ -166,7 +174,8 @@ class Nexcessnet_Turpentine_Helper_Debug extends Nexcessnet_Turpentine_Helper_Co
      * @param  array $args
      * @return string
      */
-    protected function _backtrace_formatArgs($args) {
+    protected function _backtrace_formatArgs($args)
+    {
         return implode(', ', array_map(array($this, '_backtrace_formatArgsHelper'), $args));
     }
 
@@ -176,7 +185,8 @@ class Nexcessnet_Turpentine_Helper_Debug extends Nexcessnet_Turpentine_Helper_Co
      * @param  mixed $arg
      * @return null
      */
-    protected function _backtrace_formatArgsHelper($arg) {
+    protected function _backtrace_formatArgsHelper($arg)
+    {
         $value = $arg;
         if (is_object($arg)) {
             $value = sprintf('OBJECT(%s)', get_class($arg));

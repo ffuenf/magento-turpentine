@@ -21,7 +21,8 @@
 class Nexcessnet_Turpentine_Model_Config_Select_Version
 {
 
-    public function toOptionArray() {
+    public function toOptionArray()
+    {
         $helper = Mage::helper('turpentine');
         return array(
             array('value' => '2.1', 'label' => $helper->__('2.1.x')),

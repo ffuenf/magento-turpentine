@@ -14,7 +14,8 @@ class TurpentineUrlCacheStatus extends Mage_Shell_Abstract
      * 1. If we have "part" defined - refresh cache for that part (ids are got from file)
      * 2. If we don't have "ids" - execute instances with ids
      */
-    public function run() {
+    public function run()
+{
         if ($this->getArg('help')) {
             echo $this->usageHelp();
             return;
@@ -30,7 +31,8 @@ class TurpentineUrlCacheStatus extends Mage_Shell_Abstract
         $this->createInstances();
     }
 
-    public function createInstances() {
+    public function createInstances()
+{
         $instancesCount = self::INSTANCES_COUNT;
         if ($this->getArg('instances')) {
             $instancesCount = (int)$this->getArg('instances');
@@ -164,7 +166,8 @@ class TurpentineUrlCacheStatus extends Mage_Shell_Abstract
      *
      * @return string
      */
-    public function usageHelp() {
+    public function usageHelp()
+{
         return <<<USAGE
             Usage:  php turpentineUrlCacheStatus.php -- [options]
         --instances <count>           Create "count" instances for warmup (optional, default 10)

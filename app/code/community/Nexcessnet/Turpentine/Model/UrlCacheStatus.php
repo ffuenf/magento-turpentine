@@ -18,7 +18,8 @@ class Nexcessnet_Turpentine_Model_UrlCacheStatus extends Mage_Core_Model_Abstrac
      */
     protected $_eventPrefix = 'turpentine_urlcachestatus';
 
-    protected function _construct() {
+    protected function _construct()
+    {
         $this->_init('turpentine/urlCacheStatus');
     }
 
@@ -27,7 +28,8 @@ class Nexcessnet_Turpentine_Model_UrlCacheStatus extends Mage_Core_Model_Abstrac
      *
      * @throws Exception
      */
-    public function refreshCache() {
+    public function refreshCache()
+    {
         $url = $this->getUrl();
         $client = Mage::helper('turpentine/cron')->getCrawlerClient();
         $client->setUri($url);
@@ -53,7 +55,8 @@ class Nexcessnet_Turpentine_Model_UrlCacheStatus extends Mage_Core_Model_Abstrac
      *
      * @param string $regex
      */
-    public function  expireByRegex($regex) {
+    public function  expireByRegex($regex)
+    {
         $collection = $this->getCollection();
         $collection->addFieldToFilter('url', array('regexp' => $regex));
         /** @var Nexcessnet_Turpentine_Model_UrlCacheStatus $urlCacheStatus */
@@ -70,7 +73,8 @@ class Nexcessnet_Turpentine_Model_UrlCacheStatus extends Mage_Core_Model_Abstrac
      *
      * @throws Mage_Core_Exception
      */
-    public function renewExpireAt($url = null) {
+    public function renewExpireAt($url = null)
+    {
         if (is_null($url)) {
             $url = $this->getUrl();
         }
@@ -87,7 +91,8 @@ class Nexcessnet_Turpentine_Model_UrlCacheStatus extends Mage_Core_Model_Abstrac
      * @param string $url
      * @return Zend_Date
      */
-    public function getNextExpireAtDate($url) {
+    public function getNextExpireAtDate($url)
+    {
         $currentTimestamp = Mage::getSingleton('core/date')->gmtTimestamp();
         $urlTtls = Mage::helper('turpentine/varnish')->getUrlTtls();
         $ttl = Mage::helper('turpentine/varnish')->getDefaultTtl();

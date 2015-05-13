@@ -108,7 +108,8 @@ class Nexcessnet_Turpentine_Model_Varnish_Admin_Socket
     protected $_timeout = 5;
     protected $_version = null; //auto-detect
 
-    public function __construct(array $options = array()) {
+    public function __construct(array $options = array())
+    {
         foreach ($options as $key => $value) {
             switch ($key) {
                 case 'host':
@@ -157,7 +158,8 @@ class Nexcessnet_Turpentine_Model_Varnish_Admin_Socket
      * @param  array $args method args
      * @return array
      */
-    public function __call($name, $args) {
+    public function __call($name, $args)
+    {
         array_unshift($args, self::CODE_OK);
         array_unshift($args, $this->_translateCommandMethod($name));
         return call_user_func_array(array($this, '_command'), $args);
@@ -168,7 +170,8 @@ class Nexcessnet_Turpentine_Model_Varnish_Admin_Socket
      *
      * @return string
      */
-    public function getConnectionString() {
+    public function getConnectionString()
+    {
         return sprintf('%s:%d', $this->getHost(), $this->getPort());
     }
 
@@ -177,7 +180,8 @@ class Nexcessnet_Turpentine_Model_Varnish_Admin_Socket
      *
      * @return string
      */
-    public function getHost() {
+    public function getHost()
+    {
         return $this->_host;
     }
 
@@ -186,7 +190,8 @@ class Nexcessnet_Turpentine_Model_Varnish_Admin_Socket
      *
      * @param string $host hostname or ip
      */
-    public function setHost($host) {
+    public function setHost($host)
+    {
         $this->_close();
         $this->_host = $host;
         return $this;
@@ -197,7 +202,8 @@ class Nexcessnet_Turpentine_Model_Varnish_Admin_Socket
      *
      * @return int
      */
-    public function getPort() {
+    public function getPort()
+    {
         return $this->_port;
     }
 
@@ -206,7 +212,8 @@ class Nexcessnet_Turpentine_Model_Varnish_Admin_Socket
      *
      * @param int $port
      */
-    public function setPort($port) {
+    public function setPort($port)
+    {
         $this->_close();
         $this->_port = (int)$port;
         return $this;
@@ -217,7 +224,8 @@ class Nexcessnet_Turpentine_Model_Varnish_Admin_Socket
      *
      * @param string $authSecret
      */
-    public function setAuthSecret($authSecret = null) {
+    public function setAuthSecret($authSecret = null)
+    {
         $this->_authSecret = $authSecret;
         return $this;
     }
@@ -227,7 +235,8 @@ class Nexcessnet_Turpentine_Model_Varnish_Admin_Socket
      *
      * @param int $timeout
      */
-    public function setTimeout($timeout) {
+    public function setTimeout($timeout)
+    {
         $this->_timeout = (int)$timeout;
         if (!is_null($this->_varnishConn)) {
             stream_set_timeout($this->_varnishConn, $this->_timeout);
@@ -240,11 +249,11 @@ class Nexcessnet_Turpentine_Model_Varnish_Admin_Socket
      *
      * @param string $version version from $_VERSIONS
      */
-    public function setVersion($version) {
+    public function setVersion($version)
+    {
         if (in_array($version, self::$_VERSIONS)) {
             $this->_version = $version;
-        } else
-        {
+        } else {
             Mage::throwException('Unsupported Varnish version: ' . $version);
         }
     }
@@ -254,7 +263,8 @@ class Nexcessnet_Turpentine_Model_Varnish_Admin_Socket
      *
      * @return boolean
      */
-    public function isConnected() {
+    public function isConnected()
+    {
         return !is_null($this->_varnishConn);
     }
 
@@ -263,7 +273,8 @@ class Nexcessnet_Turpentine_Model_Varnish_Admin_Socket
      *
      * @return string
      */
-    public function getVersion() {
+    public function getVersion()
+    {
         if (!$this->isConnected()) {
             $this->_connect();
         }
@@ -273,7 +284,8 @@ class Nexcessnet_Turpentine_Model_Varnish_Admin_Socket
     /**
      * Stop the Varnish instance
      */
-    public function quit() {
+    public function quit()
+    {
         $this->_command('quit', self::CODE_CLOSE);
         $this->_close();
     }
@@ -283,12 +295,12 @@ class Nexcessnet_Turpentine_Model_Varnish_Admin_Socket
      *
      * @return boolean
      */
-    public function status() {
+    public function status()
+    {
         $response = $this->_command('status');
         if (!preg_match('~Child in state (\w+)~', $response['text'], $match)) {
             return false;
-        } else
-        {
+        } else {
             return $match[1] === 'running';
         }
     }
@@ -298,7 +310,8 @@ class Nexcessnet_Turpentine_Model_Varnish_Admin_Socket
      *
      * @return $this
      */
-    public function stop() {
+    public function stop()
+    {
         if ($this->status()) {
             $this->_command('stop');
         }
@@ -310,7 +323,8 @@ class Nexcessnet_Turpentine_Model_Varnish_Admin_Socket
      *
      * @return $this
      */
-    public function start() {
+    public function start()
+    {
         $this->_command('start');
         return $this;
     }
@@ -320,7 +334,8 @@ class Nexcessnet_Turpentine_Model_Varnish_Admin_Socket
      *
      * @return boolean
      */
-    protected function _connect() {
+    protected function _connect()
+    {
         $this->_varnishConn = fsockopen($this->_host, $this->_port, $errno, $errstr, $this->_timeout);
         if (!is_resource($this->_varnishConn)) {
             Mage::throwException(sprintf('Failed to connect to Varnish on [%s:%d]: (%d) %s', $this->_host, $this->_port, $errno, $errstr));
@@ -345,7 +360,8 @@ class Nexcessnet_Turpentine_Model_Varnish_Admin_Socket
     /**
      * @param string $bannerText
      */
-    protected function _determineVersion($bannerText) {
+    protected function _determineVersion($bannerText)
+    {
         $bannerText = array_filter(explode("\n", $bannerText));
         if (count($bannerText) < 6) {
             // Varnish 2.0 does not spit out a banner on connect
@@ -356,8 +372,7 @@ class Nexcessnet_Turpentine_Model_Varnish_Admin_Socket
             return '2.1';
         } elseif (preg_match(self::REGEXP_VARNISH_VERSION, $bannerText[4], $matches) === 1) {
             return $matches['vmajor'] . '.' . $matches['vminor'];
-        } else
-        {
+        } else {
             Mage::throwException('Unable to detect varnish version');
         }
     }
@@ -367,7 +382,8 @@ class Nexcessnet_Turpentine_Model_Varnish_Admin_Socket
      *
      * @return $this
      */
-    protected function _close() {
+    protected function _close()
+    {
         if ($this->isConnected()) {
             fclose($this->_varnishConn);
             $this->_varnishConn = null;
@@ -381,7 +397,8 @@ class Nexcessnet_Turpentine_Model_Varnish_Admin_Socket
      * @param  string $data data to write
      * @return $this
      */
-    protected function _write($data) {
+    protected function _write($data)
+    {
         if (is_null($this->_varnishConn)) {
             $this->_connect();
         }
@@ -401,8 +418,7 @@ class Nexcessnet_Turpentine_Model_Varnish_Admin_Socket
                     $factors = array('k'=>1, 'm'=>2, 'g'=>3);
                     $realLimit *= pow(1024, $factors[$match[2]]);
                 }
-            } else
-            {
+            } else {
                 Mage::helper('turpentine/debug')->logWarn('Failed to determine Varnish cli_buffer limit, using default');
                 $realLimit = self::CLI_CMD_LENGTH_LIMIT;
             }
@@ -421,7 +437,8 @@ class Nexcessnet_Turpentine_Model_Varnish_Admin_Socket
      *
      * @return array tuple of the response (code, text)
      */
-    protected function _read() {
+    protected function _read()
+    {
         $code = null;
         $len = -1;
         while (!feof($this->_varnishConn)) {
@@ -440,8 +457,7 @@ class Nexcessnet_Turpentine_Model_Varnish_Admin_Socket
         }
         if (is_null($code)) {
             Mage::throwException('Failed to read response code from Varnish');
-        } else
-        {
+        } else {
             $response = array('code' => $code, 'text' => '');
             while (!feof($this->_varnishConn) && strlen($response['text']) < $len) {
                 $response['text'] .= fgets($this->_varnishConn, self::READ_CHUNK_SIZE);
@@ -457,7 +473,8 @@ class Nexcessnet_Turpentine_Model_Varnish_Admin_Socket
      * @param  string  ...         command args
      * @return array
      */
-    protected function _command($verb, $okCode = 200) {
+    protected function _command($verb, $okCode = 200)
+    {
         $params = func_get_args();
         //remove $verb
         array_shift($params);
@@ -474,8 +491,7 @@ class Nexcessnet_Turpentine_Model_Varnish_Admin_Socket
         if ($response['code'] !== $okCode && !is_null($okCode)) {
             Mage::helper('turpentine/debug')->logDebug('Error on Varnish command: %s', $data);
             Mage::throwException(sprintf("Got unexpected response code from Varnish: %d\n%s", $response['code'], $response['text']));
-        } else
-        {
+        } else {
             return $response;
         }
     }
@@ -486,7 +502,8 @@ class Nexcessnet_Turpentine_Model_Varnish_Admin_Socket
      * @param  string $verb command to check
      * @return string
      */
-    protected function _translateCommandMethod($verb) {
+    protected function _translateCommandMethod($verb)
+    {
         $command = str_replace('_', '.', $verb);
         switch ($this->getVersion()) {
             case '2.1':

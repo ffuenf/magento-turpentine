@@ -20,7 +20,8 @@
 class Nexcessnet_Turpentine_Model_Core_Session extends Mage_Core_Model_Session
 {
 
-    public function __construct($data = array()) {
+    public function __construct($data = array())
+    {
         $name = isset($data['name']) ? $data['name'] : null;
         $this->init('core', $name);
     }
@@ -30,13 +31,13 @@ class Nexcessnet_Turpentine_Model_Core_Session extends Mage_Core_Model_Session
      *
      * @return string A 16 bit unique key for forms
      */
-    public function getFormKey() {
+    public function getFormKey()
+    {
         if (Mage::registry('replace_form_key') && !Mage::app()->getRequest()->getParam('form_key', false)) {
             // flag request for ESI processing
             Mage::register('turpentine_esi_flag', true, true);
             return '{{form_key_esi_placeholder}}';
-        } else
-        {
+        } else {
             return parent::getFormKey();
         }
     }

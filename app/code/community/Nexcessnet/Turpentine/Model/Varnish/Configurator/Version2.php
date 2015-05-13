@@ -28,13 +28,15 @@ class Nexcessnet_Turpentine_Model_Varnish_Configurator_Version2 extends Nexcessn
      * @param bool $doClean if true, VCL will be cleaned (whitespaces stripped, etc.)
      * @return string
      */
-    public function generate($doClean = true) {
+    public function generate($doClean = true)
+    {
         $tplFile = $this->_getVclTemplateFilename(self::VCL_TEMPLATE_FILE);
         $vcl = $this->_formatTemplate(file_get_contents($tplFile), $this->_getTemplateVars());
         return $doClean ? $this->_cleanVcl($vcl) : $vcl;
     }
 
-    protected function _getAdvancedSessionValidation() {
+    protected function _getAdvancedSessionValidation()
+    {
         $validation = '';
         foreach ($this->_getAdvancedSessionValidationTargets() as $target) {
             $validation .= sprintf('set req.hash += %s;' . PHP_EOL, $target);
@@ -47,7 +49,8 @@ class Nexcessnet_Turpentine_Model_Varnish_Configurator_Version2 extends Nexcessn
      *
      * @return array
      */
-    protected function _getTemplateVars() {
+    protected function _getTemplateVars()
+    {
         $vars = parent::_getTemplateVars();
         $vars['esi_public_ttl'] = $this->_getDefaultTtl();
         $vars['advanced_session_validation'] = $this->_getAdvancedSessionValidation();

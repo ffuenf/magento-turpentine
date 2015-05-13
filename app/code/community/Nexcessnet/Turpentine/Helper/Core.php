@@ -9,7 +9,8 @@ class Nexcessnet_Turpentine_Helper_Core extends Mage_Core_Helper_Abstract
      * @param string $sStoreFlagAttribute
      * @return bool
      */
-    public function getStoreFlag($sStoreFlagPath, $sStoreFlagAttribute) {
+    public function getStoreFlag($sStoreFlagPath, $sStoreFlagAttribute)
+    {
         return (bool)$this->getStoreConfig($sStoreFlagPath, $sStoreFlagAttribute);
     }
     /**
@@ -19,7 +20,8 @@ class Nexcessnet_Turpentine_Helper_Core extends Mage_Core_Helper_Abstract
      * @param string $sStoreConfigAttribute
      * @return string
      */
-    public function getStoreConfig($sStoreConfigPath, $sStoreConfigAttribute) {
+    public function getStoreConfig($sStoreConfigPath, $sStoreConfigAttribute)
+    {
         if ($this->$sStoreConfigAttribute === null) {
             $this->$sStoreConfigAttribute = Mage::getStoreConfig($sStoreConfigPath);
         }

@@ -24,7 +24,8 @@ class Nexcessnet_Turpentine_Model_Resource_Mysql4_Catalog_Category_Product_Colle
     /**
      * Initialize resource model and define main table
      */
-    protected function _construct() {
+    protected function _construct()
+    {
         $this->_init('turpentine/catalog_category_product');
     }
 
@@ -34,10 +35,11 @@ class Nexcessnet_Turpentine_Model_Resource_Mysql4_Catalog_Category_Product_Colle
      * @param array $productIds
      * @return Nexcessnet_Turpentine_Model_Resource_Mysql4_Catalog_Category_Product_Collection
      */
-    public function filterAllByProductIds(array $productIds) {
+    public function filterAllByProductIds(array $productIds)
+    {
         $this->getSelect()
-            ->where('product_id in (?)', $productIds)
-                ->group('category_id');
+             ->where('product_id in (?)', $productIds)
+             ->group('category_id');
         return $this;
     }
 
@@ -46,7 +48,8 @@ class Nexcessnet_Turpentine_Model_Resource_Mysql4_Catalog_Category_Product_Colle
      *
      * @return array
      */
-    public function getAllCategoryIds() {
+    public function getAllCategoryIds()
+    {
         if (!$this->isLoaded()) {
             $this->load();
         }

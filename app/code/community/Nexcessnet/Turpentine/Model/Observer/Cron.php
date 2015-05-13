@@ -42,7 +42,8 @@ class Nexcessnet_Turpentine_Model_Observer_Cron extends Varien_Event_Observer
      * @param  Varien_Object $eventObject
      * @return null
      */
-    public function crawlUrls($eventObject) {
+    public function crawlUrls($eventObject)
+    {
         $helper = Mage::helper('turpentine/cron');
         if ($helper->getCrawlerEnabled()) {
             $maxRunTime = $helper->getAllowedRunTime();
@@ -65,7 +66,8 @@ class Nexcessnet_Turpentine_Model_Observer_Cron extends Varien_Event_Observer
      * @param  Varien_Object $eventObject
      * @return null
      */
-    public function queueAllUrls($eventObject) {
+    public function queueAllUrls($eventObject)
+    {
         $helper = Mage::helper('turpentine/cron');
         if ($helper->getCrawlerEnabled()) {
             $helper->addUrlsToCrawlerQueue($helper->getAllUrls());
@@ -78,7 +80,8 @@ class Nexcessnet_Turpentine_Model_Observer_Cron extends Varien_Event_Observer
      * @param  string $url
      * @return bool
      */
-    protected function _crawlUrl($url) {
+    protected function _crawlUrl($url)
+    {
         $client = Mage::helper('turpentine/cron')->getCrawlerClient();
         $client->setUri($url);
         Mage::helper('turpentine/debug')->logDebug('Crawling URL: %s', $url);

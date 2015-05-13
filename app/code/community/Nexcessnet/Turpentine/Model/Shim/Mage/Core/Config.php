@@ -31,7 +31,8 @@ class Nexcessnet_Turpentine_Model_Shim_Mage_Core_Config extends Mage_Core_Model_
      * @param  string $className    full class name to rewrite to
      * @return string
      */
-    public function shim_setClassNameCache($groupType, $group, $class, $className) {
+    public function shim_setClassNameCache($groupType, $group, $class, $className)
+    {
         $config = Mage::getConfig();
         $prevValue = @$config->_classNameCache[$groupType][$group][$class];
         $config->_classNameCache[$groupType][$group][$class] = $className;
@@ -44,7 +45,8 @@ class Nexcessnet_Turpentine_Model_Shim_Mage_Core_Config extends Mage_Core_Model_
      *
      * @param $area string The config area to clear (e.g. 'global')
      */
-    public function unsetEventAreaCache($area) {
+    public function unsetEventAreaCache($area)
+    {
         if (version_compare(Mage::getVersion(), '1.11.0', '>=') // enterprise
             || version_compare(Mage::getVersion(), '1.6.0', '>=')) {
             // community

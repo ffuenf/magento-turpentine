@@ -24,7 +24,8 @@ class Nexcessnet_Turpentine_Model_Resource_Mysql4_Catalog_Product_Relation_Colle
     /**
      * Initialize resource model and define main table
      */
-    protected function _construct() {
+    protected function _construct()
+    {
         $this->_init('turpentine/catalog_product_relation', 'catalog/product_relation');
     }
 }

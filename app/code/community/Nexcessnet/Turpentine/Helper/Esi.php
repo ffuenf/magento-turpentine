@@ -53,7 +53,8 @@ class Nexcessnet_Turpentine_Helper_Esi extends Nexcessnet_Turpentine_Helper_Core
      *
      * @return bool
      */
-    public function getEsiEnabled() {
+    public function getEsiEnabled()
+    {
         return Mage::app()->useCache($this->getMageCacheName());
     }
 
@@ -62,7 +63,8 @@ class Nexcessnet_Turpentine_Helper_Esi extends Nexcessnet_Turpentine_Helper_Core
      *
      * @return bool
      */
-    public function shouldResponseUseEsi() {
+    public function shouldResponseUseEsi()
+    {
         return Mage::helper('turpentine/varnish')->shouldResponseUseVarnish() && $this->getEsiEnabled();
     }
 
@@ -71,7 +73,8 @@ class Nexcessnet_Turpentine_Helper_Esi extends Nexcessnet_Turpentine_Helper_Core
      *
      * @return null
      */
-    public function ensureEsiEnabled() {
+    public function ensureEsiEnabled()
+    {
         if (!$this->shouldResponseUseEsi()) {
             Mage::throwException('ESI includes are not enabled');
         }
@@ -82,7 +85,8 @@ class Nexcessnet_Turpentine_Helper_Esi extends Nexcessnet_Turpentine_Helper_Core
      *
      * @return string
      */
-    public function getEsiDataParam() {
+    public function getEsiDataParam()
+    {
         return self::ESI_DATA_PARAM;
     }
 
@@ -91,7 +95,8 @@ class Nexcessnet_Turpentine_Helper_Esi extends Nexcessnet_Turpentine_Helper_Core
      *
      * @return string
      */
-    public function getEsiCacheTypeParam() {
+    public function getEsiCacheTypeParam()
+    {
         return self::ESI_CACHE_TYPE_PARAM;
     }
 
@@ -100,7 +105,8 @@ class Nexcessnet_Turpentine_Helper_Esi extends Nexcessnet_Turpentine_Helper_Core
      *
      * @return string
      */
-    public function getEsiScopeParam() {
+    public function getEsiScopeParam()
+    {
         return self::ESI_SCOPE_PARAM;
     }
 
@@ -109,7 +115,8 @@ class Nexcessnet_Turpentine_Helper_Esi extends Nexcessnet_Turpentine_Helper_Core
      *
      * @return string
      */
-    public function getEsiTtlParam() {
+    public function getEsiTtlParam()
+    {
         return self::ESI_TTL_PARAM;
     }
 
@@ -118,7 +125,8 @@ class Nexcessnet_Turpentine_Helper_Esi extends Nexcessnet_Turpentine_Helper_Core
      *
      * @return string
      */
-    public function getEsiMethodParam() {
+    public function getEsiMethodParam()
+    {
         return self::ESI_METHOD_PARAM;
     }
 
@@ -127,7 +135,8 @@ class Nexcessnet_Turpentine_Helper_Esi extends Nexcessnet_Turpentine_Helper_Core
      *
      * @return string
      */
-    public function getEsiHmacParam() {
+    public function getEsiHmacParam()
+    {
         return self::ESI_HMAC_PARAM;
     }
 
@@ -136,7 +145,8 @@ class Nexcessnet_Turpentine_Helper_Esi extends Nexcessnet_Turpentine_Helper_Core
      *
      * @return string
      */
-    public function getEsiReferrerParam() {
+    public function getEsiReferrerParam()
+    {
         return Mage_Core_Controller_Varien_Action::PARAM_NAME_BASE64_URL;
     }
 
@@ -145,7 +155,8 @@ class Nexcessnet_Turpentine_Helper_Esi extends Nexcessnet_Turpentine_Helper_Core
      *
      * @return bool
      */
-    public function getEsiDebugEnabled() {
+    public function getEsiDebugEnabled()
+    {
         return Mage::helper('turpentine/varnish')->getVarnishDebugEnabled();
     }
 
@@ -154,7 +165,8 @@ class Nexcessnet_Turpentine_Helper_Esi extends Nexcessnet_Turpentine_Helper_Core
      *
      * @return bool
      */
-    public function getEsiBlockLogEnabled() {
+    public function getEsiBlockLogEnabled()
+    {
         return $this->getStoreFlag(self::CONFIG_EXTENSION_BLOCKDEBUG, 'bEsiBlockLogEnabled');
     }
 
@@ -163,7 +175,8 @@ class Nexcessnet_Turpentine_Helper_Esi extends Nexcessnet_Turpentine_Helper_Core
      *
      * @return bool
      */
-    public function shouldFixFlashMessages() {
+    public function shouldFixFlashMessages()
+    {
         return Mage::helper('turpentine/data')->useFlashMessagesFix() && Mage::app()->getStore()->getCode() !== 'admin';
     }
 
@@ -172,7 +185,8 @@ class Nexcessnet_Turpentine_Helper_Esi extends Nexcessnet_Turpentine_Helper_Core
      *
      * @return string
      */
-    public function getDummyUrl() {
+    public function getDummyUrl()
+    {
         return Mage::getUrl('checkout/cart');
     }
 
@@ -185,7 +199,8 @@ class Nexcessnet_Turpentine_Helper_Esi extends Nexcessnet_Turpentine_Helper_Core
      *
      * @return Mage_Core_Controller_Request_Http
      */
-    public function getDummyRequest($url = null) {
+    public function getDummyRequest($url = null)
+    {
         if ($url === null) {
             $url = $this->getDummyUrl();
         }
@@ -199,7 +214,8 @@ class Nexcessnet_Turpentine_Helper_Esi extends Nexcessnet_Turpentine_Helper_Core
      *
      * @return string
      */
-    public function getMageCacheName() {
+    public function getMageCacheName()
+    {
         return self::MAGE_CACHE_NAME;
     }
 
@@ -208,7 +224,8 @@ class Nexcessnet_Turpentine_Helper_Esi extends Nexcessnet_Turpentine_Helper_Core
      *
      * @return string[]
      */
-    public function getDefaultCacheClearEvents() {
+    public function getDefaultCacheClearEvents()
+    {
         $events = array('customer_login', 'customer_logout');
         return $events;
     }
@@ -218,7 +235,8 @@ class Nexcessnet_Turpentine_Helper_Esi extends Nexcessnet_Turpentine_Helper_Core
      *
      * @return string[]
      */
-    public function getCacheClearEvents() {
+    public function getCacheClearEvents()
+    {
         Varien_Profiler::start('turpentine::helper::esi::getCacheClearEvents');
         $cacheKey = $this->getCacheClearEventsCacheKey();
         $events = @unserialize(Mage::app()->loadCache($cacheKey));
@@ -235,7 +253,8 @@ class Nexcessnet_Turpentine_Helper_Esi extends Nexcessnet_Turpentine_Helper_Core
      *
      * @return string
      */
-    public function getDefaultEsiTtl() {
+    public function getDefaultEsiTtl()
+    {
         return trim(Mage::getStoreConfig('web/cookie/cookie_lifetime'));
     }
 
@@ -246,11 +265,11 @@ class Nexcessnet_Turpentine_Helper_Esi extends Nexcessnet_Turpentine_Helper_Core
      *
      * @return string
      */
-    public function getCorsOrigin($url = null) {
+    public function getCorsOrigin($url = null)
+    {
         if (is_null($url)) {
             $baseUrl = Mage::getBaseUrl();
-        } else
-        {
+        } else {
             $baseUrl = $url;
         }
         $path = parse_url($baseUrl, PHP_URL_PATH);
@@ -266,7 +285,8 @@ class Nexcessnet_Turpentine_Helper_Esi extends Nexcessnet_Turpentine_Helper_Core
      *
      * @return Mage_Core_Model_Layout_Element|SimpleXMLElement
      */
-    public function getLayoutXml() {
+    public function getLayoutXml()
+    {
         Varien_Profiler::start('turpentine::helper::esi::getLayoutXml');
         if (is_null($this->_layoutXml)) {
             if ($useCache = Mage::app()->useCache('layout')) {
@@ -290,7 +310,8 @@ class Nexcessnet_Turpentine_Helper_Esi extends Nexcessnet_Turpentine_Helper_Core
      *
      * @return string
      */
-    public function getCacheClearEventsCacheKey() {
+    public function getCacheClearEventsCacheKey()
+    {
         $design = Mage::getDesign();
         return Mage::helper('turpentine/data')
         ->getCacheKeyHash(array(
@@ -307,7 +328,8 @@ class Nexcessnet_Turpentine_Helper_Esi extends Nexcessnet_Turpentine_Helper_Core
      *
      * @return string
      */
-    public function getFileLayoutUpdatesXmlCacheKey() {
+    public function getFileLayoutUpdatesXmlCacheKey()
+    {
         $design = Mage::getDesign();
         return Mage::helper('turpentine/data')
         ->getCacheKeyHash(array(
@@ -328,7 +350,8 @@ class Nexcessnet_Turpentine_Helper_Esi extends Nexcessnet_Turpentine_Helper_Core
      * @param  string $url url to pull content from
      * @return string
      */
-    public function buildEsiIncludeFragment($url) {
+    public function buildEsiIncludeFragment($url)
+    {
         return sprintf('<esi:include src="%s" />', $url);
     }
 
@@ -342,7 +365,8 @@ class Nexcessnet_Turpentine_Helper_Esi extends Nexcessnet_Turpentine_Helper_Core
      * @param  string $content content to be removed
      * @return string
      */
-    public function buildEsiRemoveFragment($content) {
+    public function buildEsiRemoveFragment($content)
+    {
         return sprintf('<esi:remove>%s</esi>', $content);
     }
 
@@ -351,7 +375,8 @@ class Nexcessnet_Turpentine_Helper_Esi extends Nexcessnet_Turpentine_Helper_Core
      *
      * @return string
      */
-    public function getFormKeyEsiUrl() {
+    public function getFormKeyEsiUrl()
+    {
         $urlOptions = array(
             $this->getEsiTtlParam() => $this->getDefaultEsiTtl(),
             $this->getEsiMethodParam() => 'esi',
@@ -366,14 +391,14 @@ class Nexcessnet_Turpentine_Helper_Esi extends Nexcessnet_Turpentine_Helper_Core
      *
      * @return array
      */
-    protected function _loadEsiCacheClearEvents() {
+    protected function _loadEsiCacheClearEvents()
+    {
         Varien_Profiler::start('turpentine::helper::esi::_loadEsiCacheClearEvents');
         $layoutXml = $this->getLayoutXml();
         $events = $layoutXml->xpath('//action[@method=\'setEsiOptions\']/params/flush_events/*');
         if ($events) {
             $events = array_unique(array_map(create_function('$e', 'return (string)$e->getName();'), $events));
-        } else
-        {
+        } else {
             $events = array();
         }
         Varien_Profiler::stop('turpentine::helper::esi::_loadEsiCacheClearEvents');
@@ -385,7 +410,8 @@ class Nexcessnet_Turpentine_Helper_Esi extends Nexcessnet_Turpentine_Helper_Core
      *
      * @return Mage_Core_Model_Layout_Element
      */
-    protected function _loadLayoutXml() {
+    protected function _loadLayoutXml()
+    {
         Varien_Profiler::start('turpentine::helper::esi::_loadLayoutXml');
         $design = Mage::getDesign();
         $layoutXml = Mage::getSingleton('core/layout')
@@ -407,7 +433,8 @@ class Nexcessnet_Turpentine_Helper_Esi extends Nexcessnet_Turpentine_Helper_Core
      * @param string $url
      * @return string
      */
-    public function unsecureUrl($url) {
+    public function unsecureUrl($url)
+    {
         return preg_replace('!^https://!', 'http://', $url);
     }
 
@@ -416,7 +443,8 @@ class Nexcessnet_Turpentine_Helper_Esi extends Nexcessnet_Turpentine_Helper_Core
      *
      * @return bool
      */
-    public function isEsiRequest() {
+    public function isEsiRequest()
+    {
         return Mage::app()->getRequest()->getControllerName() === 'esi';
     }
 }

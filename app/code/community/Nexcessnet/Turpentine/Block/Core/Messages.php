@@ -68,12 +68,12 @@ class Nexcessnet_Turpentine_Block_Core_Messages extends Mage_Core_Block_Messages
      */
     protected $_usedStorageTypes = array('core/session');
 
-    public function _prepareLayout() {
+    public function _prepareLayout()
+    {
         if ($this->_fixMessages()) {
             /* do nothing */
             return $this;
-        } else
-        {
+        } else {
             return parent::_prepareLayout();
         }
     }
@@ -84,11 +84,11 @@ class Nexcessnet_Turpentine_Block_Core_Messages extends Mage_Core_Block_Messages
      * @param Mage_Core_Model_Message_Collection $messages
      * @return Nexcessnet_Turpentine_Block_Core_Messages
      */
-    public function setMessages(Mage_Core_Model_Message_Collection $messages) {
+    public function setMessages(Mage_Core_Model_Message_Collection $messages)
+    {
         if ($this->_fixMessages()) {
             $this->_saveMessages($messages->getItems());
-        } else
-        {
+        } else {
             parent::setMessages($messages);
         }
         return $this;
@@ -100,11 +100,11 @@ class Nexcessnet_Turpentine_Block_Core_Messages extends Mage_Core_Block_Messages
      * @param Mage_Core_Model_Message_Collection $messages
      * @return Nexcessnet_Turpentine_Block_Core_Messages
      */
-    public function addMessages(Mage_Core_Model_Message_Collection $messages) {
+    public function addMessages(Mage_Core_Model_Message_Collection $messages)
+    {
         if ($this->_fixMessages()) {
             $this->_saveMessages($messages->getItems());
-        } else
-        {
+        } else {
             parent::addMessages($messages);
         }
         return $this;
@@ -116,11 +116,11 @@ class Nexcessnet_Turpentine_Block_Core_Messages extends Mage_Core_Block_Messages
      * @param Mage_Core_Model_Message_Abstract $message
      * @return Nexcessnet_Turpentine_Block_Core_Messages
      */
-    public function addMessage(Mage_Core_Model_Message_Abstract $message) {
+    public function addMessage(Mage_Core_Model_Message_Abstract $message)
+    {
         if ($this->_fixMessages()) {
             $this->_saveMessages(array($message));
-        } else
-        {
+        } else {
             $this->addMessage($message);
         }
         return $this;
@@ -132,7 +132,8 @@ class Nexcessnet_Turpentine_Block_Core_Messages extends Mage_Core_Block_Messages
      *
      * @return string
      */
-    public function getHtml($type = self::NO_SINGLE_RENDER_TYPE) {
+    public function getHtml($type = self::NO_SINGLE_RENDER_TYPE)
+    {
         $this->_singleRenderType = $type;
         return $this->_handleDirectCall('getHtml')->toHtml();
     }
@@ -143,7 +144,8 @@ class Nexcessnet_Turpentine_Block_Core_Messages extends Mage_Core_Block_Messages
      *
      * @return string
      */
-    public function getGroupedHtml() {
+    public function getGroupedHtml()
+    {
         return $this->_handleDirectCall('getGroupedHtml')->toHtml();
     }
 
@@ -154,7 +156,8 @@ class Nexcessnet_Turpentine_Block_Core_Messages extends Mage_Core_Block_Messages
      *
      * @param string $type
      */
-    public function addStorageType($type) {
+    public function addStorageType($type)
+    {
         $this->_usedStorageTypes[] = $type;
     }
 
@@ -164,7 +167,8 @@ class Nexcessnet_Turpentine_Block_Core_Messages extends Mage_Core_Block_Messages
      * @param string $methodCalled
      * @return Nexcessnet_Turpentine_Block_Core_Messages
      */
-    protected function _handleDirectCall($methodCalled) {
+    protected function _handleDirectCall($methodCalled)
+    {
         // this doesn't actually do anything because _real_toHtml() won't be
         // called in this request context (unless the flash message isn't
         // actually supposed to be ajax/esi'd in)
@@ -194,18 +198,17 @@ class Nexcessnet_Turpentine_Block_Core_Messages extends Mage_Core_Block_Messages
      *
      * @return string
      */
-    protected function _toHtml() {
+    protected function _toHtml()
+    {
         if ($this->_fixMessages()) {
             if ($this->_shouldUseInjection()) {
                 $html = $this->renderView();
-            } else
-            {
+            } else {
                 $this->_loadMessages();
                 $this->_loadSavedMessages();
                 $html = $this->_real_toHtml();
             }
-        } else
-        {
+        } else {
             $html = $this->_real_toHtml();
         }
         $this->_directCall = false;
@@ -217,7 +220,8 @@ class Nexcessnet_Turpentine_Block_Core_Messages extends Mage_Core_Block_Messages
      *
      * @return boolean
      */
-    protected function _hasInjectOptions() {
+    protected function _hasInjectOptions()
+    {
         return $this->getEsiOptions() && Mage::helper('turpentine/esi')->shouldResponseUseEsi();
     }
 
@@ -226,7 +230,8 @@ class Nexcessnet_Turpentine_Block_Core_Messages extends Mage_Core_Block_Messages
      *
      * @return boolean
      */
-    protected function _shouldUseInjection() {
+    protected function _shouldUseInjection()
+    {
         return $this->_hasTemplateSet() && $this->_hasInjectOptions() && Mage::app()->getStore()->getCode() !== 'admin';
     }
 
@@ -237,7 +242,8 @@ class Nexcessnet_Turpentine_Block_Core_Messages extends Mage_Core_Block_Messages
      *
      * @return boolean
      */
-    protected function _hasTemplateSet() {
+    protected function _hasTemplateSet()
+    {
         return (bool)$this->getTemplate();
     }
 
@@ -246,7 +252,8 @@ class Nexcessnet_Turpentine_Block_Core_Messages extends Mage_Core_Block_Messages
      *
      * @return null
      */
-    protected function _saveMessages($messages) {
+    protected function _saveMessages($messages)
+    {
         if ($this->_fixMessages() && !$this->_isEsiRequest()) {
             Mage::getSingleton('turpentine/session')
                 ->saveMessages($this->getNameInLayout(), $messages);
@@ -258,15 +265,15 @@ class Nexcessnet_Turpentine_Block_Core_Messages extends Mage_Core_Block_Messages
      *
      * @return null
      */
-    protected function _loadMessages() {
+    protected function _loadMessages()
+    {
         if ($this->getNameInLayout() == 'messages') {
             foreach ($this->_messageStorageTypes as $type) {
                 $storage = sprintf('%s/session', $type);
                 $this->addStorageType($storage);
                 $this->_loadMessagesFromStorage($storage);
             }
-        } else
-        {
+        } else {
             $this->_loadMessagesFromStorage('core/session');
         }
     }
@@ -276,7 +283,8 @@ class Nexcessnet_Turpentine_Block_Core_Messages extends Mage_Core_Block_Messages
      *
      * @return null
      */
-    protected function _loadSavedMessages() {
+    protected function _loadSavedMessages()
+    {
         $session = Mage::getSingleton('turpentine/session');
         foreach ($session->loadMessages($this->getNameInLayout()) as $msg) {
             parent::addMessage($msg);
@@ -290,7 +298,8 @@ class Nexcessnet_Turpentine_Block_Core_Messages extends Mage_Core_Block_Messages
      * @param  string $type
      * @return null
      */
-    protected function _loadMessagesFromStorage($type) {
+    protected function _loadMessagesFromStorage($type)
+    {
         foreach (Mage::getSingleton($type)->getMessages(true)->getItems() as $msg) {
             $this->addMessage($msg);
         }
@@ -301,7 +310,8 @@ class Nexcessnet_Turpentine_Block_Core_Messages extends Mage_Core_Block_Messages
      *
      * @return null
      */
-    protected function _clearMessages() {
+    protected function _clearMessages()
+    {
         Mage::getSingleton('turpentine/session')->clearMessages($this->getNameInLayout());
     }
 
@@ -310,7 +320,8 @@ class Nexcessnet_Turpentine_Block_Core_Messages extends Mage_Core_Block_Messages
      *
      * @return string
      */
-    protected function _real_toHtml() {
+    protected function _real_toHtml()
+    {
         if (!$this->_directCall) {
             switch ($this->getNameInLayout()) {
                 case 'global_messages':
@@ -341,7 +352,8 @@ class Nexcessnet_Turpentine_Block_Core_Messages extends Mage_Core_Block_Messages
      *
      * @return bool
      */
-    protected function _fixMessages() {
+    protected function _fixMessages()
+    {
         return Mage::helper('turpentine/esi')->shouldFixFlashMessages();
     }
 
@@ -353,7 +365,8 @@ class Nexcessnet_Turpentine_Block_Core_Messages extends Mage_Core_Block_Messages
      *
      * @return boolean
      */
-    protected function _isEsiRequest() {
+    protected function _isEsiRequest()
+    {
         return is_a(Mage::app()->getRequest(), 'Nexcessnet_Turpentine_Model_Dummy_Request');
     }
 }

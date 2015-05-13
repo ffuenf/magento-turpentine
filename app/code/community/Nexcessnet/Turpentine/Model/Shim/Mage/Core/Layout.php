@@ -27,7 +27,8 @@ class Nexcessnet_Turpentine_Model_Shim_Mage_Core_Layout extends Mage_Core_Model_
      * @param  Mage_Core_Model_Layout_Element $blockNode
      * @return null
      */
-    public function shim_generateFullBlock($blockNode) {
+    public function shim_generateFullBlock($blockNode)
+    {
         $layout = $this->_shim_getLayout();
         if (!($parent = $blockNode->getParent())) {
             $parent = new Varien_Object();
@@ -42,7 +43,8 @@ class Nexcessnet_Turpentine_Model_Shim_Mage_Core_Layout extends Mage_Core_Model_
      * @param  Mage_Core_Model_Layout_Element $node
      * @return Mage_Core_Model_Layout
      */
-    public function shim_generateAction($node) {
+    public function shim_generateAction($node)
+    {
         if (!($parentNode = $node->getParent())) {
             $parentNode = new Varien_Object();
         }
@@ -54,7 +56,8 @@ class Nexcessnet_Turpentine_Model_Shim_Mage_Core_Layout extends Mage_Core_Model_
      *
      * @return Mage_Core_Model_Layout
      */
-    protected function _shim_getLayout() {
+    protected function _shim_getLayout()
+    {
         return Mage::getSingleton('core/layout');
     }
 }

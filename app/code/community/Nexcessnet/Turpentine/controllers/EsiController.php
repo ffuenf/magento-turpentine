@@ -27,7 +27,8 @@ class Nexcessnet_Turpentine_EsiController extends Mage_Core_Controller_Front_Act
      *
      * @return null
      */
-    public function indexAction() {
+    public function indexAction()
+    {
         $this->getResponse()->setRedirect(Mage::getBaseUrl());
     }
 
@@ -36,7 +37,8 @@ class Nexcessnet_Turpentine_EsiController extends Mage_Core_Controller_Front_Act
      *
      * @return null
      */
-    public function getFormKeyAction() {
+    public function getFormKeyAction()
+    {
         $resp = $this->getResponse();
         $resp->setBody(Mage::getSingleton('core/session')->real_getFormKey());
         $resp->setHeader('X-Turpentine-Cache', '1');
@@ -51,7 +53,8 @@ class Nexcessnet_Turpentine_EsiController extends Mage_Core_Controller_Front_Act
      *
      * @return null
      */
-    public function getBlockAction() {
+    public function getBlockAction()
+    {
         $resp = $this->getResponse();
         $cacheFlag = false;
         if (Mage::helper('turpentine/esi')->shouldResponseUseEsi()) {
@@ -73,8 +76,7 @@ class Nexcessnet_Turpentine_EsiController extends Mage_Core_Controller_Front_Act
                 $resp->setHttpResponseCode(403);
                 $resp->setBody('ESI method mismatch');
                 $debugHelper->logWarn('Blocking change of ESI method: %s -> %s', $esiDataArray['esi_method'], $req->getParam($esiHelper->getEsiMethodParam()));
-            } else
-            {
+            } else {
                 $esiData = new Varien_Object($esiDataArray);
                 $origRequest = Mage::app()->getRequest();
                 Mage::app()->setCurrentStore(Mage::app()->getStore($esiData->getStoreId()));
@@ -82,8 +84,7 @@ class Nexcessnet_Turpentine_EsiController extends Mage_Core_Controller_Front_Act
                 if ($referer = $this->_getRefererUrl()) {
                     $referer = htmlspecialchars_decode($referer);
                     $dummyRequest = Mage::helper('turpentine/esi')->getDummyRequest($referer);
-                } else
-                {
+                } else {
                     $dummyRequest = Mage::helper('turpentine/esi')->getDummyRequest();
                 }
                 $appShim->shim_setRequest($dummyRequest);
@@ -116,15 +117,13 @@ class Nexcessnet_Turpentine_EsiController extends Mage_Core_Controller_Front_Act
                     if ($esiHelper->getEsiDebugEnabled()) {
                         $resp->setHeader('X-Turpentine-Block', $block->getNameInLayout());
                     }
-                } else
-                {
+                } else {
                     $resp->setHttpResponseCode(404);
                     $resp->setBody('ESI block not found');
                 }
                 $appShim->shim_setRequest($origRequest);
             }
-        } else
-        {
+        } else {
             $resp->setHttpResponseCode(403);
             $resp->setBody('ESI includes are not enabled');
         }
@@ -139,7 +138,8 @@ class Nexcessnet_Turpentine_EsiController extends Mage_Core_Controller_Front_Act
      *
      * @return null
      */
-    public function postDispatch() {
+    public function postDispatch()
+    {
         $flag = $this->getFlag('', self::FLAG_NO_START_SESSION);
         $this->setFlag('', self::FLAG_NO_START_SESSION, true);
         parent::postDispatch();
@@ -152,7 +152,8 @@ class Nexcessnet_Turpentine_EsiController extends Mage_Core_Controller_Front_Act
      * @param  Varien_Object $esiData
      * @return Mage_Core_Block_Template|null
      */
-    protected function _getEsiBlock($esiData) {
+    protected function _getEsiBlock($esiData)
+    {
         $block = null;
         Varien_Profiler::start('turpentine::controller::esi::_getEsiBlock');
         foreach ($esiData->getSimpleRegistry() as $key => $value) {
@@ -163,8 +164,7 @@ class Nexcessnet_Turpentine_EsiController extends Mage_Core_Controller_Front_Act
             if (!is_object($value)) {
                 Mage::helper('turpentine/debug')->logWarn('Failed to register key/model: %s as %s(%s)', $key, $data['model'], $data['id']);
                 continue;
-            } else
-            {
+            } else {
                 $value->load($data['id']);
                 Mage::register($key, $value, true);
             }
@@ -231,11 +231,11 @@ class Nexcessnet_Turpentine_EsiController extends Mage_Core_Controller_Front_Act
      * @param  array $handles
      * @return array
      */
-    protected function _swapCustomerHandles($handles) {
+    protected function _swapCustomerHandles($handles)
+    {
         if (Mage::helper('customer')->isLoggedIn()) {
             $replacement = array('customer_logged_out', 'customer_logged_in');
-        } else
-        {
+        } else {
             $replacement = array('customer_logged_in', 'customer_logged_out');
         }
         if (($pos = array_search($replacement[0], $handles)) !== false) {

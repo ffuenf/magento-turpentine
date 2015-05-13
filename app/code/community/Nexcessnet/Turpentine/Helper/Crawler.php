@@ -39,7 +39,8 @@ class Nexcessnet_Turpentine_Helper_Crawler extends Nexcessnet_Turpentine_Helper_
      *
      * @return bool
      */
-    public function getSmartCrawlerEnabled() {
+    public function getSmartCrawlerEnabled()
+    {
         return $this->getStoreFlag(self::CONFIG_EXTENSION_SMARTCRAWLERENABLE, 'bSmartCrawlerEnabled');
     }
 }

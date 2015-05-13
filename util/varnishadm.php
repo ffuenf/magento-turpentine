@@ -28,7 +28,8 @@ class Turpentine_Shell_Varnishadm extends Mage_Shell_Abstract {
      * 
      * @return array
      */
-    protected function _parseArgs() {
+    protected function _parseArgs()
+    {
         $this->_args = array_slice(
             array_filter($_SERVER['argv'],
                 create_function('$e',
@@ -37,7 +38,8 @@ class Turpentine_Shell_Varnishadm extends Mage_Shell_Abstract {
         return $this;
     }
     
-    protected function _write() {
+    protected function _write()
+    {
         $args = func_get_args();
         return call_user_func_array('printf', $args);
     }
@@ -47,7 +49,8 @@ class Turpentine_Shell_Varnishadm extends Mage_Shell_Abstract {
      * 
      * @return null
      */
-    public function run() {
+    public function run()
+    {
         $command = str_replace('.', '_', $this->_args[0]);
         $params = array_slice($this->_args, 1);
         foreach (Mage::helper('turpentine/varnish')->getSockets() as $socket) {
@@ -63,7 +66,8 @@ class Turpentine_Shell_Varnishadm extends Mage_Shell_Abstract {
      * 
      * @return string
      */
-    public function usageHelp() {
+    public function usageHelp()
+    {
         return <<<USAGE
 Usage:  php -f varnishadm.php -- <command> [args]
         php -f varnishadm.php -- ban.url /category/product
