@@ -18,8 +18,6 @@
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-namespace Nexcessnet\Turpentine;
-
 class Nexcessnet_Turpentine_Block_Catalog_Product_List_Toolbar extends Mage_Catalog_Block_Product_List_Toolbar
 {
 

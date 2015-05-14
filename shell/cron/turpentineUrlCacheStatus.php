@@ -1,10 +1,8 @@
 <?php
 
-namespace Nexcessnet\Turpentine;
-
 require_once __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'abstract.php';
 
-class Nexcessnet_Turpentine_Url_Cache_Status extends Mage_Shell_Abstract
+class TurpentineUrlCacheStatus extends Mage_Shell_Abstract
 {
 
     const INSTANCES_COUNT = 10;
@@ -17,7 +15,7 @@ class Nexcessnet_Turpentine_Url_Cache_Status extends Mage_Shell_Abstract
      * 2. If we don't have "ids" - execute instances with ids
      */
     public function run()
-    {
+{
         if ($this->getArg('help')) {
             echo $this->usageHelp();
             return;
@@ -34,7 +32,7 @@ class Nexcessnet_Turpentine_Url_Cache_Status extends Mage_Shell_Abstract
     }
 
     public function createInstances()
-    {
+{
         $instancesCount = self::INSTANCES_COUNT;
         if ($this->getArg('instances')) {
             $instancesCount = (int)$this->getArg('instances');
@@ -66,8 +64,7 @@ class Nexcessnet_Turpentine_Url_Cache_Status extends Mage_Shell_Abstract
      *
      * @return Nexcessnet_Turpentine_Model_Resource_Mysql4_UrlCacheStatus_Collection
      */
-    protected function _getCollection($pageSize = null, $page = null)
-    {
+    protected function _getCollection($pageSize = null, $page = null) {
         $collection = Mage::getModel('turpentine/urlCacheStatus')->getCollection();
         $collection->addFieldToFilter('expire_at', array('lteq' => Mage::getSingleton('core/date')->gmtDate()))
             ->setOrder('expire_at', 'ASC');
@@ -88,8 +85,7 @@ class Nexcessnet_Turpentine_Url_Cache_Status extends Mage_Shell_Abstract
      *
      * @return bool
      */
-    protected function _createInstance($instanceNumber, $ids)
-    {
+    protected function _createInstance($instanceNumber, $ids) {
         $idsFile = $this->_getIdsFile($instanceNumber, 'w');
         if (!$idsFile) {
             Mage::helper('turpentine/debug')->logInfo("Instance with number {$instanceNumber} already running");
@@ -107,8 +103,7 @@ class Nexcessnet_Turpentine_Url_Cache_Status extends Mage_Shell_Abstract
      *
      * @param $number
      */
-    public function runPart($number)
-    {
+    public function runPart($number) {
         $idsFile = $this->_getIdsFile($number);
         if (!$idsFile) {
             Mage::helper('turpentine/debug')->logInfo("Crawler part file is locked {$number}");
@@ -140,8 +135,7 @@ class Nexcessnet_Turpentine_Url_Cache_Status extends Mage_Shell_Abstract
      *
      * @return bool|resource
      */
-    protected function _getIdsFile($number, $mode = 'r')
-    {
+    protected function _getIdsFile($number, $mode = 'r') {
         $number   = (int)$number;
         $locksDir = Mage::getConfig()->getVarDir('turpentine/locks');
         $lockName = $locksDir . DS . sprintf(self::LOCK_FILE_PATTERN, $number);
@@ -159,8 +153,7 @@ class Nexcessnet_Turpentine_Url_Cache_Status extends Mage_Shell_Abstract
      *
      * @return bool
      */
-    protected function _lockFile($file)
-    {
+    protected function _lockFile($file) {
         $result = false;
         if (flock($file, LOCK_EX | LOCK_NB)) {
             $result = true;
@@ -174,19 +167,19 @@ class Nexcessnet_Turpentine_Url_Cache_Status extends Mage_Shell_Abstract
      * @return string
      */
     public function usageHelp()
-    {
-return <<<USAGE
-Usage:  php turpentineUrlCacheStatus.php -- [options]
---instances <count>           Create "count" instances for warmup (optional, default 10)
---limit <count>               Limit urls count per on execution (optional, default 100)
---part <number>               Execute warmup for part urls by ids from part file url_warm_lock_<number>.lock
-help                          This help
-Note:
-In most cases you should use "instances" and "limit" parameter. "part" parameter can be usable only when you
-have file with ids.
-USAGE;
+{
+        return <<<USAGE
+            Usage:  php turpentineUrlCacheStatus.php -- [options]
+        --instances <count>           Create "count" instances for warmup (optional, default 10)
+        --limit <count>               Limit urls count per on execution (optional, default 100)
+        --part <number>               Execute warmup for part urls by ids from part file url_warm_lock_<number>.lock
+        help                          This help
+        Note:
+        In most cases you should use "instances" and "limit" parameter. "part" parameter can be usable only when you
+        have file with ids.
+        USAGE;
     }
 }
 
-$turpentineUrlCacheStatus = new Nexcessnet_Turpentine_Url_Cache_Status();
+$turpentineUrlCacheStatus = new TurpentineUrlCacheStatus();
 $turpentineUrlCacheStatus->run

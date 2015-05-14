@@ -17,9 +17,6 @@
 * with this program; if not, write to the Free Software Foundation, Inc.,
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
-
-namespace Nexcessnet\Turpentine;
-
 class Nexcessnet_Turpentine_Model_Core_Session extends Mage_Core_Model_Session
 {
 

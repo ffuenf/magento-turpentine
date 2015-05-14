@@ -18,8 +18,6 @@
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-namespace Nexcessnet\Turpentine;
-
 class Nexcessnet_Turpentine_Model_Resource_Mysql4_Catalog_Category_Product extends Mage_Core_Model_Mysql4_Abstract
 {
 

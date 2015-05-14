@@ -5,9 +5,6 @@
 *
 * @author Oleksandr Velykzhanin <alexander.velykzhanin@flagbit.de>
 */
-
-namespace Nexcessnet\Turpentine;
-
 class Nexcessnet_Turpentine_Model_Resource_Mysql4_UrlCacheStatus_Collection extends Mage_Core_Model_Resource_Db_Collection_Abstract
 {
 

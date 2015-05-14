@@ -22,8 +22,6 @@
 * Most of this is taken from @link https://github.com/huguesalary/Magento-Varnish
 */
 
-namespace Nexcessnet\Turpentine;
-
 class Nexcessnet_Turpentine_Model_Observer_Ban extends Varien_Event_Observer
 {
 
