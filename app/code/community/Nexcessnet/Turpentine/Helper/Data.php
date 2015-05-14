@@ -38,6 +38,12 @@ class Nexcessnet_Turpentine_Helper_Data extends Nexcessnet_Turpentine_Helper_Cor
     const CONFIG_EXTENSION_AUTOAPPLYONSAVE = 'turpentine_varnish/general/auto_apply_on_save';
 
     /**
+     * Path for fix_product_toolbar
+     */
+    const CONFIG_EXTENSION_STRIPVCLWHITESPACE = 'turpentine_varnish/general/strip_vcl_whitespace';
+
+    
+    /**
      * Contains a newly generated v4 uuid whenever read, possibly not available
      * on all kernels
      */
@@ -76,6 +82,27 @@ class Nexcessnet_Turpentine_Helper_Data extends Nexcessnet_Turpentine_Helper_Cor
      * @var bool
      */
     protected $bUseFlashMessagesFix;
+
+    /**
+     * Variable for if Turpentine should apply the product list toolbar
+     *
+     * @var bool
+     */
+    protected $bUseProductListToolbarFix;
+
+    /**
+     * Variable for if Turpentine should apply the new VCL on config changes
+     *
+     * @var bool
+     */
+    protected $bAutoApplyOnSave;
+
+    /**
+     * Variable for strip VCL whitespace
+     *
+     * @var string
+     */
+    protected $sStripVclWhitespace;
 
     /**
      * Variable for if Turpentine should apply the product list toolbar
@@ -305,7 +332,7 @@ class Nexcessnet_Turpentine_Helper_Data extends Nexcessnet_Turpentine_Helper_Cor
      */
     public function getStripVclWhitespace()
     {
-        return Mage::getStoreConfig('turpentine_varnish/general/strip_vcl_whitespace');
+        return $this-getStoreConfig(self::CONFIG_EXTENSION_STRIPVCLWHITESPACE, 'sStripVclWhitespace');
     }
 
     /**

@@ -30,15 +30,21 @@ class Nexcessnet_Turpentine_Helper_Esi extends Nexcessnet_Turpentine_Helper_Core
     const MAGE_CACHE_NAME = 'turpentine_esi_blocks';
 
     /**
-     * Path for block_debug
+     * Path for general/block_debug
      */
-    const CONFIG_EXTENSION_BLOCKDEBUG = 'turpentine_varnish/general/block_debug';
+    const CONFIG_EXTENSION_GENERAL_BLOCKDEBUG = 'turpentine_varnish/general/block_debug';
 
     /**
-     * Cache for layout XML
-     *
-     * @var Mage_Core_Model_Layout_Element|SimpleXMLElement
+     * Path for general/block_debug
      */
+    const CONFIG_EXTENSION_COOKIE_COOKIELIEFETIME = 'web/cookie/cookie_lifetime';
+
+
+    /**
+    * Cache for layout XML
+    *
+    * @var Mage_Core_Model_Layout_Element|SimpleXMLElement
+    */
     protected $_layoutXml = null;
 
     /**
@@ -49,10 +55,18 @@ class Nexcessnet_Turpentine_Helper_Esi extends Nexcessnet_Turpentine_Helper_Core
     protected $bEsiBlockLogEnabled;
 
     /**
-     * Get whether ESI includes are enabled or not
+     * Variable for Cookie Lifetime
      *
-     * @return bool
+     * @var string
      */
+    protected $sCookieLifetime;
+
+    /**
+    * Get whether ESI includes are enabled or not
+    *
+    * @return bool
+    */
+
     public function getEsiEnabled()
     {
         return Mage::app()->useCache($this->getMageCacheName());
@@ -76,7 +90,7 @@ class Nexcessnet_Turpentine_Helper_Esi extends Nexcessnet_Turpentine_Helper_Core
     public function ensureEsiEnabled()
     {
         if (!$this->shouldResponseUseEsi()) {
-            Mage::throwException('ESI includes are not enabled');
+            Mage::throwException(Mage::helper('turpentine/varnish')->__('ESI includes are not enabled'));
         }
     }
 
@@ -167,7 +181,7 @@ class Nexcessnet_Turpentine_Helper_Esi extends Nexcessnet_Turpentine_Helper_Core
      */
     public function getEsiBlockLogEnabled()
     {
-        return $this->getStoreFlag(self::CONFIG_EXTENSION_BLOCKDEBUG, 'bEsiBlockLogEnabled');
+        return $this->getStoreFlag(self::CONFIG_EXTENSION_GENERAL_BLOCKDEBUG, 'bEsiBlockLogEnabled');
     }
 
     /**
@@ -255,7 +269,7 @@ class Nexcessnet_Turpentine_Helper_Esi extends Nexcessnet_Turpentine_Helper_Core
      */
     public function getDefaultEsiTtl()
     {
-        return trim(Mage::getStoreConfig('web/cookie/cookie_lifetime'));
+        return trim($this->getStoreConfig(self::CONFIG_EXTENSION_COOKIE_COOKIELIEFETIME, 'sCookieLifetime'));
     }
 
     /**

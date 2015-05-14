@@ -9,10 +9,23 @@ class Nexcessnet_Turpentine_Model_Observer_UrlCacheStatus
 {
 
     /**
-     * Add url cache for pages that should be cached by Varnish
-     *
-     * @param Varien_Event_Observer $eventObject
+     * Path for normalization/encoding
      */
+    const CONFIG_EXTENSION_PARAMS_CRAWLERWHITELISTGETPARAMS = 'turpentine_vcl/params/crawler_whitelist_get_params';
+
+    /**
+     * Variable for crawler whitelist GET parameters
+     *
+     * @var string
+     */
+    protected $sCrawlerWhitelistGetParams;
+
+    /**
+    * Add url cache for pages that should be cached by Varnish
+    *
+    * @param Varien_Event_Observer $eventObject
+    */
+
     public function addUrlCache(Varien_Event_Observer $eventObject)
     {
         if (!Mage::helper('turpentine/varnish')->shouldResponseUseVarnish()
@@ -35,7 +48,7 @@ class Nexcessnet_Turpentine_Model_Observer_UrlCacheStatus
      */
     protected function _hasInvalidParameters()
     {
-        $whitelistGetParams = Mage::helper('turpentine/data')->cleanExplode(',', Mage::getStoreConfig('turpentine_vcl/params/crawler_whitelist_get_params'));
+        $whitelistGetParams = Mage::helper('turpentine/data')->cleanExplode(',', $this->getStoreConfig(self::CONFIG_EXTENSION_PARAMS_CRAWLERWHITELISTGETPARAMS, 'sCrawlerWhitelistGetParams'));
         $whitelistGetParams = array_map('strtolower', $whitelistGetParams);
         $getLowercase = array_map('strtolower', array_keys($_GET));
         if (count($getLowercase) && count(array_diff($getLowercase, $whitelistGetParams))) {

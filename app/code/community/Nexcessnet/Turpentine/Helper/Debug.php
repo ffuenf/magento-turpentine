@@ -20,7 +20,24 @@
 
 class Nexcessnet_Turpentine_Helper_Debug extends Nexcessnet_Turpentine_Helper_Core
 {
-    
+
+    /**
+     * Path for logging/use_custom_log_file
+     */
+    const CONFIG_EXTENSION_LOGGING_USECUSTOMLOGFILE = 'turpentine_varnish/logging/use_custom_log_file';
+
+    /**
+     * Path for logging/custom_log_file_name
+     */
+    const CONFIG_EXTENSION_LOGGING_CUSTOMLOGFILENAME = 'turpentine_varnish/logging/custom_log_file_name';
+
+    /**
+     * Variable for if custom log file should be used
+     *
+     * @var bool
+     */
+    protected $bUseCustomLogFile;
+
     /**
      * Handle log* functions
      *
@@ -156,7 +173,7 @@ class Nexcessnet_Turpentine_Helper_Debug extends Nexcessnet_Turpentine_Helper_Co
      */
     public function useCustomLogFile()
     {
-        return Mage::getStoreConfigFlag('turpentine_varnish/logging/use_custom_log_file');
+        return $this->getStoreFlag(self::CONFIG_EXTENSION_LOGGING_USECUSTOMLOGFILE, 'bUseCustomLogFile');
     }
 
     /**
@@ -165,7 +182,7 @@ class Nexcessnet_Turpentine_Helper_Debug extends Nexcessnet_Turpentine_Helper_Co
      */
     public function getCustomLogFileName()
     {
-        return (string)Mage::getStoreConfig('turpentine_varnish/logging/custom_log_file_name');
+        return $this->getStoreConfig(self::CONFIG_EXTENSION_LOGGING_CUSTOMLOGFILENAME, 'sCustomLogFileName');
     }
 
     /**

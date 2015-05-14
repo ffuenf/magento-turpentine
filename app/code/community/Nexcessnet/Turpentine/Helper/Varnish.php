@@ -25,9 +25,39 @@ class Nexcessnet_Turpentine_Helper_Varnish extends Nexcessnet_Turpentine_Helper_
     const MAGE_CACHE_NAME = 'turpentine_pages';
 
     /**
-     * Path for ajax_messages
+     * Path for general/varnish_debug
      */
-    const CONFIG_EXTENSION_VARNISHDEBUG = 'turpentine_varnish/general/varnish_debug';
+    const CONFIG_EXTENSION_GENERAL_VARNISHDEBUG = 'turpentine_varnish/general/varnish_debug';
+
+    /**
+     * Path for servers/server_list
+     */
+    const CONFIG_EXTENSION_SERVERS_SERVERLIST = 'turpentine_varnish/servers/server_list';
+
+    /**
+     * Path for servers/version
+     */
+    const CONFIG_EXTENSION_SERVERS_VERSION = 'turpentine_varnish/servers/version';
+
+    /**
+     * Path for ttls/default_ttl
+     */
+    const CONFIG_EXTENSION_TTLS_DEFAULTTTL = 'turpentine_vcl/ttls/default_ttl';
+
+    /**
+     * Path for miscellaneous/formkey_fixup_actions
+     */
+    const CONFIG_EXTENSION_MISCELLANEOUS_FORMKEYFIXUPACTIONS = 'turpentine_varnish/miscellaneous/formkey_fixup_actions';
+
+    /**
+     * Path for ttls/url_ttls
+     */
+    const CONFIG_EXTENSION_TTLS_URLTTLS = 'turpentine_vcl/ttls/url_ttls';
+
+    /**
+     * Path for servers/auth_key
+     */
+    const CONFIG_EXTENSION_SERVERS_AUTHKEY = 'turpentine_varnish/servers/auth_key';
 
     protected $_urlTtls;
 
@@ -39,10 +69,53 @@ class Nexcessnet_Turpentine_Helper_Varnish extends Nexcessnet_Turpentine_Helper_
     protected $bVarnishDebugEnabled;
 
     /**
-     * Get whether Varnish caching is enabled or not
+     * Variable for Varnish Server Version
      *
-     * @return bool
+     * @var string
      */
+    protected $sServersVersion;
+
+    /**
+     * Variable for Varnish Servers
+     *
+     * @var string
+     */
+    protected $sServersList;
+
+    /**
+     * Variable for Varnish Servers Auth-Key
+     *
+     * @var string
+     */
+    protected $sServersAuthKey;
+
+    /**
+     * Variable for Default ttl
+     *
+     * @var string
+     */
+    protected $sDefaultTtl;
+
+    /**
+     * Variable for URL ttls
+     *
+     * @var string
+     */
+    protected $sUrlTtls;
+
+    /**
+     * Variable for Formkey Fixup Actions
+     *
+     * @var string
+     */
+    protected $sFormKeyFixupActions;
+
+    /**
+    * Get whether Varnish caching is enabled or not
+    *
+    * @return bool
+    */
+
     public function getVarnishEnabled()
     {
         return Mage::app()->useCache($this->getMageCacheName());
@@ -55,7 +128,7 @@ class Nexcessnet_Turpentine_Helper_Varnish extends Nexcessnet_Turpentine_Helper_
      */
     public function getVarnishDebugEnabled()
     {
-        return $this->getStoreFlag(self::CONFIG_EXTENSION_VARNISHDEBUG, 'bVarnishDebugEnabled');
+        return $this->getStoreFlag(self::CONFIG_EXTENSION_GENERAL_VARNISHDEBUG, 'bVarnishDebugEnabled');
     }
 
     /**
@@ -103,14 +176,14 @@ class Nexcessnet_Turpentine_Helper_Varnish extends Nexcessnet_Turpentine_Helper_
     }
 
     /**
-     * Get a Varnish management socket
-     *
-     * @param  string $host [description]
-     * @param  string|int $port [description]
-     * @param  string $secretKey [description]
-     * @param  string $version [description]
-     * @return Nexcessnet_Turpentine_Model_Varnish_Admin_Socket
-     */
+    * Get a Varnish management socket
+    *
+    * @param  string $host [description]
+    * @param  string|int $port [description]
+    * @param  string $secretKey=null [description]
+    * @param  string $version=null [description]
+    * @return Nexcessnet_Turpentine_Model_Varnish_Admin_Socket
+    */
     public function getSocket($host, $port, $secretKey = null, $version = null)
     {
         $socket = Mage::getModel('turpentine/varnish_admin_socket', array('host' => $host, 'port' => $port));
@@ -131,11 +204,10 @@ class Nexcessnet_Turpentine_Helper_Varnish extends Nexcessnet_Turpentine_Helper_
     public function getSockets()
     {
         $sockets = array();
-        $servers = Mage::helper('turpentine/data')->cleanExplode(PHP_EOL,
-        Mage::getStoreConfig('turpentine_varnish/servers/server_list'));
+        $servers = Mage::helper('turpentine/data')->cleanExplode(PHP_EOL, $this->getStoreConfig(self::CONFIG_EXTENSION_SERVERS_SERVERLIST, 'sServersList'));
         $key = str_replace('\n', PHP_EOL,
-        Mage::getStoreConfig('turpentine_varnish/servers/auth_key'));
-        $version = Mage::getStoreConfig('turpentine_varnish/servers/version');
+        $this->getStoreConfig(self::CONFIG_EXTENSION_SERVERS_AUTHKEY, 'sServersAuthKey'));
+        $version = $this->getStoreConfig(self::CONFIG_EXTENSION_SERVERS_VERSION, 'sServersVersion');
         if ($version == 'auto') {
             $version = null;
         }
@@ -163,7 +235,7 @@ class Nexcessnet_Turpentine_Helper_Varnish extends Nexcessnet_Turpentine_Helper_
      */
     public function getDefaultTtl()
     {
-        return Mage::getStoreConfig('turpentine_vcl/ttls/default_ttl');
+        return $this->getStoreConfig(self::CONFIG_EXTENSION_TTLS_DEFAULTTTL, 'sDefaultTtl');
     }
 
     /**
@@ -174,8 +246,7 @@ class Nexcessnet_Turpentine_Helper_Varnish extends Nexcessnet_Turpentine_Helper_
      */
     public function shouldFixProductListToolbar()
     {
-        return Mage::helper('turpentine/data')->useProductListToolbarFix() &&
-            Mage::app()->getStore()->getCode() !== 'admin';
+        return Mage::helper('turpentine/data')->useProductListToolbarFix() && Mage::app()->getStore()->getCode() !== 'admin';
     }
 
     /**
@@ -202,7 +273,7 @@ class Nexcessnet_Turpentine_Helper_Varnish extends Nexcessnet_Turpentine_Helper_
 
     public function getFormKeyFixupActionsList()
     {
-        $data = Mage::getStoreConfig('turpentine_varnish/miscellaneous/formkey_fixup_actions');
+        $data = $this->getStoreConfig(self::CONFIG_EXTENSION_MISCELLANEOUS_FORMKEYFIXUPACTIONS, 'sFormKeyFixupActions');
         $actions = array_filter(explode(PHP_EOL, trim($data)));
         return $actions;
     }
@@ -262,7 +333,7 @@ class Nexcessnet_Turpentine_Helper_Varnish extends Nexcessnet_Turpentine_Helper_
             return $this->_urlTtls;
         }
         $ttls = array();
-        $configTtls = Mage::helper('turpentine/data')->cleanExplode(PHP_EOL, Mage::getStoreConfig('turpentine_vcl/ttls/url_ttls'));
+        $configTtls = Mage::helper('turpentine/data')->cleanExplode(PHP_EOL, $this->getStoreConfig(self::CONFIG_EXTENSION_TTLS_URLTTLS, 'sUrlTtls'));
         if (!count($configTtls)) {
             return $ttls;
         }
