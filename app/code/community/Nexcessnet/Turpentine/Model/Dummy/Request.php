@@ -21,6 +21,18 @@
 class Nexcessnet_Turpentine_Model_Dummy_Request extends Mage_Core_Controller_Request_Http
 {
 
+    /**
+     * Path for default/front
+     */
+    const CONFIG_EXTENSION_DEFAULT_FRONT = 'web/default/front';
+
+    /**
+     * Variable for default frontname
+     *
+     * @var string
+     */
+    protected $sDefaultFront;
+
     public $GET = null;
     public $POST = null;
     public $SERVER = null;
@@ -676,7 +688,7 @@ class Nexcessnet_Turpentine_Model_Dummy_Request extends Mage_Core_Controller_Req
         else
         {
             // was $router->_getDefaultPath()
-            $p = explode('/', Mage::getStoreConfig('web/default/front'));
+            $p = explode('/', $this->getStoreConfig(self::CONFIG_EXTENSION_DEFAULT_FRONT, 'sDefaultFront'));
         }
         // get module name
         if ($this->getModuleName())

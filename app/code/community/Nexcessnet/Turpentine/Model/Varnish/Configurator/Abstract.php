@@ -39,25 +39,320 @@ abstract class Nexcessnet_Turpentine_Model_Varnish_Configurator_Abstract
     const CONFIG_EXTENSION_NORMALIZATION_HOST = 'turpentine_vcl/normalization/host';
 
     /**
-     * Variable for if Turpentine should normalize the encoding
+     * Path for normalization/host_target
+     */
+    const CONFIG_EXTENSION_NORMALIZATION_HOSTTARGET = 'turpentine_vcl/normalization/host_target';
+
+    /**
+     * Path for servers/config_file
+     */
+    const CONFIG_EXTENSION_SERVERS_CONFIGFILE = 'turpentine_varnish/servers/config_file';
+
+    /**
+     * Path for servers/custom_include_file
+     */
+    const CONFIG_EXTENSION_SERVERS_CUSTOMINCLUDEFILE = 'turpentine_varnish/servers/custom_include_file';
+
+    /**
+     * Path for session/use_http_user_agent
+     */
+    const CONFIG_EXTENSION_SESSION_USEHTTPUSERAGENT = 'web/session/use_http_user_agent';
+
+    /**
+     * Path for session/use_remote_addr
+     */
+    const CONFIG_EXTENSION_SESSION_USEREMOTEADDR = 'web/session/use_remote_addr';
+
+    /**
+     * Path for session/use_http_via
+     */
+    const CONFIG_EXTENSION_SESSION_USEHTTPVIA = 'web/session/use_http_via';
+
+    /**
+     * Path for session/use_http_x_forwarded_for
+     */
+    const CONFIG_EXTENSION_SESSION_USEHTTPXFORWARDEDFOR = 'web/session/use_http_x_forwarded_for';
+
+    /**
+     * Path for backend/frontend_timeout
+     */
+    const CONFIG_EXTENSION_BACKEND_FRONTENDTIMEOUT = 'turpentine_vcl/backend/frontend_timeout';
+
+    /**
+     * Path for backend/frontend_timeout
+     */
+    const CONFIG_EXTENSION_BACKEND_ADMINTIMEOUT = 'turpentine_vcl/backend/admin_timeout';
+
+    /**
+     * Path for backend/backend_host
+     */
+    const CONFIG_EXTENSION_BACKEND_BACKENDHOST = 'turpentine_vcl/backend/backend_host';
+
+    /**
+     * Path for backend/backend_port
+     */
+    const CONFIG_EXTENSION_BACKEND_BACKENDPORT = 'turpentine_vcl/backend/backend_port';
+
+    /**
+     * Path for backend/crawler_user_agents
+     */
+    const CONFIG_EXTENSION_BACKEND_CRAWLERUSERAGENTS = 'turpentine_vcl/backend/crawler_user_agents';
+
+    /**
+     * Path for backend/crawlers
+     */
+    const CONFIG_EXTENSION_BACKEND_CRAWLERS = 'turpentine_vcl/backend/crawlers';
+
+    /**
+     * Path for general/varnish_debug
+     */
+    const CONFIG_EXTENSION_GENERAL_VARNISHDEBUG = 'turpentine_vcl/general/varnish_debug';
+
+    /**
+     * Path for url/use_custom_path
+     */
+    const CONFIG_EXTENSION_URL_USECUSTOMPATH = 'admin/url/use_custom_path';
+
+    /**
+     * Path for url/use_custom_path
+     */
+    const CONFIG_EXTENSION_PARAMS_GETPARAMS = 'turpentine_vcl/params/get_params';
+
+    /**
+     * Path for static/force_static
+     */
+    const CONFIG_EXTENSION_STATIC_FORCESTATIC = 'turpentine_vcl/static/force_static';
+
+    /**
+     * Path for static/exts
+     */
+    const CONFIG_EXTENSION_STATIC_EXTS = 'turpentine_vcl/static/exts';
+
+    /**
+     * Path for urls/url_blacklist
+     */
+    const CONFIG_EXTENSION_URLS_URLBLACKLIST = 'turpentine_vcl/urls/url_blacklist';
+
+    /**
+     * Path for ttls/grace_period
+     */
+    const CONFIG_EXTENSION_TTLS_GRACEPERIOD = 'turpentine_vcl/ttls/grace_period';
+
+    /**
+     * Path for ttls/static_ttl
+     */
+    const CONFIG_EXTENSION_TTLS_STATICTTL = 'turpentine_vcl/ttls/static_ttl';
+
+    /**
+     * Path for ttls/static_ttl
+     */
+    const CONFIG_EXTENSION_TTLS_URLTTLS = 'turpentine_vcl/ttls/url_ttls';
+
+    /**
+     * Path for ttls/lru_factor
+     */
+    const CONFIG_EXTENSION_TTLS_LRUFACTOR = 'turpentine_vcl/ttls/lru_factor';
+
+    /**
+     * Path for ttls/static_ttl
+     */
+    const CONFIG_EXTENSION_RESTRICT_ALLOWIPS = 'dev/restrict/allow_ips';
+
+    /**
+     * Variable for whether Turpentine should normalize the encoding
      *
      * @var bool
      */
     protected $bNormalizeEncoding;
 
     /**
-     * Variable for if Turpentine should normalize the user_agent
+     * Variable for whether Turpentine should normalize the user_agent
      *
      * @var bool
      */
     protected $bNormalizeUserAgent;
 
     /**
-     * Variable for if Turpentine should normalize the host
+     * Variable for whether Turpentine should normalize the host
      *
      * @var bool
      */
     protected $bNormalizeHost;
+
+    /**
+     * Variable for whether Turpentine should respect User-Agent Headers
+     *
+     * @var bool
+     */
+    protected $bUseHttpUserAgent;
+
+    /**
+     * Variable for whether Turpentine should use the remote Address
+     *
+     * @var bool
+     */
+    protected $bUseRemoteAddr;
+
+    /**
+     * Variable for whether Turpentine should respect User-Agent Headers
+     *
+     * @var bool
+     */
+    protected $bUseHttpVia;
+
+    /**
+     * Variable for whether Turpentine should respect X-Forwarded-For Headers
+     *
+     * @var bool
+     */
+    protected $bUseHttpXForwardedFor;
+
+    /**
+     * Variable for whether Magento uses a custom admin path
+     *
+     * @var bool
+     */
+    protected $bUseCustomPath;
+
+    /**
+     * Variable for whether Turpentine should force static
+     *
+     * @var bool
+     */
+    protected $bForceStatic;
+
+    /**
+     * Variable for Varnish Servers Configfile
+     *
+     * @var string
+     */
+    protected $sServersConfigFile;
+
+    /**
+     * Variable for Varnish custom include file
+     *
+     * @var string
+     */
+    protected $sCustomIncludeFile;
+
+    /**
+     * Variable for Varnish frontend timeout
+     *
+     * @var string
+     */
+    protected $sFrontendTimeout;
+
+    /**
+     * Variable for Varnish admin timeout
+     *
+     * @var string
+     */
+    protected $sAdminTimeout;
+
+    /**
+     * Variable for Varnish backend host
+     *
+     * @var string
+     */
+    protected $sBackendHost;
+
+    /**
+     * Variable for Varnish backend port
+     *
+     * @var string
+     */
+    protected $sBackendPort;
+
+    /**
+     * Variable for Varnish debugging
+     *
+     * @var string
+     */
+    protected $sVarnishDebug;
+
+    /**
+     * Variable for Magento custom admin path
+     *
+     * @var string
+     */
+    protected $sCustomPath;
+
+    /**
+     * Variable for hostname for host normalization from Magento's base URL
+     *
+     * @var string
+     */
+    protected $sHostTarget;
+
+    /**
+     * Variable for GET parameters
+     *
+     * @var string
+     */
+    protected $sGetParams;
+
+    /**
+     * Variable for static file extensions
+     *
+     * @var string
+     */
+    protected $sStaticExts;
+
+    /**
+     * Variable for URL blacklist
+     *
+     * @var string
+     */
+    protected $sUrlBlacklist;
+
+    /**
+     * Variable for grace period
+     *
+     * @var string
+     */
+    protected $sGracePeriod;
+
+    /**
+     * Variable for static ttl
+     *
+     * @var string
+     */
+    protected $sStaticTtl;
+
+    /**
+     * Variable for url ttls
+     *
+     * @var string
+     */
+    protected $sUrlTtls;
+
+    /**
+     * Variable for crawler user agents
+     *
+     * @var string
+     */
+    protected $sCrawlerUserAgents;
+
+    /**
+     * Variable for crawlers
+     *
+     * @var string
+     */
+    protected $sCrawlers;
+
+    /**
+     * Variable for allowed dev IPs
+     *
+     * @var string
+     */
+    protected $sAllowIps;
+
+    /**
+     * Variable for LRU factor
+     *
+     * @var string
+     */
+    protected $sLruFactor;
 
     /**
     * Get the correct version of a configurator from a socket
@@ -157,7 +452,7 @@ abstract class Nexcessnet_Turpentine_Model_Varnish_Configurator_Abstract
     */
     protected function _getVclFilename()
     {
-        return $this->_formatTemplate(Mage::getStoreConfig('turpentine_varnish/servers/config_file'), array('root_dir' => Mage::getBaseDir()));
+        return $this->_formatTemplate($this->getStoreConfig(self::CONFIG_EXTENSION_SERVERS_CONFIGFILE, 'sServersConfigFile'), array('root_dir' => Mage::getBaseDir()));
     }
 
     /**
@@ -167,7 +462,7 @@ abstract class Nexcessnet_Turpentine_Model_Varnish_Configurator_Abstract
     */
     protected function _getCustomIncludeFilename()
     {
-        return $this->_formatTemplate(Mage::getStoreConfig('turpentine_varnish/servers/custom_include_file'), array('root_dir' => Mage::getBaseDir()));
+        return $this->_formatTemplate($this->getStoreConfig(self::CONFIG_EXTENSION_SERVERS_CUSTOMINCLUDEFILE, 'sCustomIncludeFile'), array('root_dir' => Mage::getBaseDir()));
     }
 
     /**
@@ -207,9 +502,9 @@ abstract class Nexcessnet_Turpentine_Model_Varnish_Configurator_Abstract
     */
     protected function _getAdminFrontname()
     {
-        if (Mage::getStoreConfig('admin/url/use_custom_path'))
+        if ($this->getStoreFlag(self::CONFIG_EXTENSION_URL_USECUSTOMPATH, 'bUseCustomPath'))
         {
-            return Mage::getStoreConfig('admin/url/custom_path');
+            return $this->getStoreConfig(self::CONFIG_EXTENSION_URL_CUSTOMPATH, 'sCustomPath'));
         }
         else
         {
@@ -224,7 +519,7 @@ abstract class Nexcessnet_Turpentine_Model_Varnish_Configurator_Abstract
     */
     protected function _getNormalizeHostTarget()
     {
-        $configHost = trim(Mage::getStoreConfig('turpentine_vcl/normalization/host_target'));
+        $configHost = trim($this->getStoreConfig(self::CONFIG_EXTENSION_NORMALIZATION_HOSTTARGET, 'sHostTarget'));
         if ($configHost)
         {
             return $configHost;
@@ -290,7 +585,7 @@ abstract class Nexcessnet_Turpentine_Model_Varnish_Configurator_Abstract
     */
     protected function _getUrlExcludes()
     {
-        $urls = Mage::getStoreConfig('turpentine_vcl/urls/url_blacklist');
+        $urls = $this->getStoreConfig(self::CONFIG_EXTENSION_URLS_URLBLACKLIST, 'sUrlBlacklist');
         return implode('|', array_merge(array($this->_getAdminFrontname(), 'api'), Mage::helper('turpentine/data')->cleanExplode(PHP_EOL, $urls)));
     }
 
@@ -311,14 +606,14 @@ abstract class Nexcessnet_Turpentine_Model_Varnish_Configurator_Abstract
     */
     protected function _getDefaultBackend()
     {
-        $timeout = Mage::getStoreConfig('turpentine_vcl/backend/frontend_timeout');
+        $timeout = $this->getStoreConfig(self::CONFIG_EXTENSION_BACKEND_FRONTENDTIMEOUT, 'sFrontendTimeout');
         $default_options = array(
             'first_byte_timeout' => $timeout . 's',
             'between_bytes_timeout' => $timeout . 's',
         );
         return $this->_vcl_backend('default',
-        Mage::getStoreConfig('turpentine_vcl/backend/backend_host'),
-        Mage::getStoreConfig('turpentine_vcl/backend/backend_port'),
+        $this->getStoreConfig(self::CONFIG_EXTENSION_BACKEND_BACKENDHOST, 'sBackendHost'),
+        $this->getStoreConfig(self::CONFIG_EXTENSION_BACKEND_BACKENDPORT, 'sBackendPort'),
         $default_options);
     }
 
@@ -329,14 +624,14 @@ abstract class Nexcessnet_Turpentine_Model_Varnish_Configurator_Abstract
     */
     protected function _getAdminBackend()
     {
-        $timeout = Mage::getStoreConfig('turpentine_vcl/backend/admin_timeout');
+        $timeout = $this->getStoreConfig(self::CONFIG_EXTENSION_BACKEND_ADMINTIMEOUT, 'sAdminTimeout');
         $admin_options = array(
             'first_byte_timeout' => $timeout . 's',
             'between_bytes_timeout' => $timeout . 's',
         );
         return $this->_vcl_backend('admin',
-        Mage::getStoreConfig('turpentine_vcl/backend/backend_host'),
-        Mage::getStoreConfig('turpentine_vcl/backend/backend_port'),
+        $this->getStoreConfig(self::CONFIG_EXTENSION_BACKEND_BACKENDHOST, 'sBackendHost'),
+        $this->getStoreConfig(self::CONFIG_EXTENSION_BACKEND_BACKENDPORT, 'sBackendPort'),
         $admin_options);
     }
 
@@ -350,7 +645,7 @@ abstract class Nexcessnet_Turpentine_Model_Varnish_Configurator_Abstract
     */
     protected function _getGracePeriod()
     {
-        return Mage::getStoreConfig('turpentine_vcl/ttls/grace_period');
+        return $this->getStoreConfig(self::CONFIG_EXTENSION_TTLS_GRACEPERIOD, 'sGracePeriod');
     }
 
     /**
@@ -360,7 +655,7 @@ abstract class Nexcessnet_Turpentine_Model_Varnish_Configurator_Abstract
     */
     protected function _getEnableDebugHeaders()
     {
-        return Mage::getStoreConfig('turpentine_varnish/general/varnish_debug') ? 'true' : 'false';
+        return $this->getStoreConfig(self::CONFIG_EXTENSION_GENERAL_VARNISHDEBUG, 'sVarnishDebug') ? 'true' : 'false';
     }
 
     /**
@@ -370,7 +665,7 @@ abstract class Nexcessnet_Turpentine_Model_Varnish_Configurator_Abstract
     */
     protected function _getGetParamExcludes()
     {
-        return implode('|', Mage::helper('turpentine/data')->cleanExplode(',', Mage::getStoreConfig('turpentine_vcl/params/get_params')));
+        return implode('|', Mage::helper('turpentine/data')->cleanExplode(',', $this->getStoreConfig(self::CONFIG_EXTENSION_PARAMS_GETPARAMS, 'sGetParams')));
     }
 
     /**
@@ -380,7 +675,7 @@ abstract class Nexcessnet_Turpentine_Model_Varnish_Configurator_Abstract
     */
     protected function _getForceCacheStatic()
     {
-        return Mage::getStoreConfig('turpentine_vcl/static/force_static') ? 'true' : 'false';
+        return $this->getStoreFlag(self::CONFIG_EXTENSION_STATIC_FORCESTATIC, 'bForceStatic') ? 'true' : 'false';
     }
 
     /**
@@ -390,7 +685,7 @@ abstract class Nexcessnet_Turpentine_Model_Varnish_Configurator_Abstract
     */
     protected function _getStaticExtensions()
     {
-        return implode('|', Mage::helper('turpentine/data')->cleanExplode(',', Mage::getStoreConfig('turpentine_vcl/static/exts')));
+        return implode('|', Mage::helper('turpentine/data')->cleanExplode(',', $this->getStoreConfig(self::CONFIG_EXTENSION_STATIC_EXTS, 'sStaticExts')));
     }
 
     /**
@@ -399,7 +694,7 @@ abstract class Nexcessnet_Turpentine_Model_Varnish_Configurator_Abstract
     * @return string
     */
     protected function _getStaticTtl() {
-        return Mage::getStoreConfig('turpentine_vcl/ttls/static_ttl');
+        return $this->getStoreConfig(self::CONFIG_EXTENSION_TTLS_STATICTTL, 'sStaticTtl');
     }
 
     /**
@@ -410,7 +705,7 @@ abstract class Nexcessnet_Turpentine_Model_Varnish_Configurator_Abstract
     protected function _getUrlTtls()
     {
         $str = array();
-        $configTtls = Mage::helper('turpentine/data')->cleanExplode(PHP_EOL, Mage::getStoreConfig('turpentine_vcl/ttls/url_ttls'));
+        $configTtls = Mage::helper('turpentine/data')->cleanExplode(PHP_EOL, $this->getStoreConfig(self::CONFIG_EXTENSION_TTLS_URLTTLS, 'sUrlTtls'));
         $ttls = array();
         foreach ($configTtls as $line)
         {
@@ -449,7 +744,7 @@ abstract class Nexcessnet_Turpentine_Model_Varnish_Configurator_Abstract
     */
     protected function _getDebugIps()
     {
-        return Mage::helper('turpentine/data')->cleanExplode(',', Mage::getStoreConfig('dev/restrict/allow_ips'));
+        return Mage::helper('turpentine/data')->cleanExplode(',', $this->getStoreConfig(self::CONFIG_EXTENSION_RESTRICT_ALLOWIPS, 'sAllowIps'));
     }
 
     /**
@@ -459,7 +754,7 @@ abstract class Nexcessnet_Turpentine_Model_Varnish_Configurator_Abstract
     */
     protected function _getCrawlerIps()
     {
-        return Mage::helper('turpentine/data')->cleanExplode(',', Mage::getStoreConfig('turpentine_vcl/backend/crawlers'));
+        return Mage::helper('turpentine/data')->cleanExplode(',', $this->getStoreConfig(self::CONFIG_EXTENSION_BACKEND_CRAWLERS, 'sCrawlers'));
     }
 
     /**
@@ -469,7 +764,7 @@ abstract class Nexcessnet_Turpentine_Model_Varnish_Configurator_Abstract
     */
     protected function _getCrawlerUserAgents()
     {
-        return implode('|', Mage::helper('turpentine/data')->cleanExplode(',', Mage::getStoreConfig('turpentine_vcl/backend/crawler_user_agents')));
+        return implode('|', Mage::helper('turpentine/data')->cleanExplode(',', $this->getStoreConfig(self::CONFIG_EXTENSION_BACKEND_CRAWLERUSERAGENTS, 'sCrawlerUserAgents')));
     }
 
     /**
@@ -481,7 +776,7 @@ abstract class Nexcessnet_Turpentine_Model_Varnish_Configurator_Abstract
     */
     protected function _getLruFactor()
     {
-        return Mage::getStoreConfig('turpentine_vcl/ttls/lru_factor');
+        return $this->getStoreConfig(self::CONFIG_EXTENSION_TTLS_LRUFACTOR, 'sLruFactor');
     }
 
     /**
@@ -495,19 +790,19 @@ abstract class Nexcessnet_Turpentine_Model_Varnish_Configurator_Abstract
     protected function _getAdvancedSessionValidationTargets()
     {
         $validation = array();
-        if (Mage::getStoreConfig('web/session/use_remote_addr'))
+        if ($this->getStoreFlag(self::CONFIG_EXTENSION_SESSION_USEREMOTEADDR, 'bUseRemoteAddr'))
         {
             $validation[] = 'client.ip';
         }
-        if (Mage::getStoreConfig('web/session/use_http_via'))
+        if ($this->getStoreFlag(self::CONFIG_EXTENSION_SESSION_USEHTTPVIA, 'bUseHttpVia'))
         {
             $validation[] = 'req.http.Via';
         }
-        if (Mage::getStoreConfig('web/session/use_http_x_forwarded_for'))
+        if ($this->getStoreFlag(self::CONFIG_EXTENSION_SESSION_USEHTTPXFORWARDEDFOR, 'bUseHttpXForwardedFor'))
         {
             $validation[] = 'req.http.X-Forwarded-For';
         }
-        if (Mage::getStoreConfig('web/session/use_http_user_agent') && !Mage::getStoreConfig('turpentine_vcl/normalization/user_agent'))
+        if ($this->getStoreFlag(self::CONFIG_EXTENSION_SESSION_USEHTTPUSERAGENT, 'bUseHttpUserAgent') && !$this->getStoreFlag(self::CONFIG_EXTENSION_NORMALIZATION_USERAGENT, 'bNormalizeUserAgent'))
         {
             $validation[] = 'req.http.User-Agent';
         }
@@ -732,15 +1027,15 @@ EOS;
             'custom_c_code' => file_get_contents($this->_getVclTemplateFilename(self::VCL_CUSTOM_C_CODE_FILE)),
             'esi_private_ttl' => Mage::helper('turpentine/esi')->getDefaultEsiTtl(),
         );
-        if (Mage::getStoreFlag(self::CONFIG_EXTENSION_NORMALIZATION_ENCODING, 'bNormalizeEncoding'))
+        if ($this->getStoreFlag(self::CONFIG_EXTENSION_NORMALIZATION_ENCODING, 'bNormalizeEncoding'))
         {
             $vars['normalize_encoding'] = $this->_vcl_sub_normalize_encoding();
         }
-        if (Mage::getStoreFlag(self::CONFIG_EXTENSION_NORMALIZATION_USERAGENT, 'bNormalizeUserAgent'))
+        if ($this->getStoreFlag(self::CONFIG_EXTENSION_NORMALIZATION_USERAGENT, 'bNormalizeUserAgent'))
         {
             $vars['normalize_user_agent'] = $this->_vcl_sub_normalize_user_agent();
         }
-        if (Mage::getStoreFlag(self::CONFIG_EXTENSION_NORMALIZATION_HOST, 'bNormalizeHost'))
+        if ($this->getStoreFlag(self::CONFIG_EXTENSION_NORMALIZATION_HOST, 'bNormalizeHost'))
         {
             $vars['normalize_host'] = $this->_vcl_sub_normalize_host();
         }

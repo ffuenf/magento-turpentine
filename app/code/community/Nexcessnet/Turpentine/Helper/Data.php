@@ -98,6 +98,13 @@ class Nexcessnet_Turpentine_Helper_Data extends Nexcessnet_Turpentine_Helper_Cor
     protected $bAutoApplyOnSave;
 
     /**
+     * Variable for strip VCL whitespace
+     *
+     * @var string
+     */
+    protected $sStripVclWhitespace;
+
+    /**
     * Like built-in explode() but applies trim to each exploded element and
     * filters out empty elements from result
     *
@@ -317,7 +324,7 @@ class Nexcessnet_Turpentine_Helper_Data extends Nexcessnet_Turpentine_Helper_Cor
     */
     public function getStripVclWhitespace()
     {
-        return Mage::getStoreConfig(self::CONFIG_EXTENSION_STRIPVCLWHITESPACE);
+        return $this-getStoreConfig(self::CONFIG_EXTENSION_STRIPVCLWHITESPACE, 'sStripVclWhitespace');
     }
         
     /**
