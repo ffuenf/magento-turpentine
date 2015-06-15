@@ -197,7 +197,7 @@ sub vcl_recv {
             set req.url = regsuball(req.url, "(?:(\?)?|&)(?:{{get_param_ignored}})=[^&]+", "\1");
             set req.url = regsuball(req.url, "(?:(\?)&|\?$)", "\1");
         }
-        
+
 
         return (lookup);
     }
@@ -353,7 +353,7 @@ sub vcl_deliver {
         remove resp.http.X-Varnish-Cookie-Expires;
     }
     if (req.http.X-Varnish-Esi-Method == "ajax" && req.http.X-Varnish-Esi-Access == "private") {
-        set resp.http.Cache-Control = "no-cache";
+        set resp.http.Cache-Control = "no-store, max-age=0, no-cache";
     }
     set resp.http.X-Opt-Debug-Headers = "{{debug_headers}}";
     if (resp.http.X-Opt-Debug-Headers == "true" || client.ip ~ debug_acl ) {

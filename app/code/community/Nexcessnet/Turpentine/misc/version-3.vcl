@@ -354,7 +354,7 @@ sub vcl_deliver {
         unset resp.http.X-Varnish-Cookie-Expires;
     }
     if (req.http.X-Varnish-Esi-Method == "ajax" && req.http.X-Varnish-Esi-Access == "private") {
-        set resp.http.Cache-Control = "no-cache";
+        set resp.http.Cache-Control = "no-store, max-age=0, no-cache";
     }
     if ({{debug_headers}} || client.ip ~ debug_acl) {
         # debugging is on, give some extra info
