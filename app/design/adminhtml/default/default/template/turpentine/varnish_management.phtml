@@ -109,26 +109,28 @@
             </td>
         <?php endif; ?>
     </tr>
-    <tr>
-        <td colspan="2" class="scope-label">
-            <form action="<?php echo $this->getFlushPartialUrl(); ?>" method="post" id="partial_url_form">
+</table>
+<form id="purge_form" action="<?php echo $this->getFlushPartialUrl() ?>" method="post"  enctype="multipart/form-data">
                 <?php echo $this->getBlockHtml('formkey')?>
-                <button
-                    type="submit"
-                    class="scalable delete">
-                    <span><?php echo Mage::helper( 'turpentine/data' )
-                                ->__('Flush matching URLs') ?></span>
-                </button>
-                <input id="pattern" name="pattern" type="text" style="width: 295px; margin-left: 5px;" class="required-entry" value="" />
-            </form>
-            <script type="text/javascript">
-                var partialUrlForm = new varienForm('partial_url_form');
-                new Varien.searchForm('partial_url_form', 'pattern', '<?php echo Mage::helper( 'turpentine/data' )
-                        ->__('Enter a (relative) regex to flush matching URLs')?>');
-            </script>
+    <table class="form-list">
+        <tr>
+            <td class="scope-label">
+                <input type="text" name="pattern" class="input-text required-entry" style="width:300px" />
+            </td>
+            <td class="scope-label">
+                <button type="submit" class="scalable"><span><?php echo Mage::helper('turpentine/data')->__('Purge URL') ?></span></button>
+            </td>
+            <td class="scope-label">
+                <?php echo Mage::helper('turpentine/data')->__('Flush URL in Varnish Cache.')?>
         </td>
     </tr>
 </table>
+</form>
+<script type="text/javascript">
+    //<![CDATA[
+    var purgeForm = new varienForm('purge_form');
+    //]]>
+</script>
 <?php echo $this->getChildHtml(); ?>
 
 <style>

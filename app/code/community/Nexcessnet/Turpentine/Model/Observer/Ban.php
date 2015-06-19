@@ -84,8 +84,15 @@ class Nexcessnet_Turpentine_Model_Observer_Ban extends Varien_Event_Observer {
     public function banProductPageCache( $eventObject ) {
         if( Mage::helper( 'turpentine/varnish' )->getVarnishEnabled() ) {
             $banHelper = Mage::helper( 'turpentine/ban' );
+
+            /** @var Mage_Catalog_Model_Product $product */
             $product = $eventObject->getProduct();
-            $urlPattern = $banHelper->getProductBanRegex( $product );
+
+            /** @var Mage_Catalog_Model_Resource_Eav_Mysql4_Product_Collection $productCollection */
+            $parentProductsCollection = $banHelper->getRelatedProductsCollection($product);
+
+            // ban product and related products
+            $urlPattern = $banHelper->getProductBanRegex( $parentProductsCollection );
             $result = $this->_getVarnishAdmin()->flushUrl( $urlPattern );
             Mage::dispatchEvent( 'turpentine_ban_product_cache', $result );
             $cronHelper = Mage::helper( 'turpentine/cron' );
@@ -97,8 +104,24 @@ class Nexcessnet_Turpentine_Model_Observer_Ban extends Varien_Event_Observer {
                     $cronHelper->addProductToCrawlerQueue( $parentProduct );
                 }
             }
+
+            // ban related categories
+            $productIds = array_merge(array($product->getId()), $parentProductsCollection->getAllIds());
+            $categoryRelationCollection = Mage::getResourceModel('turpentine/catalog_category_product_collection')
+                                            ->filterAllByProductIds( $productIds);
+
+            $categoryIds = $categoryRelationCollection->getAllCategoryIds();
+            $categoryCollection = Mage::getResourceModel('catalog/category_collection')
+                                    ->addAttributeToSelect('url_key')
+                                    ->addIdFilter($categoryIds);
+
+            foreach ($categoryCollection as $category)
+            {
+                $this->banCategoryCache(new Varien_Object(array('category' => $category)));
+            }
         }
     }
+
 
     /**
      * Ban a product page from the cache if it's stock status changed
@@ -213,6 +236,34 @@ class Nexcessnet_Turpentine_Model_Observer_Ban extends Varien_Event_Observer {
             if( $this->_checkResult( $result ) &&
                     $cronHelper->getCrawlerEnabled() ) {
                 $cronHelper->addCmsPageToCrawlerQueue( $pageId );
+            }
+        }
+    }
+
+    /**
+     * Ban a specific CMS page revision from cache after edit (enterprise edition only)
+     * Events:
+     *     enterprise_cms_revision_save_commit_after
+     *
+     * @param Varien_Object $eventObject
+     * @return null
+     */
+    public function banCmsPageRevisionCache($eventObject) {
+        if ( Mage::helper( 'turpentine/varnish' )->getVarnishEnabled() ) {
+            $pageId = $eventObject->getDataObject()->getPageId();
+            $page = Mage::getModel( 'cms/page' )->load( $pageId );
+
+            // Don't do anything if the page isn't found.
+            if( !$page ) {
+                return;
+            }
+            $pageIdentifier = $page->getIdentifier();
+            $result = $this->_getVarnishAdmin()->flushUrl( $pageIdentifier . '(?:\.html?)?$' );
+            Mage::dispatchEvent( 'turpentine_ban_cms_page_cache', $result );
+            $cronHelper = Mage::helper( 'turpentine/cron' );
+            if( $this->_checkResult( $result ) &&
+                $cronHelper->getCrawlerEnabled() ) {
+                $cronHelper->addCmsPageToCrawlerQueue( $pageIdentifier );
             }
         }
     }

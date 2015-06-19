@@ -8,3 +8,4 @@ app/design/adminhtml/default/default/template/turpentine/  app/design/adminhtml/
 app/design/frontend/base/default/layout/turpentine_esi.xml   app/design/frontend/base/default/layout/turpentine_esi.xml
 app/design/frontend/base/default/template/turpentine/   app/design/frontend/base/default/template/turpentine/
 util/varnishadm.php shell/varnishadm.php
+shell/cron/* shell/cron

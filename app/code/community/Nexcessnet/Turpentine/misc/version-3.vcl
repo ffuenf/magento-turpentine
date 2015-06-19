@@ -106,21 +106,25 @@ sub vcl_recv {
         }
     }
 
+    # Normalize request data before potentially sending things off to the
+    # backend. This ensures all request types get the same information, most
+    # notably POST requests getting a normalized user agent string to empower
+    # adaptive designs.
+    {{normalize_encoding}}
+    {{normalize_user_agent}}
+    {{normalize_host}}
+
     # We only deal with GET and HEAD by default
     # we test this here instead of inside the url base regex section
     # so we can disable caching for the entire site if needed
     if (!{{enable_caching}} || req.http.Authorization ||
-        req.request !~ "^(GET|HEAD)$" ||
+        req.request !~ "^(GET|HEAD|OPTIONS)$" ||
         req.http.Cookie ~ "varnish_bypass={{secret_handshake}}") {
         return (pipe);
     }
 
     # remove double slashes from the URL, for higher cache hit rate
     set req.url = regsuball(req.url, "(.*)//+(.*)", "\1/\2");
-
-    {{normalize_encoding}}
-    {{normalize_user_agent}}
-    {{normalize_host}}
 
     # check if the request is for part of magento
     if (req.url ~ "{{url_base_regex}}") {
@@ -155,6 +159,10 @@ sub vcl_recv {
         }
         # no frontend cookie was sent to us AND this is not an ESI or AJAX call
         if (req.http.Cookie !~ "frontend=" && !req.http.X-Varnish-Esi-Method) {
+        # no frontend cookie was sent to us
+        # BUGFIX https://github.com/ho-nl/magento-turpentine/commit/88a84039b1ae13a90eb9498aa458bec402a14009
+        # Issue thread: https://github.com/nexcess/magento-turpentine/issues/470
+        if (req.http.Cookie !~ "frontend="  && !req.http.X-Varnish-Esi-Method) {
             if (client.ip ~ crawler_acl ||
                     req.http.User-Agent ~ "^(?:{{crawler_user_agent_regex}})$") {
                 # it's a crawler, give it a fake cookie
@@ -186,11 +194,12 @@ sub vcl_recv {
             # TODO: should this be pass or pipe?
             return (pass);
         }
-        if (req.url ~ "[?&](utm_source|utm_medium|utm_campaign|gclid|cx|ie|cof|siteurl)=") {
-            # Strip out Google related parameters
-            set req.url = regsuball(req.url, "(?:(\?)?|&)(?:utm_source|utm_medium|utm_campaign|gclid|cx|ie|cof|siteurl)=[^&]+", "\1");
+        if ({{enable_get_ignored}} && req.url ~ "[?&]({{get_param_ignored}})=") {
+            # Strip out Ignored GET parameters
+            set req.url = regsuball(req.url, "(?:(\?)?|&)(?:{{get_param_ignored}})=[^&]+", "\1");
             set req.url = regsuball(req.url, "(?:(\?)&|\?$)", "\1");
         }
+
 
         # everything else checks out, try and pull from the cache
         return (lookup);
@@ -294,28 +303,20 @@ sub vcl_fetch {
                 set beresp.ttl = {{grace_period}}s;
                 return (hit_for_pass);
             } else {
-                if ({{force_cache_static}} &&
-                        bereq.url ~ ".*\.(?:{{static_extensions}})(?=\?|&|$)") {
+                if ({{force_cache_static}} && bereq.url ~ ".*\.(?:{{static_extensions}})(?=\?|&|$)") {
                     # it's a static asset
                     set beresp.ttl = {{static_ttl}}s;
                     set beresp.http.Cache-Control = "max-age={{static_ttl}}";
                 } elseif (req.http.X-Varnish-Esi-Method) {
                     # it's a ESI request
-                    if (req.http.X-Varnish-Esi-Access == "private" &&
-                            req.http.Cookie ~ "frontend=") {
+                    if (req.http.X-Varnish-Esi-Access == "private" && req.http.Cookie ~ "frontend=") {
                         # set this header so we can ban by session from Turpentine
-                        set beresp.http.X-Varnish-Session = regsub(req.http.Cookie,
-                            "^.*?frontend=([^;]*);*.*$", "\1");
+                        set beresp.http.X-Varnish-Session = regsub(req.http.Cookie, "^.*?frontend=([^;]*);*.*$", "\1");
                     }
-                    if (req.http.X-Varnish-Esi-Method == "ajax" &&
-                            req.http.X-Varnish-Esi-Access == "public") {
-                        set beresp.http.Cache-Control = "max-age=" + regsub(
-                            req.url, ".*/{{esi_ttl_param}}/(\d+)/.*", "\1");
+                    if (req.http.X-Varnish-Esi-Method == "ajax" && req.http.X-Varnish-Esi-Access == "public") {
+                        set beresp.http.Cache-Control = "max-age=" + regsub(req.url, ".*/{{esi_ttl_param}}/(\d+)/.*", "\1");
                     }
-                    set beresp.ttl = std.duration(
-                        regsub(
-                            req.url, ".*/{{esi_ttl_param}}/(\d+)/.*", "\1s"),
-                        300s);
+                    set beresp.ttl = std.duration(regsub(req.url, ".*/{{esi_ttl_param}}/(\d+)/.*", "\1s"), 300s);
                     if (beresp.ttl == 0s) {
                         # this is probably faster than bothering with 0 ttl
                         # cache objects
@@ -347,7 +348,7 @@ sub vcl_deliver {
         unset resp.http.X-Varnish-Cookie-Expires;
     }
     if (req.http.X-Varnish-Esi-Method == "ajax" && req.http.X-Varnish-Esi-Access == "private") {
-        set resp.http.Cache-Control = "no-cache";
+        set resp.http.Cache-Control = "no-store, max-age=0, no-cache";
     }
     if ({{debug_headers}} || client.ip ~ debug_acl) {
         # debugging is on, give some extra info
