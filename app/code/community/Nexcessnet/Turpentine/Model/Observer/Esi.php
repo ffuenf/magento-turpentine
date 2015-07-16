@@ -31,7 +31,8 @@ class Nexcessnet_Turpentine_Model_Observer_Esi extends Varien_Event_Observer {
      */
     public function setFlagHeaders( $eventObject ) {
         $response = $eventObject->getResponse();
-        if( Mage::helper( 'turpentine/esi' )->shouldResponseUseEsi() ) {
+        if($response->canSendHeaders()
+            && Mage::helper( 'turpentine/esi' )->shouldResponseUseEsi() ) {
             $response->setHeader( 'X-Turpentine-Esi',
                 Mage::registry( 'turpentine_esi_flag' ) ? '1' : '0' );
             Mage::helper( 'turpentine/debug' )->logDebug(
