@@ -6,22 +6,58 @@ class TurpentineFlushCache extends Mage_Shell_Abstract
 {
     public function run()
     {
-        if ($this->getArg('current')) {
+        if ($this->getArg('current') or $this->getArg('specialprices') == 'current') {
 
             foreach (Mage::app()->getStores() as $store) {
                 $this->_flushCurrentChanges($store);
             }
 
-        }elseif ($this->getArg('all')) {
+        }elseif ($this->getArg('all') or $this->getArg('specialprices') == 'all') {
 
             foreach(Mage::app()->getStores() as $store){
                 $this->_flushAllSpecialPrices($store);
+            }
+
+        }elseif ($this->getArg('products')) {
+
+            $skuList = stream_get_contents(STDIN);
+            $skuListArray = array();
+            if(!empty($skuList)){
+                $skuListArray = explode("\n", $skuList);
+            }else{
+                $skuListArray[] =  $this->getArg('products');
+            }
+
+            foreach(Mage::app()->getStores() as $store){
+                $this->_flushbySkuArray($skuListArray, $store);
             }
 
         }else{
             echo $this->usageHelp();
         }
     }
+
+    /**
+     * @param array $skuListArray
+     * @param Mage_Core_Model_Store $store
+     */
+    protected function _flushbySkuArray($skuListArray, $store)
+    {
+        /** @var Mage_Catalog_Model_Resource_Product_Collection $products */
+        $products = Mage::getResourceModel('catalog/product_collection')
+            ->setStoreId($store->getId())
+            ->addAttributeToFilter(
+                'sku', array('in' => $skuListArray)
+            )->addWebsiteFilter($store->getWebsiteId());
+
+        $size = $products->getSize();
+        if($size) {
+            $msg = sprintf('process store %s and %s product(s) ', $store->getCode(), $size);
+            Mage::getSingleton('core/resource_iterator')->walk($products->getSelect(), array(array($this, 'iteratorCallback')), array('size' => $size, 'msg' => $msg, 'store' => $store));
+            echo PHP_EOL;
+        }
+    }
+
 
     /**
      * @param Mage_Core_Model_Store $store
@@ -92,10 +128,12 @@ class TurpentineFlushCache extends Mage_Shell_Abstract
         return <<<USAGE
 Usage:  php turpentineFlushCache.php -- [options]
 
-        current          flush products where special prices will change today
-        all              flush all products with special prices
+        --specialprices <current|all>
+                        current          flush products where special prices will change today
+                        all              flush all products with special prices
 
-        help                          This help
+        --products <sku>                 specify one sku as parameter or pipe a file with a list of skus like "cat skulist.txt | php turpentineFlushCache.php products"
+        help                             This help
 USAGE;
     }
 }
