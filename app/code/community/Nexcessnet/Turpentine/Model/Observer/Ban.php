@@ -91,6 +91,11 @@ class Nexcessnet_Turpentine_Model_Observer_Ban extends Varien_Event_Observer {
             /** @var Mage_Catalog_Model_Resource_Eav_Mysql4_Product_Collection $productCollection */
             $parentProductsCollection = $banHelper->getRelatedProductsCollection($product);
 
+            // if not possible to get collection
+            if (!$parentProductsCollection) {
+                return;
+            }
+
             // ban product and related products
             $urlPattern = $banHelper->getProductBanRegex( $parentProductsCollection );
             $result = $this->_getVarnishAdmin()->flushUrl( $urlPattern );

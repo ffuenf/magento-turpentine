@@ -71,10 +71,14 @@ class Nexcessnet_Turpentine_Helper_Ban extends Mage_Core_Helper_Abstract {
      * get a collection of all related products
      *
      * @param Mage_Catalog_Model_Product $product
-     * @return Mage_Catalog_Model_Resource_Product_Collection
+     * @return Mage_Catalog_Model_Resource_Product_Collection|bool
      */
     public function getRelatedProductsCollection(Mage_Catalog_Model_Product $product)
     {
+        if (!$product->getId()) {
+            return false;
+        }
+
         /** @var Mage_Catalog_Model_Resource_Eav_Mysql4_Product_Collection $productCollection */
         $parentProductsCollection = Mage::getResourceModel('catalog/product_collection');
         $parentProductsCollection->addAttributeToSelect('url_key');
