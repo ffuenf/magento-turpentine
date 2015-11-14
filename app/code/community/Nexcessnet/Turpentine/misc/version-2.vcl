@@ -104,6 +104,13 @@ sub vcl_recv {
     set req.http.X-Opt-Enable-Caching = "{{enable_caching}}";
     set req.http.X-Opt-Force-Static-Caching = "{{force_cache_static}}";
     set req.http.X-Opt-Enable-Get-Excludes = "{{enable_get_excludes}}";
+    set req.http.X-Opt-Send-Unmodified-Url = "{{send_unmodified_url}}";
+
+
+    if(req.http.X-Opt-Send-Unmodified-Url == "true") {
+        # save unmodified url
+        set req.http.X-Varnish-Origin-Url = req.url;
+    }
 
     # Normalize request data before potentially sending things off to the
     # backend. This ensures all request types get the same information, most
@@ -119,6 +126,9 @@ sub vcl_recv {
     if (req.http.X-Opt-Enable-Caching != "true" || req.http.Authorization ||
             !(req.request ~ "^(GET|HEAD|OPTIONS)$") ||
             req.http.Cookie ~ "varnish_bypass={{secret_handshake}}") {
+        if (req.url ~ "{{url_base_regex}}{{admin_frontname}}") {
+            set req.backend = admin;
+        }
         return (pipe);
     }
 
@@ -198,6 +208,12 @@ sub vcl_recv {
             set req.url = regsuball(req.url, "(?:(\?)&|\?$)", "\1");
         }
 
+        if(req.http.X-Opt-Send-Unmodified-Url == "true") {
+            # change req.url back and save the modified for cache look-ups in a separate variable
+            set req.http.X-Varnish-Cache-Url = req.url;
+            set req.url = req.http.X-Varnish-Origin-Url;
+            unset req.http.X-Varnish-Origin-Url;
+        }
 
         return (lookup);
     }
@@ -217,6 +233,13 @@ sub vcl_pipe {
 # }
 
 sub vcl_hash {
+
+    if({{send_unmodified_url}} && req.http.X-Varnish-Cache-Url) {
+        set req.hash += req.http.X-Varnish-Cache-Url;
+    } else {
+        set req.hash += req.url;
+    }
+
     set req.hash += req.url;
     if (req.http.Host) {
         set req.hash += req.http.Host;
@@ -245,6 +268,12 @@ sub vcl_hash {
         set req.hash += regsub(req.http.Cookie, "^.*?frontend=([^;]*);*.*$", "\1");
         {{advanced_session_validation}}
     }
+
+    if (req.http.X-Varnish-Esi-Access == "customer_group" &&
+            req.http.Cookie ~ "customer_group=") {
+        set req.hash += regsub(req.http.Cookie, "^.*?customer_group=([^;]*);*.*$", "\1");
+    }
+
     return (hash);
 }
 

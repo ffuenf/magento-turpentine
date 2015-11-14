@@ -19,13 +19,14 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-class Nexcessnet_Turpentine_Block_Poll_Activepoll extends Mage_Poll_Block_ActivePoll {
+class Nexcessnet_Turpentine_Block_Product_Viewed extends Mage_Reports_Block_Product_Viewed {
 
-    public function setTemplate($template)
+    protected function _toHtml()
     {
-        $this->_template = $template;
-        $this->setPollTemplate('turpentine/ajax.phtml', 'poll' );
-        $this->setPollTemplate('turpentine/ajax.phtml', 'results' );         
-        return $this;
+        if (!$this->getCount()) {
+            return $this->renderView();
+        }
+        $this->setRecentlyViewedProducts($this->getItemsCollection());
+        return parent::_toHtml();
     }
 }

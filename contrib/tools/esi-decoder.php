@@ -7,12 +7,20 @@
  *
  * Make sure you place this utility on a protected spot on your web server where only authorized users can use it.
  *
- * If the URLs you see in "varnishlog" or "varnishncsa", read this FAQ item:
+ * If the URLs you see in "varnishlog" or "varnishncsa" are not working because they are cut off, read this FAQ item:
  * https://github.com/nexcess/magento-turpentine/wiki/FAQ#im-using-varnishncsa-to-generate-logs-and-the-esi-urls-are-cut-off-how-do-i-get-the-full-url-in-the-logs
  */
 
-// You might need to fix the path to your app/Mage.php on the line below.
-require_once dirname(__FILE__).'/../../app/Mage.php';
+$tries = 5;
+$dir = dirname(__FILE__);
+while( $tries-- && ! file_exists( $dir . '/app/Mage.php' ) ) {
+    $dir = dirname($dir); // go one dir up
+}
+if ( file_exists( $dir . '/app/Mage.php' ) ) {
+    require_once $dir . '/app/Mage.php';
+} else {
+    die( "Could not find 'app/Mage.php'. Please edit esi-decoder.php and 'require' it manually." );
+}
 
 Mage::app();
 $data = (empty($_REQUEST['data'])) ? '' : $_REQUEST['data'];
@@ -66,9 +74,14 @@ if ($data):
     if (preg_match('|'.$dataPreg.'/([\w\.\-]+=*)|', $data, $matches)) {
         $processData = $matches[1];
     }
-    $dataHelper = Mage::helper('turpentine/data');
-    $esiDataArray = $dataHelper->thaw($processData);
-?>
+    $dataHelper = Mage::helper( 'turpentine/data' );
+    $esiDataArray = $dataHelper->thaw( $processData );
+    $showContentUrl = Mage::getUrl( 'turpentine/esi/getBlock',
+        array( 'method' => 'esi',
+               'ttl' => 0,
+               'hmac' => $dataHelper->getHmac( $processData ),
+               'data' => $processData ) );
+    ?>
     <div class="center">=&nbsp; DATA &nbsp;=</div>
     <div class="result">
         <pre><?php echo htmlentities(var_export($esiDataArray, 1)); ?></pre>
@@ -77,14 +90,19 @@ if ($data):
     $refPreg = preg_quote($esiHelper->getEsiReferrerParam(), '|');
     if (preg_match('|'.$refPreg.'/([\w\.\-]+),*|', $data, $matches)):
         $processData = $matches[1];
+        ?>
+        <div class="center">=&nbsp; REFERRER &nbsp;=</div>
+        <div class="result">
+            <pre><?php echo htmlentities( $dataHelper->urlBase64Decode( $processData ) ); ?></pre>
+        </div>
+<?php
+    endif; // if preg_match referrer
 ?>
-    <div class="center">=&nbsp; REFERRER &nbsp;=</div>
-    <div class="result">
-        <pre><?php echo htmlentities($dataHelper->urlBase64Decode($processData)); ?></pre>
+    <div class="center">
+        <input type="button" value="SHOW CONTENT" onclick='window.open(<?php echo json_encode($showContentUrl); ?>,"_blank");' />
     </div>
 <?php
-    endif;
-endif;
+endif; // if $data
 ?>
 </body>
 </html>

@@ -15,10 +15,14 @@ vcl 4.0;
 # You should have received a copy of the GNU General Public License along
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-## Nexcessnet_Turpentine Varnish v3 VCL Template
+
+## Nexcessnet_Turpentine Varnish v4 VCL Template
+
 ## Custom C Code
+
 C{
-  {{custom_c_code}}
+    // @source app/code/community/Nexcessnet/Turpentine/misc/uuid.c
+    {{custom_c_code}}
 }C
 
 ## Imports
@@ -42,6 +46,7 @@ import std;
 {{debug_acl}}
 
 ## Custom Subroutines
+{{generate_session_start}}
 sub generate_session {
   # generate a UUID and add `frontend=$UUID` to the Cookie header, or use SID
   # from SID URL param
@@ -80,10 +85,11 @@ sub generate_session_expires {
     VRT_SetHdr(ctx, &VGC_HDR_RESP_COOKIE_EXPIRES, date_buf, vrt_magic_string_end);
   }C
 }
+{{generate_session_end}}
 
 ## Varnish Subroutines
-
 sub vcl_recv {
+  {{maintenance_allowed_ips}}
   # this always needs to be done so it's up at the top
   if (req.restarts == 0) {
     if (req.http.X-Forwarded-For) {
@@ -92,27 +98,27 @@ sub vcl_recv {
       set req.http.X-Forwarded-For = client.ip;
     }
   }
-  # Normalize request data before potentially sending things off to the
-  # backend. This ensures all request types get the same information, most
-  # notably POST requests getting a normalized user agent string to empower
-  # adaptive designs.
-  {{normalize_encoding}}
-  {{normalize_user_agent}}
-  {{normalize_host}}
   # We only deal with GET and HEAD by default
   # we test this here instead of inside the url base regex section
   # so we can disable caching for the entire site if needed
   if (!{{enable_caching}} || req.http.Authorization || req.method !~ "^(GET|HEAD|OPTIONS)$" || req.http.Cookie ~ "varnish_bypass={{secret_handshake}}") {
     return (pipe);
   }
+  if ({{send_unmodified_url}}) {
+      # save the unmodified url
+      set req.http.X-Varnish-Origin-Url = req.url;
+  }
   # remove double slashes from the URL, for higher cache hit rate
   set req.url = regsuball(req.url, "(.*)//+(.*)", "\1/\2");
+    {{normalize_encoding}}
+    {{normalize_user_agent}}
+    {{normalize_host}}
   # check if the request is for part of magento
   if (req.url ~ "{{url_base_regex}}") {
     # set this so Turpentine can see the request passed through Varnish
     set req.http.X-Turpentine-Secret-Handshake = "{{secret_handshake}}";
     # use the special admin backend and pipe if it's for the admin section
-    if (req.url ~ "{{url_base_regex}}{{admin_frontname}}" || req.url ~ "(/enhancedgrid/|/MarketPlace/|/banner7/|/wp-admin/|/amshiprules/|/datafeedmanager/|/Amazon/|/ekomimeetsmage_admin/|/adminhtml_config/|/navconnect_admin/|/seoautolink/|/seo/admin|/downloader/|/M2ePro/|/promo_quote/|/advancedreports_admin/|/navconnect)" || req.url ~  "/ranvi_feed/|/pnsofortueberweisung/|/timthumb|/paypal/") {
+    if (req.url ~ "{{url_base_regex}}{{admin_frontname}}") {
       set req.backend_hint = admin;
       return (pipe);
     }
@@ -132,7 +138,8 @@ sub vcl_recv {
         return (synth(403, "External ESI requests are not allowed"));
       }
     }
-    # no frontend cookie was sent to us
+    {{allowed_hosts}}
+    # no frontend cookie was sent to us AND this is not an ESI or AJAX call
     # BUGFIX https://github.com/ho-nl/magento-turpentine/commit/88a84039b1ae13a90eb9498aa458bec402a14009
     # Issue thread: https://github.com/nexcess/magento-turpentine/issues/470
     if (req.http.Cookie !~ "frontend=" && !req.http.X-Varnish-Esi-Method) {
@@ -141,7 +148,7 @@ sub vcl_recv {
         set req.http.Cookie = "frontend=crawler-session";
       } else {
         # it's a real user, make up a new session for them
-        call generate_session;
+        {{generate_session}}
       }
     }
     if ({{force_cache_static}} && req.url ~ ".*\.(?:{{static_extensions}})(?=\?|&|$)") {
@@ -164,10 +171,20 @@ sub vcl_recv {
       # TODO: should this be pass or pipe?
       return (pass);
     }
+    if (req.url ~ "[?&](utm_source|utm_medium|utm_campaign|gclid|cx|ie|cof|siteurl)=") {
+        # Strip out Google related parameters
+        set req.url = regsuball(req.url, "(?:(\?)?|&)(?:utm_source|utm_medium|utm_campaign|gclid|cx|ie|cof|siteurl)=[^&]+", "\1");
+        set req.url = regsuball(req.url, "(?:(\?)&|\?$)", "\1");
+    }
     if ({{enable_get_ignored}} && req.url ~ "[?&]({{get_param_ignored}})=") {
       # Strip out Ignored GET parameters
       set req.url = regsuball(req.url, "(?:(\?)?|&)(?:{{get_param_ignored}})=[^&]+", "\1");
       set req.url = regsuball(req.url, "(?:(\?)&|\?$)", "\1");
+    }
+    if ({{send_unmodified_url}}) {
+        set req.http.X-Varnish-Cache-Url = req.url;
+        set req.url = req.http.X-Varnish-Origin-Url;
+        unset req.http.X-Varnish-Origin-Url;
     }
     # everything else checks out, try and pull from the cache
     return (hash);
@@ -184,7 +201,11 @@ sub vcl_pipe {
 }
 
 sub vcl_hash {
-  hash_data(req.url);
+    if ({{send_unmodified_url}} && req.http.X-Varnish-Cache-Url) {
+        hash_data(req.http.X-Varnish-Cache-Url);
+    } else {
+      hash_data(req.url);
+    }
   if (req.http.Host) {
     hash_data(req.http.Host);
   } else {
@@ -207,7 +228,7 @@ sub vcl_hash {
     hash_data(regsub(req.http.Cookie, "^.*?frontend=([^;]*);*.*$", "\1"));
     {{advanced_session_validation}}
   }
-  return (hash);
+  return (lookup);
 }
 
 sub vcl_backend_response {
@@ -282,13 +303,25 @@ sub vcl_backend_response {
   # else it's not part of Magento so use the default Varnish handling
 }
 
+{{vcl_synth}}
+
 sub vcl_deliver {
   if (req.http.X-Varnish-Faked-Session) {
     # need to set the set-cookie header since we just made it out of thin air
-    call generate_session_expires;
+    {{generate_session_expires}}
     set resp.http.Set-Cookie = req.http.X-Varnish-Faked-Session + "; expires=" + resp.http.X-Varnish-Cookie-Expires + "; path=/";
     if (req.http.Host) {
-      set resp.http.Set-Cookie = resp.http.Set-Cookie + "; domain=" + regsub(req.http.Host, ":\d+$", "");
+        if (req.http.User-Agent ~ "^(?:{{crawler_user_agent_regex}})$") {
+            # it's a crawler, no need to share cookies
+            set resp.http.Set-Cookie = resp.http.Set-Cookie + "; domain=" + regsub(req.http.Host, ":\d+$", "");
+        } else {
+            # it's a real user, allow sharing of cookies between stores
+            if (req.http.Host ~ "{{normalize_cookie_regex}}") {
+                set resp.http.Set-Cookie = resp.http.Set-Cookie + "; domain={{normalize_cookie_target}}";
+            } else {
+                set resp.http.Set-Cookie = resp.http.Set-Cookie + "; domain=" + regsub(req.http.Host, ":\d+$", "");
+            }
+        }
     }
     set resp.http.Set-Cookie = resp.http.Set-Cookie + "; httponly";
     unset resp.http.X-Varnish-Cookie-Expires;
