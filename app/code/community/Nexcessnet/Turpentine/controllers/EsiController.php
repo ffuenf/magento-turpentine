@@ -118,7 +118,7 @@ class Nexcessnet_Turpentine_EsiController extends Mage_Core_Controller_Front_Act
                             }
                         }
                     }
-                    if( $esiData->getEsiMethod() == 'ajax' ) {
+                    if( $resp->canSendHeaders() && $esiData->getEsiMethod() == 'ajax' ) {
                         $resp->setHeader( 'Access-Control-Allow-Origin',
                             $esiHelper->getCorsOrigin() );
                     }
