@@ -27,9 +27,8 @@ class Nexcessnet_Turpentine_Helper_Ban extends Mage_Core_Helper_Abstract {
      * @param  Mage_Catalog_Model_Product | Mage_Catalog_Model_Resource_Product_Collection $product
      * @return string
      */
-    public function getProductBanRegex( $product ) {
+    public function getProductBanRegex($product) {
         $urlPatterns = array();
-
         if($product instanceof Mage_Catalog_Model_Resource_Product_Collection){
             foreach( $product as $productObject ) {
                 if ( $productObject->getUrlKey() ) {
@@ -41,10 +40,10 @@ class Nexcessnet_Turpentine_Helper_Ban extends Mage_Core_Helper_Abstract {
                 $urlPatterns[] = $product->getUrlKey();
             }
         }
-        if ( empty($urlPatterns) ) {
+        if (empty($urlPatterns)) {
             $urlPatterns[] = "##_NEVER_MATCH_##";
         }
-        $pattern = sprintf( '(?:%s)', implode( '|', $urlPatterns ) );
+        $pattern = sprintf('(?:%s)', implode('|', $urlPatterns));
         return $pattern;
     }
 
@@ -54,7 +53,7 @@ class Nexcessnet_Turpentine_Helper_Ban extends Mage_Core_Helper_Abstract {
      * @param  Mage_Catalog_Model_Product $childProduct
      * @return array
      */
-    public function getParentProducts( $childProduct ) {
+    public function getParentProducts($childProduct) {
         $parentProducts = array();
         foreach( array( 'configurable', 'grouped' ) as $pType ) {
             foreach( Mage::getModel( 'catalog/product_type_' . $pType )

@@ -214,7 +214,7 @@ class Nexcessnet_Turpentine_Helper_Esi extends Mage_Core_Helper_Abstract
     /**
      * Get the list of cache clear events to include with every ESI block.
      *
-     * @return array
+     * @return string[]
      */
     public function getDefaultCacheClearEvents()
     {
@@ -229,7 +229,7 @@ class Nexcessnet_Turpentine_Helper_Esi extends Mage_Core_Helper_Abstract
     /**
      * Get the list of events that should cause the ESI cache to be cleared.
      *
-     * @return array
+     * @return string[]
      */
     public function getCacheClearEvents()
     {
@@ -242,7 +242,6 @@ class Nexcessnet_Turpentine_Helper_Esi extends Mage_Core_Helper_Abstract
                 array('LAYOUT_GENERAL_CACHE_TAG'));
         }
         Varien_Profiler::stop('turpentine::helper::esi::getCacheClearEvents');
-
         return array_merge($this->getDefaultCacheClearEvents(), $events);
     }
 
@@ -304,7 +303,6 @@ class Nexcessnet_Turpentine_Helper_Esi extends Mage_Core_Helper_Abstract
             }
         }
         Varien_Profiler::stop('turpentine::helper::esi::getLayoutXml');
-
         return $this->_layoutXml;
     }
 
@@ -316,7 +314,6 @@ class Nexcessnet_Turpentine_Helper_Esi extends Mage_Core_Helper_Abstract
     public function getCacheClearEventsCacheKey()
     {
         $design = Mage::getDesign();
-
         return Mage::helper('turpentine/data')
             ->getCacheKeyHash(array(
                 'FILE_LAYOUT_ESI_CACHE_EVENTS',
@@ -335,7 +332,6 @@ class Nexcessnet_Turpentine_Helper_Esi extends Mage_Core_Helper_Abstract
     public function getFileLayoutUpdatesXmlCacheKey()
     {
         $design = Mage::getDesign();
-
         return Mage::helper('turpentine/data')
             ->getCacheKeyHash(array(
                 'FILE_LAYOUT_UPDATES_XML',
@@ -390,9 +386,9 @@ class Nexcessnet_Turpentine_Helper_Esi extends Mage_Core_Helper_Abstract
             $this->getEsiScopeParam() => 'global',
             $this->getEsiCacheTypeParam() => 'private',
         );
-        $esiUrl = Mage::getUrl( 'turpentine/esi/getFormKey', $urlOptions );
+        $esiUrl = Mage::getUrl('turpentine/esi/getFormKey', $urlOptions);
         // setting [web/unsecure/base_url] can be https://... but ESI can never be HTTPS
-        $esiUrl = preg_replace( '|^https://|i', 'http://', $esiUrl );
+        $esiUrl = preg_replace('|^https://|i', 'http://', $esiUrl);
         return $esiUrl;
     }
 
@@ -416,7 +412,6 @@ class Nexcessnet_Turpentine_Helper_Esi extends Mage_Core_Helper_Abstract
             $events = array();
         }
         Varien_Profiler::stop('turpentine::helper::esi::_loadEsiCacheClearEvents');
-
         return $events;
     }
 
@@ -437,7 +432,6 @@ class Nexcessnet_Turpentine_Helper_Esi extends Mage_Core_Helper_Abstract
                 $design->getTheme('layout'),
                 Mage::app()->getStore()->getId());
         Varien_Profiler::stop('turpentine::helper::esi::_loadLayoutXml');
-
         return $layoutXml;
     }
 

@@ -13,13 +13,13 @@
 
 $tries = 5;
 $dir = dirname(__FILE__);
-while( $tries-- && ! file_exists( $dir . '/app/Mage.php' ) ) {
+while ($tries-- && ! file_exists($dir.'/app/Mage.php')) {
     $dir = dirname($dir); // go one dir up
 }
-if ( file_exists( $dir . '/app/Mage.php' ) ) {
-    require_once $dir . '/app/Mage.php';
+if (file_exists($dir.'/app/Mage.php')) {
+    require_once $dir.'/app/Mage.php';
 } else {
-    die( "Could not find 'app/Mage.php'. Please edit esi-decoder.php and 'require' it manually." );
+    die("Could not find 'app/Mage.php'. Please edit esi-decoder.php and 'require' it manually.");
 }
 
 Mage::app();
@@ -74,13 +74,13 @@ if ($data):
     if (preg_match('|'.$dataPreg.'/([\w\.\-]+=*)|', $data, $matches)) {
         $processData = $matches[1];
     }
-    $dataHelper = Mage::helper( 'turpentine/data' );
-    $esiDataArray = $dataHelper->thaw( $processData );
-    $showContentUrl = Mage::getUrl( 'turpentine/esi/getBlock',
-        array( 'method' => 'esi',
-               'ttl' => 0,
-               'hmac' => $dataHelper->getHmac( $processData ),
-               'data' => $processData ) );
+    $dataHelper = Mage::helper('turpentine/data');
+    $esiDataArray = $dataHelper->thaw($processData);
+    $showContentUrl = Mage::getUrl('turpentine/esi/getBlock',
+        array('method' => 'esi',
+                'ttl' => 0,
+                'hmac' => $dataHelper->getHmac($processData),
+                'data' => $processData));
     ?>
     <div class="center">=&nbsp; DATA &nbsp;=</div>
     <div class="result">
@@ -93,7 +93,7 @@ if ($data):
         ?>
         <div class="center">=&nbsp; REFERRER &nbsp;=</div>
         <div class="result">
-            <pre><?php echo htmlentities( $dataHelper->urlBase64Decode( $processData ) ); ?></pre>
+            <pre><?php echo htmlentities($dataHelper->urlBase64Decode($processData)); ?></pre>
         </div>
 <?php
     endif; // if preg_match referrer

@@ -423,4 +423,6 @@ This release is a merge of various branches to add support of Varnish4 and compa
   * [#945] Send unmodified url to the backend server (@thampe)  
   * [#885] Add maintenance mode that will allow debug_ips through to visit the site, all other users get the landing page (@craigcarnell)  
   * [#955] Include theme specific handles to ESI data (@LyndonHook)  
-  * [#972] Fixed bug with wrong return value of ->getSkinUrl() (@ceckoslab)  
+  * [#972] Fixed bug with wrong return value of ->getSkinUrl() (@ceckoslab)
+  * [#951] Added 'disableEsiInjection' ESI policy option.  
+  * [#1005 ]  Invalidating cms pages with url enging with slash. (@sivaschenko)  
