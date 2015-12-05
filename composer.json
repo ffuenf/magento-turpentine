@@ -1,5 +1,5 @@
 {
-    "name": "flagbit/magento-turpentine",
+    "name": "ffuenf/magento-turpentine",
     "type": "magento-module",
     "license": "GPL-2.0+",
     "description": "A Varnish extension for Magento.",
@@ -12,8 +12,5 @@
     ],
     "replace": {
         "connect20/nexcessnet_turpentine": "self.version"
-    },
-    "require": {
-        "magento-hackathon/magento-composer-installer": "*"
     }
 }
