@@ -31,7 +31,8 @@ class Nexcessnet_Turpentine_Model_Observer_Esi extends Varien_Event_Observer {
      */
     public function setFlagHeaders( $eventObject ) {
         $response = $eventObject->getResponse();
-        if( Mage::helper( 'turpentine/esi' )->shouldResponseUseEsi() ) {
+        if($response->canSendHeaders()
+            && Mage::helper( 'turpentine/esi' )->shouldResponseUseEsi() ) {
             $response->setHeader( 'X-Turpentine-Esi',
                 Mage::registry( 'turpentine_esi_flag' ) ? '1' : '0' );
             Mage::helper( 'turpentine/debug' )->logDebug(
@@ -307,7 +308,11 @@ class Nexcessnet_Turpentine_Model_Observer_Esi extends Varien_Event_Observer {
             $esiData->setParentUrl( Mage::app()->getRequest()->getRequestString() );
         }
         if( is_array( $esiOptions['dummy_blocks'] ) ) {
-            $esiData->setDummyBlocks( $esiOptions['dummy_blocks'] );
+            $dummyBlocks = array();
+            foreach( $esiOptions['dummy_blocks'] as $key => $value ) {
+                $dummyBlocks[] = ( empty($value) && !is_numeric($key) ) ? $key : $value;
+            }
+            $esiData->setDummyBlocks( $dummyBlocks );
         } else {
             Mage::helper( 'turpentine/debug' )->logWarn(
                 'Invalid dummy_blocks for block: %s',

@@ -91,6 +91,11 @@ class Nexcessnet_Turpentine_Model_Observer_Ban extends Varien_Event_Observer {
             /** @var Mage_Catalog_Model_Resource_Eav_Mysql4_Product_Collection $productCollection */
             $parentProductsCollection = $banHelper->getRelatedProductsCollection($product);
 
+            // if not possible to get collection
+            if (!$parentProductsCollection) {
+                return;
+            }
+
             // ban product and related products
             $urlPattern = $banHelper->getProductBanRegex( $parentProductsCollection );
             $result = $this->_getVarnishAdmin()->flushUrl( $urlPattern );
@@ -236,6 +241,34 @@ class Nexcessnet_Turpentine_Model_Observer_Ban extends Varien_Event_Observer {
             if( $this->_checkResult( $result ) &&
                     $cronHelper->getCrawlerEnabled() ) {
                 $cronHelper->addCmsPageToCrawlerQueue( $pageId );
+            }
+        }
+    }
+
+    /**
+     * Ban a specific CMS page revision from cache after edit (enterprise edition only)
+     * Events:
+     *     enterprise_cms_revision_save_commit_after
+     *
+     * @param Varien_Object $eventObject
+     * @return null
+     */
+    public function banCmsPageRevisionCache($eventObject) {
+        if ( Mage::helper( 'turpentine/varnish' )->getVarnishEnabled() ) {
+            $pageId = $eventObject->getDataObject()->getPageId();
+            $page = Mage::getModel( 'cms/page' )->load( $pageId );
+
+            // Don't do anything if the page isn't found.
+            if( !$page ) {
+                return;
+            }
+            $pageIdentifier = $page->getIdentifier();
+            $result = $this->_getVarnishAdmin()->flushUrl( $pageIdentifier . '(?:\.html?)?$' );
+            Mage::dispatchEvent( 'turpentine_ban_cms_page_cache', $result );
+            $cronHelper = Mage::helper( 'turpentine/cron' );
+            if( $this->_checkResult( $result ) &&
+                $cronHelper->getCrawlerEnabled() ) {
+                $cronHelper->addCmsPageToCrawlerQueue( $pageIdentifier );
             }
         }
     }

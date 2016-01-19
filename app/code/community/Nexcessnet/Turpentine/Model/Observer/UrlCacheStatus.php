@@ -16,11 +16,11 @@ class Nexcessnet_Turpentine_Model_Observer_UrlCacheStatus
      */
     public function addUrlCache(Varien_Event_Observer $eventObject)
     {
-        if (!Mage::helper('turpentine/varnish')->shouldResponseUseVarnish()
+        if (!Mage::helper('turpentine/crawler')->getSmartCrawlerEnabled()
+            || !Mage::helper('turpentine/varnish')->shouldResponseUseVarnish()
             || Mage::registry('turpentine_nocache_flag')
-            || http_response_code() == 404
+            || $this->_is404Request()
             || Mage::helper('turpentine/esi')->isEsiRequest()
-            || !Mage::helper('turpentine/crawler')->getSmartCrawlerEnabled()
             || $this->_hasInvalidParameters()
         ) {
             return;
@@ -28,6 +28,27 @@ class Nexcessnet_Turpentine_Model_Observer_UrlCacheStatus
 
         $url = Mage::helper('core/url')->getCurrentUrl();
         Mage::getModel('turpentine/urlCacheStatus')->renewExpireAt($url);
+    }
+
+
+    /**
+     * @return bool
+     */
+    protected function _is404Request()
+    {
+        if (function_exists('http_response_code')) {
+            return (http_response_code() == 404);
+        } else {
+            foreach (Mage::app()->getResponse()->getHeaders() as $header) {
+                if (stripos($header['value'], '404 not found') !== false
+                    || stripos($header['value'], '404 file not found') !== false
+                ) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
     }
 
 

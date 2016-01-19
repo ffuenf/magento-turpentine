@@ -106,21 +106,25 @@ sub vcl_recv {
         }
     }
 
+    # Normalize request data before potentially sending things off to the
+    # backend. This ensures all request types get the same information, most
+    # notably POST requests getting a normalized user agent string to empower
+    # adaptive designs.
+    {{normalize_encoding}}
+    {{normalize_user_agent}}
+    {{normalize_host}}
+
     # We only deal with GET and HEAD by default
     # we test this here instead of inside the url base regex section
     # so we can disable caching for the entire site if needed
     if (!{{enable_caching}} || req.http.Authorization ||
-        req.request !~ "^(GET|HEAD)$" ||
+        req.request !~ "^(GET|HEAD|OPTIONS)$" ||
         req.http.Cookie ~ "varnish_bypass={{secret_handshake}}") {
         return (pipe);
     }
 
     # remove double slashes from the URL, for higher cache hit rate
     set req.url = regsuball(req.url, "(.*)//+(.*)", "\1/\2");
-
-    {{normalize_encoding}}
-    {{normalize_user_agent}}
-    {{normalize_host}}
 
     # check if the request is for part of magento
     if (req.url ~ "{{url_base_regex}}") {
@@ -188,11 +192,12 @@ sub vcl_recv {
             # TODO: should this be pass or pipe?
             return (pass);
         }
-        if (req.url ~ "[?&](utm_source|utm_medium|utm_campaign|gclid|cx|ie|cof|siteurl)=") {
-            # Strip out Google related parameters
-            set req.url = regsuball(req.url, "(?:(\?)?|&)(?:utm_source|utm_medium|utm_campaign|gclid|cx|ie|cof|siteurl)=[^&]+", "\1");
+        if ({{enable_get_ignored}} && req.url ~ "[?&]({{get_param_ignored}})=") {
+            # Strip out Ignored GET parameters
+            set req.url = regsuball(req.url, "(?:(\?)?|&)(?:{{get_param_ignored}})=[^&]+", "\1");
             set req.url = regsuball(req.url, "(?:(\?)&|\?$)", "\1");
         }
+
 
         # everything else checks out, try and pull from the cache
         return (lookup);
@@ -349,7 +354,7 @@ sub vcl_deliver {
         unset resp.http.X-Varnish-Cookie-Expires;
     }
     if (req.http.X-Varnish-Esi-Method == "ajax" && req.http.X-Varnish-Esi-Access == "private") {
-        set resp.http.Cache-Control = "no-cache";
+        set resp.http.Cache-Control = "no-store, max-age=0, no-cache";
     }
     if ({{debug_headers}} || client.ip ~ debug_acl) {
         # debugging is on, give some extra info
