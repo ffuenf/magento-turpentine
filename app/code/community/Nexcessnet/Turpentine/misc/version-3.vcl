@@ -28,10 +28,6 @@ C{
 
 import std;
 
-## Custom VCL Logic
-
-{{custom_vcl_include}}
-
 ## Backends
 
 {{default_backend}}
@@ -46,6 +42,7 @@ import std;
 
 ## Custom Subroutines
 
+{{generate_session_start}}
 sub generate_session {
     # generate a UUID and add `frontend=$UUID` to the Cookie header, or use SID
     # from SID URL param
@@ -92,10 +89,12 @@ sub generate_session_expires {
         );
     }C
 }
-
+{{generate_session_end}}
 ## Varnish Subroutines
 
 sub vcl_recv {
+	{{maintenance_allowed_ips}}
+
     # this always needs to be done so it's up at the top
     if (req.restarts == 0) {
         if (req.http.X-Forwarded-For) {
@@ -104,6 +103,11 @@ sub vcl_recv {
         } else {
             set req.http.X-Forwarded-For = client.ip;
         }
+    }
+
+    if({{send_unmodified_url}}) {
+        # save the unmodified url
+        set req.http.X-Varnish-Origin-Url = req.url;
     }
 
     # Normalize request data before potentially sending things off to the
@@ -120,11 +124,14 @@ sub vcl_recv {
     if (!{{enable_caching}} || req.http.Authorization ||
         req.request !~ "^(GET|HEAD|OPTIONS)$" ||
         req.http.Cookie ~ "varnish_bypass={{secret_handshake}}") {
+        if (req.url ~ "{{url_base_regex}}{{admin_frontname}}") {
+            set req.backend = admin;
+        }
         return (pipe);
     }
 
     # remove double slashes from the URL, for higher cache hit rate
-    set req.url = regsuball(req.url, "(.*)//+(.*)", "\1/\2");
+    set req.url = regsuball(req.url, "([^:])//+", "\1/");
 
     # check if the request is for part of magento
     if (req.url ~ "{{url_base_regex}}") {
@@ -157,17 +164,16 @@ sub vcl_recv {
                 error 403 "External ESI requests are not allowed";
             }
         }
-        # no frontend cookie was sent to us
-        # BUGFIX https://github.com/ho-nl/magento-turpentine/commit/88a84039b1ae13a90eb9498aa458bec402a14009
-        # Issue thread: https://github.com/nexcess/magento-turpentine/issues/470
-        if (req.http.Cookie !~ "frontend="  && !req.http.X-Varnish-Esi-Method) {
+        {{allowed_hosts}}
+        # no frontend cookie was sent to us AND this is not an ESI or AJAX call
+        if (req.http.Cookie !~ "frontend=" && !req.http.X-Varnish-Esi-Method) {
             if (client.ip ~ crawler_acl ||
                     req.http.User-Agent ~ "^(?:{{crawler_user_agent_regex}})$") {
                 # it's a crawler, give it a fake cookie
                 set req.http.Cookie = "frontend=crawler-session";
             } else {
                 # it's a real user, make up a new session for them
-                call generate_session;
+                {{generate_session}}
             }
         }
         if ({{force_cache_static}} &&
@@ -175,6 +181,7 @@ sub vcl_recv {
             # don't need cookies for static assets
             unset req.http.Cookie;
             unset req.http.X-Varnish-Faked-Session;
+            set req.http.X-Varnish-Static = 1;
             return (lookup);
         }
         # this doesn't need a enable_url_excludes because we can be reasonably
@@ -198,6 +205,11 @@ sub vcl_recv {
             set req.url = regsuball(req.url, "(?:(\?)&|\?$)", "\1");
         }
 
+        if({{send_unmodified_url}}) {
+            set req.http.X-Varnish-Cache-Url = req.url;
+            set req.url = req.http.X-Varnish-Origin-Url;
+            unset req.http.X-Varnish-Origin-Url;
+        }
 
         # everything else checks out, try and pull from the cache
         return (lookup);
@@ -218,7 +230,22 @@ sub vcl_pipe {
 # }
 
 sub vcl_hash {
-    hash_data(req.url);
+    # For static files we keep the hash simple and don't add the domain.
+    # This saves memory when a static file is used on multiple domains.
+    if ({{simple_hash_static}} && req.http.X-Varnish-Static) {
+        hash_data(req.url);
+        if (req.http.Accept-Encoding) {
+            # make sure we give back the right encoding
+            hash_data(req.http.Accept-Encoding);
+        }
+        return (hash);
+    }
+
+    if({{send_unmodified_url}} && req.http.X-Varnish-Cache-Url) {
+        hash_data(req.http.X-Varnish-Cache-Url);
+    } else {
+        hash_data(req.url);
+    }
     if (req.http.Host) {
         hash_data(req.http.Host);
     } else {
@@ -244,6 +271,12 @@ sub vcl_hash {
         {{advanced_session_validation}}
 
     }
+
+    if (req.http.X-Varnish-Esi-Access == "customer_group" &&
+            req.http.Cookie ~ "customer_group=") {
+        hash_data(regsub(req.http.Cookie, "^.*?customer_group=([^;]*);*.*$", "\1"));
+    }
+
     return (hash);
 }
 
@@ -340,15 +373,30 @@ sub vcl_fetch {
     # else it's not part of Magento so use the default Varnish handling
 }
 
+{{vcl_synth}}
+
 sub vcl_deliver {
     if (req.http.X-Varnish-Faked-Session) {
         # need to set the set-cookie header since we just made it out of thin air
-        call generate_session_expires;
+        # call generate_session_expires;
+        {{generate_session_expires}}
         set resp.http.Set-Cookie = req.http.X-Varnish-Faked-Session +
             "; expires=" + resp.http.X-Varnish-Cookie-Expires + "; path=/";
         if (req.http.Host) {
-            set resp.http.Set-Cookie = resp.http.Set-Cookie +
+            if (req.http.User-Agent ~ "^(?:{{crawler_user_agent_regex}})$") {
+                # it's a crawler, no need to share cookies
+                set resp.http.Set-Cookie = resp.http.Set-Cookie +
                 "; domain=" + regsub(req.http.Host, ":\d+$", "");
+            } else {
+                # it's a real user, allow sharing of cookies between stores
+                if(req.http.Host ~ "{{normalize_cookie_regex}}") {
+                    set resp.http.Set-Cookie = resp.http.Set-Cookie +
+                    "; domain={{normalize_cookie_target}}";
+                } else {
+                    set resp.http.Set-Cookie = resp.http.Set-Cookie +
+                    "; domain=" + regsub(req.http.Host, ":\d+$", "");
+                }
+            }
         }
         set resp.http.Set-Cookie = resp.http.Set-Cookie + "; httponly";
         unset resp.http.X-Varnish-Cookie-Expires;
@@ -382,3 +430,8 @@ sub vcl_deliver {
         unset resp.http.X-Varnish-Set-Cookie;
     }
 }
+
+## Custom VCL Logic
+
+{{custom_vcl_include}}
+
