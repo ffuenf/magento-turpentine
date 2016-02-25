@@ -85,7 +85,12 @@ class Nexcessnet_Turpentine_Helper_Ban extends Mage_Core_Helper_Abstract {
             '{{table}}.child_id='.$product->getId(),
             'inner');
         $parentProductsCollection->load();
-        $parentProductsCollection->addItem($product);
+
+        try {
+            $parentProductsCollection->addItem($product);
+        } catch(Exception $e) {
+            // Mage::logException($e);
+        }
 
         return $parentProductsCollection;
     }
