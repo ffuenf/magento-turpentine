@@ -29,10 +29,6 @@ C{
 
 import std;
 
-## Custom VCL Logic
-
-{{custom_vcl_include}}
-
 ## Backends
 
 {{default_backend}}
@@ -113,17 +109,124 @@ sub vcl_recv {
     {{normalize_encoding}}
     {{normalize_user_agent}}
     {{normalize_host}}
-  # check if the request is for part of magento
-  if (req.url ~ "{{url_base_regex}}") {
-    # set this so Turpentine can see the request passed through Varnish
-    set req.http.X-Turpentine-Secret-Handshake = "{{secret_handshake}}";
-    # use the special admin backend and pipe if it's for the admin section
-    if (req.url ~ "{{url_base_regex}}{{admin_frontname}}") {
-      set req.backend_hint = admin;
-      return (pipe);
+    # check if the request is for part of magento
+    if (req.url ~ "{{url_base_regex}}") {
+        # set this so Turpentine can see the request passed through Varnish
+        set req.http.X-Turpentine-Secret-Handshake = "{{secret_handshake}}";
+        # use the special admin backend and pipe if it's for the admin section
+        if (req.url ~ "{{url_base_regex}}{{admin_frontname}}") {
+            set req.backend_hint = admin;
+            return (pipe);
+        }
+        if (req.http.Cookie ~ "\bcurrency=") {
+            set req.http.X-Varnish-Currency = regsub(
+                req.http.Cookie, ".*\bcurrency=([^;]*).*", "\1");
+        }
+        if (req.http.Cookie ~ "\bstore=") {
+            set req.http.X-Varnish-Store = regsub(
+                req.http.Cookie, ".*\bstore=([^;]*).*", "\1");
+        }
+        # looks like an ESI request, add some extra vars for further processing
+        if (req.url ~ "/turpentine/esi/get(?:Block|FormKey)/") {
+            set req.http.X-Varnish-Esi-Method = regsub(
+                req.url, ".*/{{esi_method_param}}/(\w+)/.*", "\1");
+            set req.http.X-Varnish-Esi-Access = regsub(
+                req.url, ".*/{{esi_cache_type_param}}/(\w+)/.*", "\1");
+
+            # throw a forbidden error if debugging is off and a esi block is
+            # requested by the user (does not apply to ajax blocks)
+            if (req.http.X-Varnish-Esi-Method == "esi" && req.esi_level == 0 &&
+                    !({{debug_headers}} || client.ip ~ debug_acl)) {
+                return (synth(403, "External ESI requests are not allowed"));
+            }
+        }
+        {{allowed_hosts}}
+        # no frontend cookie was sent to us AND this is not an ESI or AJAX call
+        if (req.http.Cookie !~ "frontend=" && !req.http.X-Varnish-Esi-Method) {
+            if (client.ip ~ crawler_acl ||
+                    req.http.User-Agent ~ "^(?:{{crawler_user_agent_regex}})$") {
+                # it's a crawler, give it a fake cookie
+                set req.http.Cookie = "frontend=crawler-session";
+            } else {
+                # it's a real user, make up a new session for them
+                {{generate_session}}
+            }
+        }
+        if ({{force_cache_static}} &&
+                req.url ~ ".*\.(?:{{static_extensions}})(?=\?|&|$)") {
+            # don't need cookies for static assets
+            unset req.http.Cookie;
+            unset req.http.X-Varnish-Faked-Session;
+            set req.http.X-Varnish-Static = 1;
+            return (hash);
+        }
+        # this doesn't need a enable_url_excludes because we can be reasonably
+        # certain that cron.php at least will always be in it, so it will
+        # never be empty
+        if (req.url ~ "{{url_base_regex}}(?:{{url_excludes}})" ||
+                # user switched stores. we pipe this instead of passing below because
+                # switching stores doesn't redirect (302), just acts like a link to
+                # another page (200) so the Set-Cookie header would be removed
+                req.url ~ "\?.*__from_store=") {
+            return (pipe);
+        }
+        if ({{enable_get_excludes}} &&
+                req.url ~ "(?:[?&](?:{{get_param_excludes}})(?=[&=]|$))") {
+            # TODO: should this be pass or pipe?
+            return (pass);
+        }
+        if (req.url ~ "[?&](utm_source|utm_medium|utm_campaign|gclid|cx|ie|cof|siteurl)=") {
+            # Strip out Google related parameters
+            set req.url = regsuball(req.url, "(?:(\?)?|&)(?:utm_source|utm_medium|utm_campaign|gclid|cx|ie|cof|siteurl)=[^&]+", "\1");
+            set req.url = regsuball(req.url, "(?:(\?)&|\?$)", "\1");
+        }
+
+        if ({{enable_get_ignored}} && req.url ~ "[?&]({{get_param_ignored}})=") {
+            # Strip out Ignored GET parameters
+            set req.url = regsuball(req.url, "(?:(\?)?|&)(?:{{get_param_ignored}})=[^&]+", "\1");
+            set req.url = regsuball(req.url, "(?:(\?)&|\?$)", "\1");
+        }
+
+        if({{send_unmodified_url}}) {
+            set req.http.X-Varnish-Cache-Url = req.url;
+            set req.url = req.http.X-Varnish-Origin-Url;
+            unset req.http.X-Varnish-Origin-Url;
+        }
+
+        # everything else checks out, try and pull from the cache
+        return (hash);
     }
-    if (req.http.Cookie ~ "\bcurrency=") {
-      set req.http.X-Varnish-Currency = regsub(req.http.Cookie, ".*\bcurrency=([^;]*).*", "\1");
+    # else it's not part of magento so do default handling (doesn't help
+    # things underneath magento but we can't detect that)
+}
+
+sub vcl_pipe {
+    # since we're not going to do any stuff to the response we pretend the
+    # request didn't pass through Varnish
+    unset bereq.http.X-Turpentine-Secret-Handshake;
+    set bereq.http.Connection = "close";
+}
+
+# sub vcl_pass {
+#     return (pass);
+# }
+
+sub vcl_hash {
+    # For static files we keep the hash simple and don't add the domain.
+    # This saves memory when a static file is used on multiple domains.
+    if ({{simple_hash_static}} && req.http.X-Varnish-Static) {
+        hash_data(req.url);
+        if (req.http.Accept-Encoding) {
+            # make sure we give back the right encoding
+            hash_data(req.http.Accept-Encoding);
+        }
+        return (lookup);
+    }
+
+    if({{send_unmodified_url}} && req.http.X-Varnish-Cache-Url) {
+        hash_data(req.http.X-Varnish-Cache-Url);
+    } else {
+        hash_data(req.url);
     }
     if (req.http.Cookie ~ "\bstore=") {
       set req.http.X-Varnish-Store = regsub(req.http.Cookie, ".*\bstore=([^;]*).*", "\1");
@@ -355,3 +458,7 @@ sub vcl_deliver {
     unset resp.http.X-Varnish-Set-Cookie;
   }
 }
+
+## Custom VCL Logic
+
+{{custom_vcl_include}}

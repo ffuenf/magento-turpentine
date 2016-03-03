@@ -39,10 +39,10 @@ class Nexcessnet_Turpentine_Model_Varnish_Admin {
      * @param  string $subPattern regex to match against URLs
      * @return bool
      */
-    public function flushUrl( $subPattern ) {
-        $result      = array();
+    public function flushUrl($subPattern) {
+        $result = array();
         $clearedFlag = false;
-        foreach( Mage::helper( 'turpentine/varnish' )->getSockets() as $socket ) {
+        foreach (Mage::helper('turpentine/varnish')->getSockets() as $socket) {
             $socketName = $socket->getConnectionString();
             try {
                 // We don't use "ban_url" here, because we want to do lurker friendly bans.
@@ -107,9 +107,9 @@ class Nexcessnet_Turpentine_Model_Varnish_Admin {
      */
     public function applyConfig() {
         $result = array();
-        $helper = Mage::helper( 'turpentine' );
-        foreach( Mage::helper( 'turpentine/varnish' )->getSockets() as $socket ) {
-            $cfgr = Nexcessnet_Turpentine_Model_Varnish_Configurator_Abstract::getFromSocket( $socket );
+        $helper = Mage::helper('turpentine');
+        foreach (Mage::helper('turpentine/varnish')->getSockets() as $socket) {
+            $cfgr = Nexcessnet_Turpentine_Model_Varnish_Configurator_Abstract::getFromSocket($socket);
             $socketName = $socket->getConnectionString();
             if (is_null($cfgr)) {
                 $result[$socketName] = 'Failed to load configurator';

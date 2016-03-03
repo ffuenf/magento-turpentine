@@ -20,7 +20,7 @@
 <config>
     <modules>
         <Nexcessnet_Turpentine>
-            <version>0.6.7</version>
+            <version>0.6.8</version>
         </Nexcessnet_Turpentine>
     </modules>
     <default>
@@ -85,6 +85,7 @@
             <static>
                 <force_static>1</force_static>
                 <exts>css,js,jpe?g,png,gif,ico,swf</exts>
+                <simple_hash>1</simple_hash>
             </static>
         </turpentine_vcl>
     </default>
@@ -139,7 +140,7 @@
             </poll>
 
             <!--
-            Rewrite the compared and viewed product block. Default behavior returns '' if 
+            Rewrite the compared and viewed product block. Default behavior returns '' if
             no items to display, which prevents display of the ESI url, causing caching problems
             -->
             <reports>
@@ -165,11 +166,6 @@
                 <class>Nexcessnet_Turpentine_Model</class>
                 <resourceModel>turpentine_resource_mysql4</resourceModel>
             </turpentine>
-            <core>
-                <rewrite>
-                    <session>Nexcessnet_Turpentine_Model_Core_Session</session>
-                </rewrite>
-            </core>
             <turpentine_resource_mysql4>
                 <class>Nexcessnet_Turpentine_Model_Resource_Mysql4</class>
                 <entities>
@@ -178,6 +174,11 @@
                     </url_cache_status>
                 </entities>
             </turpentine_resource_mysql4>
+            <core>
+                <rewrite>
+                    <session>Nexcessnet_Turpentine_Model_Core_Session</session>
+                </rewrite>
+            </core>
         </models>
         <resources>
             <turpentine_setup>
@@ -317,6 +318,10 @@
                         <class>turpentine/observer_varnish</class>
                         <method>addProductListToolbarRewrite</method>
                     </turpentine_varnish_controller_front_init_before>
+                    <turpentine_varnish_fix_cm_redissession_locks>
+                        <class>turpentine/observer_varnish</class>
+                        <method>fixCmRedisSessionLocks</method>
+                    </turpentine_varnish_fix_cm_redissession_locks>
                     <turpentine_esi_set_replace_form_key_flag>
                         <class>turpentine/observer_esi</class>
                         <method>setReplaceFormKeyFlag</method>
@@ -452,14 +457,6 @@
             </updates>
         </layout>
         <events>
-            <controller_front_send_response_after>
-                <observers>
-                    <turpentine_add_url_cache>
-                        <class>turpentine/observer_urlCacheStatus</class>
-                        <method>addUrlCache</method>
-                    </turpentine_add_url_cache>
-                </observers>
-            </controller_front_send_response_after>
             <controller_action_predispatch>
                 <observers>
                     <controller_action_before>
@@ -500,6 +497,14 @@
                     </wishlist_index_index_before>
                 </observers>
             </wishlist_index_index_before>
+            <controller_front_send_response_after>
+                <observers>
+                    <turpentine_add_url_cache>
+                        <class>turpentine/observer_urlCacheStatus</class>
+                        <method>addUrlCache</method>
+                    </turpentine_add_url_cache>
+                </observers>
+            </controller_front_send_response_after>
         </events>
     </frontend>
     <admin>

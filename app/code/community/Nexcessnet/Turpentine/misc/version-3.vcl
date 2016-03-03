@@ -28,10 +28,6 @@ C{
 
 import std;
 
-## Custom VCL Logic
-
-{{custom_vcl_include}}
-
 ## Backends
 
 {{default_backend}}
@@ -73,7 +69,7 @@ sub generate_session {
     } else {
         set req.http.Cookie = req.http.X-Varnish-Faked-Session;
     }
-} 
+}
 
 sub generate_session_expires {
     # sets X-Varnish-Cookie-Expires to now + esi_private_ttl in format:
@@ -189,6 +185,7 @@ sub vcl_recv {
             # don't need cookies for static assets
             unset req.http.Cookie;
             unset req.http.X-Varnish-Faked-Session;
+            set req.http.X-Varnish-Static = 1;
             return (lookup);
         }
         # this doesn't need a enable_url_excludes because we can be reasonably
@@ -237,6 +234,16 @@ sub vcl_pipe {
 # }
 
 sub vcl_hash {
+    # For static files we keep the hash simple and don't add the domain.
+    # This saves memory when a static file is used on multiple domains.
+    if ({{simple_hash_static}} && req.http.X-Varnish-Static) {
+        hash_data(req.url);
+        if (req.http.Accept-Encoding) {
+            # make sure we give back the right encoding
+            hash_data(req.http.Accept-Encoding);
+        }
+        return (hash);
+    }
 
     if({{send_unmodified_url}} && req.http.X-Varnish-Cache-Url) {
         hash_data(req.http.X-Varnish-Cache-Url);
@@ -273,7 +280,7 @@ sub vcl_hash {
             req.http.Cookie ~ "customer_group=") {
         hash_data(regsub(req.http.Cookie, "^.*?customer_group=([^;]*);*.*$", "\1"));
     }
-    
+
     return (hash);
 }
 
@@ -419,3 +426,8 @@ sub vcl_deliver {
         unset resp.http.X-Varnish-Set-Cookie;
     }
 }
+
+## Custom VCL Logic
+
+{{custom_vcl_include}}
+

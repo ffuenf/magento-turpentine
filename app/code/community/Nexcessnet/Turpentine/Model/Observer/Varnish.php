@@ -28,20 +28,19 @@ class Nexcessnet_Turpentine_Model_Observer_Varnish extends Varien_Event_Observer
      * @param  mixed $eventObject
      * @return null
      */
-    public function setCacheFlagHeader( $eventObject ) {
+    public function setCacheFlagHeader($eventObject) {
 
         /** @var Mage_Core_Controller_Response_Http $response */
         $response = $eventObject->getResponse();
 
-        if($response->canSendHeaders()
-            &&  Mage::helper( 'turpentine/varnish' )->shouldResponseUseVarnish() ) {
-
-            $response->setHeader( 'X-Turpentine-Cache',
-                Mage::registry( 'turpentine_nocache_flag' ) ? '0' : '1' );
-            if( Mage::helper( 'turpentine/varnish' )->getVarnishDebugEnabled() ) {
-                Mage::helper( 'turpentine/debug' )->logDebug(
-                    'Set Varnish cache flag header to: ' .
-                    ( Mage::registry( 'turpentine_nocache_flag' ) ? '0' : '1' ) );
+        if ($response->canSendHeaders()
+            && Mage::helper('turpentine/varnish')->shouldResponseUseVarnish()) {
+            $response->setHeader('X-Turpentine-Cache',
+                Mage::registry('turpentine_nocache_flag') ? '0' : '1');
+            if (Mage::helper('turpentine/varnish')->getVarnishDebugEnabled()) {
+                Mage::helper('turpentine/debug')->logDebug(
+                    'Set Varnish cache flag header to: '.
+                    (Mage::registry('turpentine_nocache_flag') ? '0' : '1') );
             }
         }
     }
@@ -57,6 +56,22 @@ class Nexcessnet_Turpentine_Model_Observer_Varnish extends Varien_Event_Observer
             Mage::getSingleton('turpentine/shim_mage_core_app')
                 ->shim_addClassRewrite('block', 'catalog', 'product_list_toolbar',
                     'Nexcessnet_Turpentine_Block_Catalog_Product_List_Toolbar');
+        }
+    }
+
+    /**
+     * Turpentine sets the fake cookie 'frontend=crawler-session' when a crawler is detected.
+     * This causes lock problems with Cm_RedisSession, because all crawler hits are requesting the same session lock.
+     * Cm_RedisSession provides the define CM_REDISSESSION_LOCKING_ENABLED to overrule if locking should be enabled.
+     *
+     * @param $eventObject
+     * @return null
+     */
+    public function fixCmRedisSessionLocks($eventObject) {
+        if (Mage::helper('core')->isModuleEnabled('Cm_RedisSession')) {
+            if ( ! empty($_COOKIE['frontend']) && 'crawler-session' == $_COOKIE['frontend']) {
+                define('CM_REDISSESSION_LOCKING_ENABLED', false);
+            }
         }
     }
 

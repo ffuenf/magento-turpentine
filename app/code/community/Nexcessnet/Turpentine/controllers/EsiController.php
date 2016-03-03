@@ -118,9 +118,9 @@ class Nexcessnet_Turpentine_EsiController extends Mage_Core_Controller_Front_Act
                             }
                         }
                     }
-                    if( $resp->canSendHeaders() && $esiData->getEsiMethod() == 'ajax' ) {
-                        $resp->setHeader( 'Access-Control-Allow-Origin',
-                            $esiHelper->getCorsOrigin() );
+                    if ($resp->canSendHeaders() && $esiData->getEsiMethod() == 'ajax') {
+                        $resp->setHeader('Access-Control-Allow-Origin',
+                            $esiHelper->getCorsOrigin());
                     }
                     if ( ! is_null($flushEvents = $esiData->getFlushEvents())) {
                         $resp->setHeader('X-Turpentine-Flush-Events',

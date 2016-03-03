@@ -81,9 +81,9 @@ class Nexcessnet_Turpentine_Model_Observer_Ban extends Varien_Event_Observer {
      * @param  Varien_Object $eventObject
      * @return null
      */
-    public function banProductPageCache( $eventObject ) {
-        if( Mage::helper( 'turpentine/varnish' )->getVarnishEnabled() ) {
-            $banHelper = Mage::helper( 'turpentine/ban' );
+    public function banProductPageCache($eventObject) {
+        if (Mage::helper('turpentine/varnish')->getVarnishEnabled()) {
+            $banHelper = Mage::helper('turpentine/ban');
 
             /** @var Mage_Catalog_Model_Product $product */
             $product = $eventObject->getProduct();
@@ -97,16 +97,16 @@ class Nexcessnet_Turpentine_Model_Observer_Ban extends Varien_Event_Observer {
             }
 
             // ban product and related products
-            $urlPattern = $banHelper->getProductBanRegex( $parentProductsCollection );
-            $result = $this->_getVarnishAdmin()->flushUrl( $urlPattern );
-            Mage::dispatchEvent( 'turpentine_ban_product_cache', $result );
-            $cronHelper = Mage::helper( 'turpentine/cron' );
-            if( $this->_checkResult( $result ) &&
-                    $cronHelper->getCrawlerEnabled() ) {
-                $cronHelper->addProductToCrawlerQueue( $product );
-                foreach( $banHelper->getParentProducts( $product )
-                        as $parentProduct ) {
-                    $cronHelper->addProductToCrawlerQueue( $parentProduct );
+            $urlPattern = $banHelper->getProductBanRegex($product);
+            $result = $this->_getVarnishAdmin()->flushUrl($urlPattern);
+            Mage::dispatchEvent('turpentine_ban_product_cache', $result);
+            $cronHelper = Mage::helper('turpentine/cron');
+            if ($this->_checkResult($result) &&
+                    $cronHelper->getCrawlerEnabled()) {
+                $cronHelper->addProductToCrawlerQueue($product);
+                foreach ($banHelper->getParentProducts($product)
+                        as $parentProduct) {
+                    $cronHelper->addProductToCrawlerQueue($parentProduct);
                 }
             }
 
@@ -329,10 +329,10 @@ class Nexcessnet_Turpentine_Model_Observer_Ban extends Varien_Event_Observer {
         $patterns = array();
         /* @var $review \Mage_Review_Model_Review*/
         $review = $eventObject->getObject();
-        
+
         /* @var $productCollection \Mage_Review_Model_Resource_Review_Product_Collection*/
         $productCollection = $review->getProductCollection();
-        
+
         $products = $productCollection->addEntityFilter((int) $review->getEntityPkValue())->getItems();
 
         $productIds = array_unique(array_map(

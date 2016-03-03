@@ -60,13 +60,14 @@ class Nexcessnet_Turpentine_Model_Observer_Esi extends Varien_Event_Observer {
      */
     public function setFlagHeaders($eventObject) {
         $response = $eventObject->getResponse();
-        if($response->canSendHeaders()
-            && Mage::helper( 'turpentine/esi' )->shouldResponseUseEsi() ) {
-            $response->setHeader( 'X-Turpentine-Esi',
-                Mage::registry( 'turpentine_esi_flag' ) ? '1' : '0' );
-            Mage::helper( 'turpentine/debug' )->logDebug(
-                'Set ESI flag header to: %s',
-                (Mage::registry('turpentine_esi_flag') ? '1' : '0') );
+        if ($response->canSendHeaders()
+            && Mage::helper('turpentine/esi')->shouldResponseUseEsi()) {
+            $response->setHeader('X-Turpentine-Esi',
+                Mage::registry('turpentine_esi_flag') ? '1' : '0');
+                Mage::helper('turpentine/debug')->logDebug(
+                    'Set ESI flag header to: %s',
+                    (Mage::registry('turpentine_esi_flag') ? '1' : '0')
+                );
         }
     }
 
@@ -232,7 +233,7 @@ class Nexcessnet_Turpentine_Model_Observer_Esi extends Varien_Event_Observer {
                 $blockObject instanceof Mage_Core_Block_Template &&
                 $esiOptions = $blockObject->getEsiOptions()) {
 
-            if ((isset($esiOptions['disableEsiInjection'])) && ($esiOptions['disableEsiInjection'] == 1)) { 
+            if ((isset($esiOptions['disableEsiInjection'])) && ($esiOptions['disableEsiInjection'] == 1)) {
                 return;
             }
 
@@ -542,7 +543,7 @@ class Nexcessnet_Turpentine_Model_Observer_Esi extends Varien_Event_Observer {
             Mage::dispatchEvent("add_to_cart_after", array('request' => $observer->getControllerAction()->getRequest()));
         }
     }
-    
+
     public function hookToAddToCartBefore($observer) {
         //Mage::log("hookToAddToCartBefore-antes ".print_r($observer->getEvent()->getRequest()->getParams(),true)." will be added to cart.", null, 'carrinho.log', true);
         $key = Mage::getSingleton('core/session')->getFormKey();
