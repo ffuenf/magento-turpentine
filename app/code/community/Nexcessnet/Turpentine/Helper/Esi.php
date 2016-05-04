@@ -36,6 +36,13 @@ class Nexcessnet_Turpentine_Helper_Esi extends Mage_Core_Helper_Abstract {
     protected $_layoutXml = null;
 
     /**
+     * special chars to url encoded version
+     *
+     * @var array
+     */
+    protected $_specialCharsEncodingMap = array('ä' => '%C3%A4', 'ü' => '%C3%BC', 'ö' => '%C3%B6', 'Ä' => '%C3%84', 'Ü' => '%C3%9C', 'Ö' => '%C3%96', 'ß' => '%C3%9F', '{' => '%7B', '}' => '%7D');
+
+    /**
      * Get whether ESI includes are enabled or not
      *
      * @return bool
@@ -180,6 +187,7 @@ class Nexcessnet_Turpentine_Helper_Esi extends Mage_Core_Helper_Abstract {
         if ($url === null) {
             $url = $this->getDummyUrl();
         }
+        $url = str_replace(array_keys($this->_specialCharsEncodingMap), array_values($this->_specialCharsEncodingMap), $url);
         $request = Mage::getModel('turpentine/dummy_request', $url);
         $request->fakeRouterDispatch();
         return $request;
