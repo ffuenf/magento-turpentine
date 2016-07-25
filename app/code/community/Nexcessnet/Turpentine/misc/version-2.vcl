@@ -106,10 +106,19 @@ else
     }
 
     # varnish 2.1 doesn't support bare booleans so we have to add these
-    # as headers to the req so they've available throught the VCL
+    # as headers to the req so they've available through the VCL
     set req.http.X-Opt-Enable-Caching = "{{enable_caching}}";
     set req.http.X-Opt-Force-Static-Caching = "{{force_cache_static}}";
+    set req.http.X-Opt-Simple-Hash-Static = "{{simple_hash_static}}";
+    set req.http.X-Opt-Enable-Get-Ignored = "{{enable_get_ignored}}";
     set req.http.X-Opt-Enable-Get-Excludes = "{{enable_get_excludes}}";
+    set req.http.X-Opt-Send-Unmodified-Url = "{{send_unmodified_url}}";
+
+
+    if(req.http.X-Opt-Send-Unmodified-Url == "true") {
+        # save unmodified url
+        set req.http.X-Varnish-Origin-Url = req.url;
+    }
 
     # Normalize request data before potentially sending things off to the
     # backend. This ensures all request types get the same information, most
@@ -125,6 +134,9 @@ else
     if (req.http.X-Opt-Enable-Caching != "true" || req.http.Authorization ||
             !(req.request ~ "^(GET|HEAD|OPTIONS)$") ||
             req.http.Cookie ~ "varnish_bypass={{secret_handshake}}") {
+        if (req.url ~ "{{url_base_regex}}{{admin_frontname}}") {
+            set req.backend = admin;
+        }
         return (pipe);
     }
 
@@ -184,6 +196,7 @@ else
             # don't need cookies for static assets
             remove req.http.Cookie;
             remove req.http.X-Varnish-Faked-Session;
+            set req.http.X-Varnish-Static = "1";
             return (lookup);
         }
         # this doesn't need a enable_url_excludes because we can be reasonably
@@ -200,10 +213,17 @@ else
                 req.url ~ "(?:[?&](?:{{get_param_excludes}})(?=[&=]|$))") {
             return (pass);
         }
-        if (req.url ~ "[?&](utm_source|utm_medium|utm_campaign|gclid|cx|ie|cof|siteurl)=") {
-            # Strip out Google related parameters
-            set req.url = regsuball(req.url, "(?:(\?)?|&)(?:utm_source|utm_medium|utm_campaign|gclid|cx|ie|cof|siteurl)=[^&]+", "\1");
+        if (req.http.X-Opt-Enable-Get-Ignored == "true" && req.url ~ "[?&]({{get_param_ignored}})=") {
+            # Strip out ignored GET related parameters
+            set req.url = regsuball(req.url, "(?:(\?)?|&)(?:{{get_param_ignored}})=[^&]+", "\1");
             set req.url = regsuball(req.url, "(?:(\?)&|\?$)", "\1");
+        }
+
+        if(req.http.X-Opt-Send-Unmodified-Url == "true") {
+            # change req.url back and save the modified for cache look-ups in a separate variable
+            set req.http.X-Varnish-Cache-Url = req.url;
+            set req.url = req.http.X-Varnish-Origin-Url;
+            unset req.http.X-Varnish-Origin-Url;
         }
 
         return (lookup);
@@ -224,6 +244,23 @@ sub vcl_pipe {
 # }
 
 sub vcl_hash {
+    # For static files we keep the hash simple and don't add the domain.
+    # This saves memory when a static file is used on multiple domains.
+    if (req.http.X-Opt-Simple-Hash-Static == "true" && req.http.X-Varnish-Static) {
+        set req.hash += req.url;
+        if (req.http.Accept-Encoding) {
+            # make sure we give back the right encoding
+            set req.hash += req.http.Accept-Encoding;
+        }
+        return (hash);
+    }
+
+    if(req.http.X-Opt-Send-Unmodified-Url == "true" && req.http.X-Varnish-Cache-Url) {
+        set req.hash += req.http.X-Varnish-Cache-Url;
+    } else {
+        set req.hash += req.url;
+    }
+
     set req.hash += req.url;
     if (req.http.Host) {
         set req.hash += req.http.Host;
@@ -254,6 +291,12 @@ else
         set req.hash += regsub(req.http.Cookie, "^.*?frontend=([^;]*);*.*$", "\1");
         {{advanced_session_validation}}
     }
+
+    if (req.http.X-Varnish-Esi-Access == "customer_group" &&
+            req.http.Cookie ~ "customer_group=") {
+        set req.hash += regsub(req.http.Cookie, "^.*?customer_group=([^;]*);*.*$", "\1");
+    }
+
     return (hash);
 }
 
@@ -372,7 +415,7 @@ sub vcl_deliver {
         remove resp.http.X-Varnish-Cookie-Expires;
     }
     if (req.http.X-Varnish-Esi-Method == "ajax" && req.http.X-Varnish-Esi-Access == "private") {
-        set resp.http.Cache-Control = "no-cache";
+        set resp.http.Cache-Control = "no-store, max-age=0, no-cache";
     }
     set resp.http.X-Opt-Debug-Headers = "{{debug_headers}}";
     if (resp.http.X-Opt-Debug-Headers == "true" || client.ip ~ debug_acl) {

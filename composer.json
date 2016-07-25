@@ -1,32 +1,16 @@
 {
-  "name": "ffuenf/magento-turpentine",
-  "license": "GPL-2.0+",
-  "description": "A Varnish extension for Magento",
-  "authors": [
-    {
-      "name": "Alex Headley",
-      "email": "aheadley@nexcess.net"
+    "name": "ffuenf/magento-turpentine",
+    "type": "magento-module",
+    "license": "GPL-2.0+",
+    "description": "A Varnish extension for Magento.",
+    "homepage": "http://www.magentocommerce.com/magento-connect/2984.html",
+    "authors": [
+        {
+            "name": "Alex Headley",
+            "email": "aheadley@nexcess.net"
+        }
+    ],
+    "replace": {
+        "connect20/nexcessnet_turpentine": "self.version"
     }
-    {
-      "name": "Achim Rosenhagen",
-      "email": "a.rosenhagen@ffuenf.de"
-    }
-  ],
-  "type": "magento-module",
-  "require": {
-    "magento-hackathon/magento-composer-installer": "*",
-    "colinmollenhour/modman": "*"
-  },
-  "require-dev": {
-    "phpunit/phpunit": "3.7.*"
-  },
-  "repositories": [
-    {
-      "type": "composer",
-      "url": "http://packages.firegento.com"
-    }
-  ],
-  "extra": {
-    "magento-root-dir": "./magento/"
-  }
 }

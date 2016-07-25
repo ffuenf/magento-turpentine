@@ -29,8 +29,10 @@
         </div>
     </div>
     <style>
-        .varnish-global-notice { border:1px solid #cfcfcf; border-width:0 0 1px; background:#ffff90; font-size:12px; line-height:1.25; text-align:center; color:#2f2f2f; }
-        .varnish-global-notice .notice-inner { width:860px; margin:0 auto; padding:12px 0 12px 0px; text-align:left; }
+        .varnish-global-notice { 
+            border:1px solid #cfcfcf; border-width:0 0 1px; background:#ffff90; font-size:12px; line-height:1.25;
+            text-align:center; color:#2f2f2f; position: fixed; z-index: 999; top: 100px; left: 10px; opacity: 0.6; }
+        .varnish-global-notice .notice-inner { width:200px; margin:0 auto; padding:12px 0 12px 0px; text-align:left; }
         .varnish-global-notice .notice-inner p { margin:0; padding:10px; }
     </style>
 <?php endif; ?>
