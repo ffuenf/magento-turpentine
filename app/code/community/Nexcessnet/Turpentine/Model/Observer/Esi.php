@@ -60,14 +60,12 @@ class Nexcessnet_Turpentine_Model_Observer_Esi extends Varien_Event_Observer {
      */
     public function setFlagHeaders($eventObject) {
         $response = $eventObject->getResponse();
-        if ($response->canSendHeaders()
-            && Mage::helper('turpentine/esi')->shouldResponseUseEsi()) {
+        if (Mage::helper('turpentine/esi')->shouldResponseUseEsi()) {
             $response->setHeader('X-Turpentine-Esi',
                 Mage::registry('turpentine_esi_flag') ? '1' : '0');
-                Mage::helper('turpentine/debug')->logDebug(
-                    'Set ESI flag header to: %s',
-                    (Mage::registry('turpentine_esi_flag') ? '1' : '0')
-                );
+            Mage::helper('turpentine/debug')->logDebug(
+                'Set ESI flag header to: %s',
+                (Mage::registry('turpentine_esi_flag') ? '1' : '0') );
         }
     }
 
@@ -228,12 +226,19 @@ class Nexcessnet_Turpentine_Model_Observer_Esi extends Varien_Event_Observer {
             $debugHelper->logInfo(
                 'Checking ESI block candidate: %s',
                 $blockObject->getNameInLayout() ? $blockObject->getNameInLayout() : $blockObject->getModuleName() );
-        }
+
+            $debugHelper->logInfo( "-- block testing: shouldResponseUseEsi = " . $esiHelper->shouldResponseUseEsi());
+            $debugHelper->logInfo( "-- block testing: instanceof Mage_Core_Block_Template = " . $blockObject instanceof Mage_Core_Block_Template );
+            $debugHelper->logInfo( "-- block testing: Esi Options = " . print_r($blockObject->getEsiOptions(), true) );
+        }        
         if ($esiHelper->shouldResponseUseEsi() &&
                 $blockObject instanceof Mage_Core_Block_Template &&
                 $esiOptions = $blockObject->getEsiOptions()) {
 
-            if ((isset($esiOptions['disableEsiInjection'])) && ($esiOptions['disableEsiInjection'] == 1)) {
+            if ((isset($esiOptions['disableEsiInjection'])) && ($esiOptions['disableEsiInjection'] == 1)) { 
+                if ($esiHelper->getEsiBlockLogEnabled()) {
+                    $debugHelper->logInfo("-- ESI Injection disabled");
+                }
                 return;
             }
 
@@ -291,8 +296,9 @@ class Nexcessnet_Turpentine_Model_Observer_Esi extends Varien_Event_Observer {
                     Mage::getUrl('*/*/*', array('_use_rewrite' => true, '_current' => true))
                 );
             }
-            $esiUrl = Mage::getUrl( 'turpentine/esi/getBlock', $urlOptions );
-            if( $esiOptions[$methodParam] == 'esi' ) {
+
+            $esiUrl = Mage::getUrl('turpentine/esi/getBlock', $urlOptions);
+            if ($esiOptions[$methodParam] == 'esi') {
                 // setting [web/unsecure/base_url] can be https://... but ESI can never be HTTPS
                 $esiUrl = preg_replace('|^https://|i', 'http://', $esiUrl);
             }
@@ -543,7 +549,7 @@ class Nexcessnet_Turpentine_Model_Observer_Esi extends Varien_Event_Observer {
             Mage::dispatchEvent("add_to_cart_after", array('request' => $observer->getControllerAction()->getRequest()));
         }
     }
-
+    
     public function hookToAddToCartBefore($observer) {
         //Mage::log("hookToAddToCartBefore-antes ".print_r($observer->getEvent()->getRequest()->getParams(),true)." will be added to cart.", null, 'carrinho.log', true);
         $key = Mage::getSingleton('core/session')->getFormKey();

@@ -42,7 +42,8 @@ abstract class Nexcessnet_Turpentine_Model_Varnish_Configurator_Abstract {
             case '4.0':
                 return Mage::getModel(
                     'turpentine/varnish_configurator_version4',
-                    array( 'socket' => $socket ) );
+                    array('socket' => $socket) );
+
             case '3.0':
                 return Mage::getModel(
                     'turpentine/varnish_configurator_version3',
@@ -109,8 +110,8 @@ abstract class Nexcessnet_Turpentine_Model_Varnish_Configurator_Abstract {
      * @return string
      */
     protected function _getVclTemplateFilename($baseFilename) {
-        $extensionDir = Mage::getModuleDir('', 'Nexcessnet_Turpentine');
-        return sprintf('%s/misc/%s', $extensionDir, $baseFilename);
+           $extensionDir = Mage::getModuleDir('', 'Nexcessnet_Turpentine');
+           return sprintf('%s/misc/%s', $extensionDir, $baseFilename);
     }
 
     /**
@@ -134,6 +135,23 @@ abstract class Nexcessnet_Turpentine_Model_Varnish_Configurator_Abstract {
             Mage::getStoreConfig('turpentine_varnish/servers/custom_include_file'),
             array('root_dir' => Mage::getBaseDir()) );
     }
+
+
+    /**
+     * Get the custom VCL template, if it exists
+     * Returns 'null' if the file doesn't exist
+     *
+     * @return string
+     */
+    protected function _getCustomTemplateFilename() {
+        $filePath = $this->_formatTemplate(
+            Mage::getStoreConfig('turpentine_varnish/servers/custom_vcl_template'),
+            array('root_dir' => Mage::getBaseDir())
+        );
+        if (is_file($filePath)) { return $filePath; }
+        else { return null; }
+    }
+
 
     /**
      * Format a template string, replacing {{keys}} with the appropriate values
@@ -770,54 +788,8 @@ EOS;
          * @link http://magebase.com/magento-tutorials/magento-design-exceptions-explained/
          */
         $tpl = <<<EOS
-    if (
-         req.http.User-Agent ~ "(?i)ip(hone|od)" ||
-         req.http.User-Agent ~ "(?i)android.*(mobile|mini)" ||
-         req.http.User-Agent ~ "Opera Mobi" ||
-         req.http.User-Agent ~ "Fennec" ||
-         req.http.User-Agent ~ "IEMobile" ||
-         req.http.User-Agent ~ "BlackBerry" ||
-         req.http.User-Agent ~ "BB10.*Mobile" ||
-         req.http.User-Agent ~ "GT-.*Build/GINGERBREAD" ||
-         req.http.User-Agent ~ "SymbianOS.*AppleWebKit" ||
-         req.http.User-Agent ~ "Mobile.+Firefox" ||
-         req.http.User-Agent ~ "(?i)symbian" ||
-         req.http.User-Agent ~ "(?i)^sonyericsson" ||
-         req.http.User-Agent ~ "(?i)^nokia" ||
-         req.http.User-Agent ~ "(?i)^samsung" ||
-         req.http.User-Agent ~ "(?i)^lg" ||
-         req.http.User-Agent ~ "(?i)bada" ||
-         req.http.User-Agent ~ "(?i)blazer" ||
-         req.http.User-Agent ~ "(?i)cellphone" ||
-         req.http.User-Agent ~ "(?i)iemobile" ||
-         req.http.User-Agent ~ "(?i)midp-2.0" ||
-         req.http.User-Agent ~ "(?i)u990" ||
-         req.http.User-Agent ~ "(?i)netfront" ||
-         req.http.User-Agent ~ "(?i)opera mini" ||
-         req.http.User-Agent ~ "(?i)palm" ||
-         req.http.User-Agent ~ "(?i)nintendo wii" ||
-         req.http.User-Agent ~ "(?i)playstation portable" ||
-         req.http.User-Agent ~ "(?i)portalmmm" ||
-         req.http.User-Agent ~ "(?i)proxinet" ||
-         req.http.User-Agent ~ "(?i)sonyericsson" ||
-         req.http.User-Agent ~ "(?i)symbian" ||
-         req.http.User-Agent ~ "(?i)windows\ ?ce" ||
-         req.http.User-Agent ~ "(?i)winwap" ||
-         req.http.User-Agent ~ "(?i)eudoraweb" ||
-         req.http.User-Agent ~ "(?i)htc" ||
-         req.http.User-Agent ~ "(?i)240x320" ||
-         req.http.User-Agent ~ "(?i)avantgo") {
-         set req.http.X-Normalized-User-Agent = "mobile";
-    } else if (req.http.User-Agent ~ "MSIE") {
-        set req.http.X-Normalized-User-Agent = "msie";
-    } else if (req.http.User-Agent ~ "Firefox") {
-        set req.http.X-Normalized-User-Agent = "firefox";
-    } else if (req.http.User-Agent ~ "Chrome") {
-        set req.http.X-Normalized-User-Agent = "chrome";
-    } else if (req.http.User-Agent ~ "Safari") {
-        set req.http.X-Normalized-User-Agent = "safari";
-    } else if (req.http.User-Agent ~ "Opera") {
-        set req.http.X-Normalized-User-Agent = "opera";
+if (req.http.User-Agent ~ "iP(?:hone|ad|od)|BlackBerry|Palm|Googlebot-Mobile|Mobile|mobile|mobi|Windows Mobile|Safari Mobile|Android|Opera (?:Mini|Mobi)") {
+        set req.http.X-Normalized-User-Agent = "mobile";
     } else {
         set req.http.X-Normalized-User-Agent = "other";
     }
