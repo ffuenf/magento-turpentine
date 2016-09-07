@@ -29,6 +29,10 @@ C{
 
 import std;
 
+## Custom top VCL Logic
+
+{{custom_top_vcl_include}}
+
 ## Backends
 
 {{default_backend}}
