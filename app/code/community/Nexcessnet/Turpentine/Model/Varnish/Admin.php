@@ -68,6 +68,28 @@ class Nexcessnet_Turpentine_Model_Varnish_Admin {
     }
 
     /**
+     * Flush all URLs matching tag by pattern
+     *
+     * @param  $pattern
+     * @return bool
+     */
+    public function flushTagsByPattern($pattern) {
+        $result = array();
+
+        foreach (Mage::helper('turpentine/varnish')->getSockets() as $socket) {
+            $socketName = $socket->getConnectionString();
+            try {
+                $socket->ban('obj.http.X-Varnish-Tag', '~', $pattern);
+            } catch (Mage_Core_Exception $e) {
+                $result[$socketName] = $e->getMessage();
+                continue;
+            }
+            $result[$socketName] = true;
+        }
+        return $result;
+    }
+
+    /**
      * Flush according to Varnish expression
      *
      * @param  mixed ...
