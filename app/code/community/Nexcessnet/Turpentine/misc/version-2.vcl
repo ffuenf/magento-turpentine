@@ -24,9 +24,9 @@ C{
     {{custom_c_code}}
 }C
 
-## Custom VCL Logic
+## Custom top VCL Logic
 
-{{custom_vcl_include}}
+{{custom_top_vcl_include}}
 
 ## Backends
 
@@ -447,3 +447,7 @@ else
     }
     remove resp.http.X-Opt-Debug-Headers;
 }
+
+## Custom VCL Logic
+
+{{custom_vcl_include}}

@@ -339,6 +339,10 @@
                         <class>turpentine/observer_ban</class>
                         <method>banProductPageCache</method>
                     </turpentine_varnish_catalog_product_save_commit_after>
+                    <turpentine_varnish_catalog_product_save_commit_after_ban_tag>
+                        <class>turpentine/observer_ban</class>
+                        <method>banProductTagCache</method>
+                    </turpentine_varnish_catalog_product_save_commit_after_ban_tag>
                 </observers>
             </catalog_product_save_commit_after>
             <review_save_after>
@@ -508,6 +512,30 @@
                     </turpentine_add_url_cache>
                 </observers>
             </controller_front_send_response_after>
+            <catalog_product_collection_load_after>
+                <observers>
+                    <turpentine_varnish_set_product_ids_to_registry>
+                        <class>turpentine/observer_tag</class>
+                        <method>setCollectionProductIdsToRegistry</method>
+                    </turpentine_varnish_set_product_ids_to_registry>
+                </observers>
+            </catalog_product_collection_load_after>
+            <catalog_product_load_after>
+                <observers>
+                    <turpentine_varnish_set_product_ids_to_registry>
+                        <class>turpentine/observer_tag</class>
+                        <method>setModelProductIdToRegistry</method>
+                    </turpentine_varnish_set_product_ids_to_registry>
+                </observers>
+            </catalog_product_load_after>
+            <controller_front_send_response_before>
+                <observers>
+                    <turpentine_varnish_set_tag_header>
+                        <class>turpentine/observer_tag</class>
+                        <method>setTagHeader</method>
+                    </turpentine_varnish_set_tag_header>
+                </observers>
+            </controller_front_send_response_before>
         </events>
     </frontend>
     <admin>
