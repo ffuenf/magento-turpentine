@@ -45,23 +45,6 @@ class Nexcessnet_Turpentine_Helper_Ban extends Mage_Core_Helper_Abstract {
     }
 
     /**
-     * @param  Mage_Catalog_Model_Product $product
-     * @return string
-     */
-    public function getProductTagBanRegex($product) {
-        $productIds  = array($product->getId());
-
-        foreach (array('configurable', 'grouped') as $pType) {
-            $parentIds  = Mage::getModel('catalog/product_type_'.$pType) ->getParentIdsByChild($product->getId());
-            $productIds = array_merge($productIds, $parentIds);
-        }
-
-        $pattern = sprintf('(?:\|%s\|)', implode('\||\|', $productIds));
-
-        return $pattern;
-    }
-
-    /**
      * Get parent products of a configurable or group product
      *
      * @param  Mage_Catalog_Model_Product $childProduct

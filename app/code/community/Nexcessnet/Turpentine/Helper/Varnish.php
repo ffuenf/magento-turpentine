@@ -35,14 +35,6 @@ class Nexcessnet_Turpentine_Helper_Varnish extends Mage_Core_Helper_Abstract {
     }
 
     /**
-     * @return bool
-     */
-    public function getProductTagBanEnabled() {
-        return (bool) Mage::getStoreConfig(
-            'turpentine_varnish/general/product_tag' );
-    }
-
-    /**
      * Get whether Varnish debugging is enabled or not
      *
      * @return bool

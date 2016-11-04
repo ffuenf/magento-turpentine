@@ -127,28 +127,6 @@ class Nexcessnet_Turpentine_Model_Observer_Ban extends Varien_Event_Observer {
         }
     }
 
-    /**
-     * Ban pages with tag that includes product id
-     *
-     * Events:
-     *     catalog_product_save_commit_after
-     *
-     * @param  Varien_Object $eventObject
-     * @return null
-     */
-    public function banProductTagCache($eventObject) {
-        if (Mage::helper('turpentine/varnish')->getVarnishEnabled()
-            && Mage::helper('turpentine/varnish')->getProductTagBanEnabled()
-        ) {
-            $banHelper = Mage::helper('turpentine/ban');
-            $product = $eventObject->getProduct();
-            $productIds = $banHelper->getProductTagBanRegex($product);
-            $result = $this->_getVarnishAdmin()->flushTagsByPattern($productIds);
-            if ($result) {
-                Mage::dispatchEvent('turpentine_ban_tag_product_cache', $result);
-            }
-        }
-    }
 
     /**
      * Ban a product page from the cache if it's stock status changed
