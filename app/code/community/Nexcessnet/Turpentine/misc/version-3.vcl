@@ -28,9 +28,9 @@ C{
 
 import std;
 
-## Custom top VCL Logic
+## Custom VCL Logic - Top
 
-{{custom_top_vcl_include}}
+{{custom_vcl_include_top}}
 
 ## Backends
 
@@ -73,7 +73,7 @@ sub generate_session {
     } else {
         set req.http.Cookie = req.http.X-Varnish-Faked-Session;
     }
-}
+} 
 
 sub generate_session_expires {
     # sets X-Varnish-Cookie-Expires to now + esi_private_ttl in format:
@@ -96,8 +96,18 @@ sub generate_session_expires {
 {{generate_session_end}}
 ## Varnish Subroutines
 
+sub vcl_synth {
+    if (resp.status == 750) {
+        set resp.status = 301;
+        set resp.http.Location = "https://" + req.http.host + req.url;
+        return(deliver);
+    }
+}
+
 sub vcl_recv {
 	{{maintenance_allowed_ips}}
+
+    {{https_redirect}}
 
     # this always needs to be done so it's up at the top
     if (req.restarts == 0) {
@@ -171,10 +181,6 @@ sub vcl_recv {
         {{allowed_hosts}}
         # no frontend cookie was sent to us AND this is not an ESI or AJAX call
         if (req.http.Cookie !~ "frontend=" && !req.http.X-Varnish-Esi-Method) {
-        # no frontend cookie was sent to us
-        # BUGFIX https://github.com/ho-nl/magento-turpentine/commit/88a84039b1ae13a90eb9498aa458bec402a14009
-        # Issue thread: https://github.com/nexcess/magento-turpentine/issues/470
-        if (req.http.Cookie !~ "frontend="  && !req.http.X-Varnish-Esi-Method) {
             if (client.ip ~ crawler_acl ||
                     req.http.User-Agent ~ "^(?:{{crawler_user_agent_regex}})$") {
                 # it's a crawler, give it a fake cookie
@@ -284,7 +290,7 @@ sub vcl_hash {
             req.http.Cookie ~ "customer_group=") {
         hash_data(regsub(req.http.Cookie, "^.*?customer_group=([^;]*);*.*$", "\1"));
     }
-
+    
     return (hash);
 }
 
@@ -342,20 +348,28 @@ sub vcl_fetch {
                 set beresp.ttl = {{grace_period}}s;
                 return (hit_for_pass);
             } else {
-                if ({{force_cache_static}} && bereq.url ~ ".*\.(?:{{static_extensions}})(?=\?|&|$)") {
+                if ({{force_cache_static}} &&
+                        bereq.url ~ ".*\.(?:{{static_extensions}})(?=\?|&|$)") {
                     # it's a static asset
                     set beresp.ttl = {{static_ttl}}s;
                     set beresp.http.Cache-Control = "max-age={{static_ttl}}";
                 } elseif (req.http.X-Varnish-Esi-Method) {
                     # it's a ESI request
-                    if (req.http.X-Varnish-Esi-Access == "private" && req.http.Cookie ~ "frontend=") {
+                    if (req.http.X-Varnish-Esi-Access == "private" &&
+                            req.http.Cookie ~ "frontend=") {
                         # set this header so we can ban by session from Turpentine
-                        set beresp.http.X-Varnish-Session = regsub(req.http.Cookie, "^.*?frontend=([^;]*);*.*$", "\1");
+                        set beresp.http.X-Varnish-Session = regsub(req.http.Cookie,
+                            "^.*?frontend=([^;]*);*.*$", "\1");
                     }
-                    if (req.http.X-Varnish-Esi-Method == "ajax" && req.http.X-Varnish-Esi-Access == "public") {
-                        set beresp.http.Cache-Control = "max-age=" + regsub(req.url, ".*/{{esi_ttl_param}}/(\d+)/.*", "\1");
+                    if (req.http.X-Varnish-Esi-Method == "ajax" &&
+                            req.http.X-Varnish-Esi-Access == "public") {
+                        set beresp.http.Cache-Control = "max-age=" + regsub(
+                            req.url, ".*/{{esi_ttl_param}}/(\d+)/.*", "\1");
                     }
-                    set beresp.ttl = std.duration(regsub(req.url, ".*/{{esi_ttl_param}}/(\d+)/.*", "\1s"), 300s);
+                    set beresp.ttl = std.duration(
+                        regsub(
+                            req.url, ".*/{{esi_ttl_param}}/(\d+)/.*", "\1s"),
+                        300s);
                     if (beresp.ttl == 0s) {
                         # this is probably faster than bothering with 0 ttl
                         # cache objects
@@ -402,7 +416,7 @@ sub vcl_deliver {
         unset resp.http.X-Varnish-Cookie-Expires;
     }
     if (req.http.X-Varnish-Esi-Method == "ajax" && req.http.X-Varnish-Esi-Access == "private") {
-        set resp.http.Cache-Control = "no-store, max-age=0, no-cache";
+        set resp.http.Cache-Control = "no-cache";
     }
     if ({{debug_headers}} || client.ip ~ debug_acl) {
         # debugging is on, give some extra info
@@ -431,7 +445,7 @@ sub vcl_deliver {
     }
 }
 
-## Custom VCL Logic
+## Custom VCL Logic - Bottom
 
 {{custom_vcl_include}}
 

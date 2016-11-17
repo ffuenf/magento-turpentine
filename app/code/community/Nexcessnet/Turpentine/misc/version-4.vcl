@@ -30,9 +30,9 @@ C{
 import std;
 import directors;
 
-## Custom top VCL Logic
+## Custom VCL Logic - Top
 
-{{custom_top_vcl_include}}
+{{custom_vcl_include_top}}
 
 ## Backends
 
@@ -102,12 +102,22 @@ sub generate_session_expires {
 {{generate_session_end}}
 ## Varnish Subroutines
 
+sub vcl_synth {
+    if (resp.status == 750) {
+        set resp.status = 301;
+        set resp.http.Location = "https://" + req.http.host + req.url;
+        return(deliver);
+    }
+}
+
 sub vcl_init {
     {{directors}}
 }
 
 sub vcl_recv {
 	{{maintenance_allowed_ips}}
+
+    {{https_redirect}}
 
     # this always needs to be done so it's up at the top
     if (req.restarts == 0) {
@@ -303,6 +313,11 @@ sub vcl_hash {
         {{advanced_session_validation}}
 
     }
+    
+    if (req.http.X-Varnish-Esi-Access == "customer_group" &&
+            req.http.Cookie ~ "customer_group=") {
+        hash_data(regsub(req.http.Cookie, "^.*?customer_group=([^;]*);*.*$", "\1"));
+    }
     std.log("vcl_hash end return lookup");
     return (lookup);
 }
@@ -460,6 +475,6 @@ sub vcl_deliver {
     }
 }
 
-## Custom VCL Logic
+## Custom VCL Logic - Bottom
 
 {{custom_vcl_include}}
