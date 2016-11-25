@@ -95,9 +95,9 @@ class Nexcessnet_Turpentine_Helper_Varnish extends Mage_Core_Helper_Abstract {
      * @param  string $version   [description]
      * @return Nexcessnet_Turpentine_Model_Varnish_Admin_Socket
      */
-    public function getSocket($host, $port, $secretKey = null, $version = null) {
-        $socket = Mage::getModel('turpentine/varnish_admin_socket',
-            array('host' => $host, 'port' => $port));
+    public function getSocket($host, $port, $version = null) {
+        $socket = Mage::getModel('turpentine/varnish_admin_socket', array('host' => $host, 'port' => $port));
+        $secretKey = Mage::getStoreConfig('turpentine_varnish/servers/auth_key') . "\n";
         if ($secretKey) {
             $socket->setAuthSecret($secretKey);
         }
@@ -114,17 +114,14 @@ class Nexcessnet_Turpentine_Helper_Varnish extends Mage_Core_Helper_Abstract {
      */
     public function getSockets() {
         $sockets = array();
-        $servers = Mage::helper('turpentine/data')->cleanExplode(PHP_EOL,
-            Mage::getStoreConfig('turpentine_varnish/servers/server_list'));
-        $key = str_replace('\n', PHP_EOL,
-            Mage::getStoreConfig('turpentine_varnish/servers/auth_key'));
+        $servers = Mage::helper('turpentine/data')->cleanExplode(PHP_EOL, Mage::getStoreConfig('turpentine_varnish/servers/server_list'));
         $version = Mage::getStoreConfig('turpentine_varnish/servers/version');
         if ($version == 'auto') {
             $version = null;
         }
         foreach ($servers as $server) {
             $parts = explode(':', $server);
-            $sockets[] = $this->getSocket($parts[0], $parts[1], $key, $version);
+            $sockets[] = $this->getSocket($parts[0], $parts[1], $version);
         }
         return $sockets;
     }
