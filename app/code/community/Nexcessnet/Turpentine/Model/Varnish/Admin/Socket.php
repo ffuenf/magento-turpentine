@@ -401,7 +401,6 @@ class Nexcessnet_Turpentine_Model_Varnish_Admin_Socket {
             $this->_connect();
         }
         $data = rtrim($data).PHP_EOL;
-        Mage::log($data, null, 'varnishadmin.log', true);
         $dataLength = strlen($data);
         if ($dataLength >= self::CLI_CMD_LENGTH_LIMIT) {
             $cliBufferResponse = $this->param_show('cli_buffer');
