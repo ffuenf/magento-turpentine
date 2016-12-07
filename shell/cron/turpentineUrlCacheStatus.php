@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'abstract.php';
+require_once '..' . DIRECTORY_SEPARATOR . 'abstract.php';
 
 class TurpentineUrlCacheStatus extends Mage_Shell_Abstract
 {
