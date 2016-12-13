@@ -31,6 +31,9 @@ import std;
 ## Custom top VCL Logic
 
 {{custom_top_vcl_include}}
+## Custom VCL Logic - Top
+
+{{custom_vcl_include_top}}
 
 ## Backends
 
@@ -96,8 +99,18 @@ sub generate_session_expires {
 {{generate_session_end}}
 ## Varnish Subroutines
 
+sub vcl_error {
+    if (obj.status == 750) {
+        set obj.http.Location = obj.response;
+        set obj.status = 301;
+        return(deliver);
+    }
+}
+
 sub vcl_recv {
 	{{maintenance_allowed_ips}}
+
+    {{https_redirect}}
 
     # this always needs to be done so it's up at the top
     if (req.restarts == 0) {
@@ -393,7 +406,7 @@ sub vcl_deliver {
                 "; domain=" + regsub(req.http.Host, ":\d+$", "");
             } else {
                 # it's a real user, allow sharing of cookies between stores
-                if(req.http.Host ~ "{{normalize_cookie_regex}}") {
+                 if (req.http.Host ~ "{{normalize_cookie_regex}}" && "{{normalize_cookie_regex}}" ~ "..") {
                     set resp.http.Set-Cookie = resp.http.Set-Cookie +
                     "; domain={{normalize_cookie_target}}";
                 } else {
@@ -435,7 +448,7 @@ sub vcl_deliver {
     }
 }
 
-## Custom VCL Logic
+## Custom VCL Logic - Bottom
 
 {{custom_vcl_include}}
 
