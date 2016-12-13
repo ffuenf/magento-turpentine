@@ -34,10 +34,6 @@ import directors;
 
 {{custom_vcl_include_top}}
 
-## Custom top VCL Logic
-
-{{custom_top_vcl_include}}
-
 ## Backends
 
 {{default_backend}}

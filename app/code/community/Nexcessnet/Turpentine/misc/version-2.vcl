@@ -24,9 +24,6 @@ C{
     {{custom_c_code}}
 }C
 
-## Custom top VCL Logic
-
-{{custom_top_vcl_include}}
 ## Custom VCL Logic - Top
 
 {{custom_vcl_include_top}}

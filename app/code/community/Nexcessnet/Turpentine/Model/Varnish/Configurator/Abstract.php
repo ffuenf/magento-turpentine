@@ -154,18 +154,6 @@ abstract class Nexcessnet_Turpentine_Model_Varnish_Configurator_Abstract {
         else { return null; }
     }
 
-
-    /**
-     * Get the name of the custom include VCL file
-     *
-     * @return string
-     */
-    protected function _getCustomTopIncludeFilename() {
-        return $this->_formatTemplate(
-            Mage::getStoreConfig('turpentine_varnish/servers/custom_top_include_file'),
-            array('root_dir' => Mage::getBaseDir()) );
-    }
-
     /**
      * Format a template string, replacing {{keys}} with the appropriate values
      * and remove unspecified keys
@@ -1108,11 +1096,6 @@ sub vcl_synth {
                 $key .= ($position) ? '_'.$position : '';
                 $vars[$key] = file_get_contents($customIncludeFile);
             }
-        }
-
-        $customTopIncludeFile = $this->_getCustomTopIncludeFilename();
-        if (is_readable($customTopIncludeFile)) {
-            $vars['custom_top_vcl_include'] = file_get_contents($customTopIncludeFile);
         }
 
         return $vars;
