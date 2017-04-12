@@ -40,6 +40,12 @@ class Nexcessnet_Turpentine_Model_Varnish_Admin {
      * @return bool
      */
     public function flushUrl($subPattern) {
+        // ToDo KOEMPF-OVERWRITE: Begin
+        // Do not allow to clear full cache
+        if ($subPattern === '.*') {
+            return false;
+        }
+        // ToDo KOEMPF-OVERWRITE: End
         $result = array();
         $clearedFlag = false;
         foreach (Mage::helper('turpentine/varnish')->getSockets() as $socket) {
