@@ -305,11 +305,14 @@ sub vcl_hash {
         {{advanced_session_validation}}
 
     }
-    
-    if (req.http.X-Varnish-Esi-Access == "customer_group" &&
-            req.http.Cookie ~ "customer_group=") {
-        hash_data(regsub(req.http.Cookie, "^.*?customer_group=([^;]*);*.*$", "\1"));
-    }
+
+    # ToDo KOEMPF-OVERWRITE: Begin
+    # Disable caching for user group
+    #if (req.http.X-Varnish-Esi-Access == "customer_group" &&
+    #        req.http.Cookie ~ "customer_group=") {
+    #    hash_data(regsub(req.http.Cookie, "^.*?customer_group=([^;]*);*.*$", "\1"));
+    #}
+    # ToDo KOEMPF-OVERWRITE: End
     std.log("vcl_hash end return lookup");
     return (lookup);
 }
