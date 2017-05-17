@@ -111,6 +111,12 @@ sub vcl_recv {
 
     {{https_redirect}}
 
+    # Deliver uncached page for crawlers and overwrite cache entry,
+    # to refresh a cache entry (without purging it first)
+    if (req.http.X-Varnish-Nuke == "1" && client.ip ~ crawler_acl) {
+        set req.hash_always_miss = true;
+    }
+
     # this always needs to be done so it's up at the top
     if (req.restarts == 0) {
         if (req.http.X-Forwarded-For) {
