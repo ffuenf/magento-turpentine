@@ -352,7 +352,11 @@ sub vcl_backend_response {
         # we pretty much always want to do this
         set beresp.do_gzip = true;
 
-        if (beresp.status != 200 && beresp.status != 404) {
+        # ToDo KOEMPF-OVERWRITE: Begin
+        # do not cache 404 responses
+        #if (beresp.status != 200 && beresp.status != 404) {
+        if (beresp.status != 200) {
+        # ToDo KOEMPF-OVERWRITE: End
             # pass anything that isn't a 200 or 404
             set beresp.ttl = {{grace_period}}s;
             set beresp.uncacheable = true;
