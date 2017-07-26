@@ -235,7 +235,7 @@ class Nexcessnet_Turpentine_Model_Observer_Esi extends Varien_Event_Observer {
                 $blockObject instanceof Mage_Core_Block_Template &&
                 $esiOptions = $blockObject->getEsiOptions()) {
 
-            if ((isset($esiOptions['disableEsiInjection'])) && ($esiOptions['disableEsiInjection'] == 1)) { 
+            if ((isset($esiOptions['disableEsiInjection'])) && ($esiOptions['disableEsiInjection'] == 1)) {
                 if ($esiHelper->getEsiBlockLogEnabled()) {
                     $debugHelper->logInfo("-- ESI Injection disabled");
                 }
