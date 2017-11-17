@@ -128,10 +128,7 @@ class Nexcessnet_Turpentine_Helper_Data extends Mage_Core_Helper_Abstract {
      * @return string
      */
     public function urlBase64Encode($str) {
-        return str_replace(
-            array('/', '+'),
-            array('_', '-'),
-            base64_encode($str) );
+        return rtrim(strtr(base64_encode($str), '+/', '-_'), '=');
     }
 
     /**
@@ -141,11 +138,7 @@ class Nexcessnet_Turpentine_Helper_Data extends Mage_Core_Helper_Abstract {
      * @return string
      */
     public function urlBase64Decode($str) {
-        return base64_decode(
-            str_replace(
-                array('_', '-'),
-                array('/', '+'),
-                $str ) );
+        return base64_decode(str_pad(strtr($str, '-_', '+/'), strlen($str) % 4, '=', STR_PAD_RIGHT));
     }
 
     /**

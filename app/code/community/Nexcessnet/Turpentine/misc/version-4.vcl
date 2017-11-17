@@ -112,6 +112,12 @@ sub vcl_recv {
     {{https_proto_fix}}
     {{https_redirect}}
 
+    # Deliver uncached page for crawlers and overwrite cache entry,
+    # to refresh a cache entry (without purging it first)
+    if (req.http.X-Varnish-Nuke == "1" && client.ip ~ crawler_acl) {
+        set req.hash_always_miss = true;
+    }
+
     # this always needs to be done so it's up at the top
     if (req.restarts == 0) {
         if (req.http.X-Forwarded-For) {
@@ -306,11 +312,14 @@ sub vcl_hash {
         {{advanced_session_validation}}
 
     }
-    
-    if (req.http.X-Varnish-Esi-Access == "customer_group" &&
-            req.http.Cookie ~ "customer_group=") {
-        hash_data(regsub(req.http.Cookie, "^.*?customer_group=([^;]*);*.*$", "\1"));
-    }
+
+    # ToDo KOEMPF-OVERWRITE: Begin
+    # Disable caching for user group
+    #if (req.http.X-Varnish-Esi-Access == "customer_group" &&
+    #        req.http.Cookie ~ "customer_group=") {
+    #    hash_data(regsub(req.http.Cookie, "^.*?customer_group=([^;]*);*.*$", "\1"));
+    #}
+    # ToDo KOEMPF-OVERWRITE: End
     std.log("vcl_hash end return lookup");
     return (lookup);
 }
@@ -344,7 +353,11 @@ sub vcl_backend_response {
         # we pretty much always want to do this
         set beresp.do_gzip = true;
 
-        if (beresp.status != 200 && beresp.status != 404) {
+        # ToDo KOEMPF-OVERWRITE: Begin
+        # do not cache 404 responses
+        #if (beresp.status != 200 && beresp.status != 404) {
+        if (beresp.status != 200) {
+        # ToDo KOEMPF-OVERWRITE: End
             # pass anything that isn't a 200 or 404
             set beresp.ttl = {{grace_period}}s;
             set beresp.uncacheable = true;

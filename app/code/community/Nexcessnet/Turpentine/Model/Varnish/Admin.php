@@ -37,7 +37,7 @@ class Nexcessnet_Turpentine_Model_Varnish_Admin {
      * Flush all Magento URLs matching the given (relative) regex
      *
      * @param  string $subPattern regex to match against URLs
-     * @return bool
+     * @return array
      */
     public function flushUrl($subPattern) {
         $result = array();
@@ -45,9 +45,14 @@ class Nexcessnet_Turpentine_Model_Varnish_Admin {
         foreach (Mage::helper('turpentine/varnish')->getSockets() as $socket) {
             $socketName = $socket->getConnectionString();
             try {
-                // We don't use "ban_url" here, because we want to do lurker friendly bans.
-                // Lurker friendly bans get cleaned up, so they don't slow down Varnish.
-                $socket->ban('obj.http.X-Varnish-URL', '~', $subPattern);
+                // ToDo KOEMPF-OVERWRITE: Begin
+                // Do not allow to clear full cache
+                if ($subPattern !== '.*') {
+                    // We don't use "ban_url" here, because we want to do lurker friendly bans.
+                    // Lurker friendly bans get cleaned up, so they don't slow down Varnish.
+                    $socket->ban('obj.http.X-Varnish-URL', '~', $subPattern);
+                }
+                // ToDo KOEMPF-OVERWRITE: End
             } catch (Mage_Core_Exception $e) {
                 $result[$socketName] = $e->getMessage();
                 continue;

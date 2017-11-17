@@ -805,7 +805,10 @@ if (req.http.User-Agent ~ "iP(?:hone|ad|od)|BlackBerry|Palm|Googlebot-Mobile|Mob
     }
 
 EOS;
-        return $tpl;
+//        return $tpl;
+        // ToDo KOEMPF-OVERWRITE: Begin
+        return 'set req.http.X-Normalized-User-Agent = "normalized";';
+        // ToDo KOEMPF-OVERWRITE: End
     }
 
     /**
