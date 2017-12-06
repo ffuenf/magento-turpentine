@@ -15,39 +15,24 @@ vcl 4.0;
 # You should have received a copy of the GNU General Public License along
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-
 ## Nexcessnet_Turpentine Varnish v4 VCL Template
-
 ## Custom C Code
-
 C{
     // @source app/code/community/Nexcessnet/Turpentine/misc/uuid.c
     {{custom_c_code}}
 }C
-
 ## Imports
-
 import std;
 import directors;
-
 ## Custom VCL Logic - Top
-
 {{custom_vcl_include_top}}
-
 ## Backends
-
 {{default_backend}}
-
 {{admin_backend}}
-
 ## ACLs
-
 {{crawler_acl}}
-
 {{debug_acl}}
-
 ## Custom Subroutines
-
 {{generate_session_start}}
 sub generate_session {
     # generate a UUID and add `frontend=$UUID` to the Cookie header, or use SID
@@ -78,7 +63,6 @@ sub generate_session {
         set req.http.Cookie = req.http.X-Varnish-Faked-Session;
     }
 }
-
 sub generate_session_expires {
     # sets X-Varnish-Cookie-Expires to now + esi_private_ttl in format:
     #   Tue, 19-Feb-2013 00:14:27 GMT
@@ -101,23 +85,18 @@ sub generate_session_expires {
 }
 {{generate_session_end}}
 ## Varnish Subroutines
-
 sub vcl_init {
     {{directors}}
 }
-
 sub vcl_recv {
-	{{maintenance_allowed_ips}}
-
+    {{maintenance_allowed_ips}}
     {{https_proto_fix}}
     {{https_redirect}}
-
     # Deliver uncached page for crawlers and overwrite cache entry,
     # to refresh a cache entry (without purging it first)
     if (req.http.X-Varnish-Nuke == "1" && client.ip ~ crawler_acl) {
         set req.hash_always_miss = true;
     }
-
     # this always needs to be done so it's up at the top
     if (req.restarts == 0) {
         if (req.http.X-Forwarded-For) {
@@ -127,7 +106,6 @@ sub vcl_recv {
             set req.http.X-Forwarded-For = client.ip;
         }
     }
-
     # We only deal with GET and HEAD by default
     # we test this here instead of inside the url base regex section
     # so we can disable caching for the entire site if needed
@@ -136,19 +114,15 @@ sub vcl_recv {
         req.http.Cookie ~ "varnish_bypass={{secret_handshake}}") {
         return (pipe);
     }
-
     if({{send_unmodified_url}}) {
         # save the unmodified url
         set req.http.X-Varnish-Origin-Url = req.url;
     }
-
     # remove double slashes from the URL, for higher cache hit rate
     set req.url = regsuball(req.url, "(.*)//+(.*)", "\1/\2");
-
     {{normalize_encoding}}
     {{normalize_user_agent}}
     {{normalize_host}}
-
     # check if the request is for part of magento
     if (req.url ~ "{{url_base_regex}}") {
         # set this so Turpentine can see the request passed through Varnish
@@ -194,8 +168,7 @@ sub vcl_recv {
                 {{generate_session}}
             }
         }
-        if ({{force_cache_static}} &&
-                req.url ~ ".*\.(?:{{static_extensions}})(?=\?|&|$)") {
+        if ({{force_cache_static}} && req.url ~ ".*\.(?:{{static_extensions}})(?=\?|&|$)") {
             # don't need cookies for static assets
             unset req.http.Cookie;
             unset req.http.X-Varnish-Faked-Session;
@@ -222,40 +195,30 @@ sub vcl_recv {
             set req.url = regsuball(req.url, "(?:(\?)?|&)(?:utm_source|utm_medium|utm_campaign|gclid|cx|ie|cof|siteurl)=[^&]+", "\1");
             set req.url = regsuball(req.url, "(?:(\?)&|\?$)", "\1");
         }
-
         if ({{enable_get_ignored}} && req.url ~ "[?&]({{get_param_ignored}})=") {
             # Strip out Ignored GET parameters
             set req.url = regsuball(req.url, "(?:(\?)?|&)(?:{{get_param_ignored}})=[^&]+", "\1");
             set req.url = regsuball(req.url, "(?:(\?)&|\?$)", "\1");
         }
-
         if({{send_unmodified_url}}) {
             set req.http.X-Varnish-Cache-Url = req.url;
             set req.url = req.http.X-Varnish-Origin-Url;
             unset req.http.X-Varnish-Origin-Url;
         }
-
         # everything else checks out, try and pull from the cache
         return (hash);
     }
     # else it's not part of magento so do default handling (doesn't help
     # things underneath magento but we can't detect that)
 }
-
 sub vcl_pipe {
     # since we're not going to do any stuff to the response we pretend the
     # request didn't pass through Varnish
     unset bereq.http.X-Turpentine-Secret-Handshake;
     set bereq.http.Connection = "close";
 }
-
-# sub vcl_pass {
-#     return (pass);
-# }
-
 sub vcl_hash {
     std.log("vcl_hash start");
-
     # For static files we keep the hash simple and don't add the domain.
     # This saves memory when a static file is used on multiple domains.
     if ({{simple_hash_static}} && req.http.X-Varnish-Static) {
@@ -269,8 +232,6 @@ sub vcl_hash {
         std.log("vcl_hash end return lookup");
         return (lookup);
     }
-
-
     if({{send_unmodified_url}} && req.http.X-Varnish-Cache-Url) {
         hash_data(req.http.X-Varnish-Cache-Url);
         std.log("hash_data - X-Varnish-Cache-Url: " + req.http.X-Varnish-Cache-Url);
@@ -278,17 +239,14 @@ sub vcl_hash {
         hash_data(req.url);
         std.log("hash_data - req.url: " + req.url );
     }
-
     if (req.http.Host) {
         hash_data(req.http.Host);
         std.log("hash_data - req.http.Host: " + req.http.Host);
     } else {
         hash_data(server.ip);
     }
-
     std.log("hash_data - req.http.Ssl-Offloaded: " + req.http.Ssl-Offloaded);
     hash_data(req.http.Ssl-Offloaded);
-
     if (req.http.X-Normalized-User-Agent) {
         hash_data(req.http.X-Normalized-User-Agent);
         std.log("hash_data - req.http.X-Normalized-User-Agent: " + req.http.X-Normalized-User-Agent);
@@ -304,46 +262,20 @@ sub vcl_hash {
         hash_data("s=" + req.http.X-Varnish-Store + "&c=" + req.http.X-Varnish-Currency);
         std.log("hash_data - Store and Currency: " + "s=" + req.http.X-Varnish-Store + "&c=" + req.http.X-Varnish-Currency);
     }
-
-    if (req.http.X-Varnish-Esi-Access == "private" &&
-            req.http.Cookie ~ "frontend=") {
-        std.log("hash_data - frontned cookie: " + regsub(req.http.Cookie, "^.*?frontend=([^;]*);*.*$", "\1"));
+    if (req.http.X-Varnish-Esi-Access == "private" && req.http.Cookie ~ "frontend=") {
+        std.log("hash_data - frontend cookie: " + regsub(req.http.Cookie, "^.*?frontend=([^;]*);*.*$", "\1"));
         hash_data(regsub(req.http.Cookie, "^.*?frontend=([^;]*);*.*$", "\1"));
         {{advanced_session_validation}}
-
     }
-
-    # ToDo KOEMPF-OVERWRITE: Begin
-    # Disable caching for user group
-    #if (req.http.X-Varnish-Esi-Access == "customer_group" &&
-    #        req.http.Cookie ~ "customer_group=") {
-    #    hash_data(regsub(req.http.Cookie, "^.*?customer_group=([^;]*);*.*$", "\1"));
-    #}
-    # ToDo KOEMPF-OVERWRITE: End
     std.log("vcl_hash end return lookup");
     return (lookup);
 }
-
-sub vcl_hit {
-    # this seems to cause cache object contention issues so removed for now
-    # TODO: use obj.hits % something maybe
-    # if (obj.hits > 0) {
-    #     set obj.ttl = obj.ttl + {{lru_factor}}s;
-    # }
-}
-
-# sub vcl_miss {
-#     return (fetch);
-# }
-
 sub vcl_backend_response {
     # set the grace period
     set beresp.grace = {{grace_period}}s;
-
     # Store the URL in the response object, to be able to do lurker friendly bans later
     set beresp.http.X-Varnish-Host = bereq.http.host;
     set beresp.http.X-Varnish-URL = bereq.url;
-
     # if it's part of magento...
     if (bereq.url ~ "{{url_base_regex}}") {
         # we handle the Vary stuff ourselves for now, we'll want to actually
@@ -352,12 +284,7 @@ sub vcl_backend_response {
         unset beresp.http.Vary;
         # we pretty much always want to do this
         set beresp.do_gzip = true;
-
-        # ToDo KOEMPF-OVERWRITE: Begin
-        # do not cache 404 responses
-        #if (beresp.status != 200 && beresp.status != 404) {
         if (beresp.status != 200) {
-        # ToDo KOEMPF-OVERWRITE: End
             # pass anything that isn't a 200 or 404
             set beresp.ttl = {{grace_period}}s;
             set beresp.uncacheable = true;
@@ -369,14 +296,12 @@ sub vcl_backend_response {
                 set beresp.http.X-Varnish-Set-Cookie = beresp.http.Set-Cookie;
                 unset beresp.http.Set-Cookie;
             }
-
             # we'll set our own cache headers if we need them
             # we'll override the "Cache-Control" header if needed
             unset beresp.http.Expires;
             unset beresp.http.Pragma;
             unset beresp.http.Cache;
             unset beresp.http.Age;
-
             if (beresp.http.X-Turpentine-Esi == "1") {
                 set beresp.do_esi = true;
             }
@@ -426,9 +351,7 @@ sub vcl_backend_response {
     }
     # else it's not part of Magento so use the default Varnish handling
 }
-
 {{vcl_synth}}
-
 sub vcl_deliver {
     if (req.http.X-Varnish-Faked-Session) {
         # need to set the set-cookie header since we just made it out of thin air
@@ -483,7 +406,5 @@ sub vcl_deliver {
         unset resp.http.X-Varnish-Set-Cookie;
     }
 }
-
 ## Custom VCL Logic - Bottom
-
 {{custom_vcl_include}}

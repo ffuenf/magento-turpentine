@@ -29,6 +29,7 @@ class Nexcessnet_Turpentine_Model_Config_Select_Version
             array('value' => '3.0', 'label' => $helper->__('3.0.x')),
             array('value' => '4.0', 'label' => $helper->__('4.0.x')),
             array('value' => '4.1', 'label' => $helper->__('4.1.x')),
+            array('value' => '5.2', 'label' => $helper->__('5.2.x')),
             array('value' => 'auto', 'label' => $helper->__('Auto')),
         );
     }
