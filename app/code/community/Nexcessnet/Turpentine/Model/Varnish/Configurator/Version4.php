@@ -144,8 +144,7 @@ EOS;
             $parts = explode(':', $backendNode, 2);
             $host = (empty($parts[0])) ? '127.0.0.1' : $parts[0];
             $port = (empty($parts[1])) ? '80' : $parts[1];
-            $descriptor = $prefix.$number;
-            $backends .= $this->_vcl_director_backend($host, $port, $probeUrl, $backendOptions, $descriptor);
+            $backends .= $this->_vcl_director_backend($host, $port, $prefix.$number, $probeUrl, $backendOptions);
 
             $number++;
         }
@@ -166,7 +165,7 @@ EOS;
      * @param array  $options    extra options for backend
      * @return string
      */
-    protected function _vcl_director_backend($host, $port, $probeUrl = '', $options = array(), $descriptor = '') {
+    protected function _vcl_director_backend($host, $port, $descriptor = '', $probeUrl = '', $options = array()) {
         $tpl = <<<EOS
         backend web{$descriptor} {
             .host = "{{host}}";
